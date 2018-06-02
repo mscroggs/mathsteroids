@@ -1,4 +1,6 @@
 import pygame
+from exceptions import EndGame
+import config
 
 class Asteroids:
     def __init__(self):
@@ -12,16 +14,38 @@ class Asteroids:
         self.screen = pygame.display.set_mode(self.size)
         pygame.display.set_caption("Mathsteroids")
 
-        done = False
-        clock = pygame.time.Clock()
+        try:
+            self.title_screen()
 
-        while not done:
+        except EndGame:
+            pygame.quit()
+
+    def title_screen(self):
+        clock = pygame.time.Clock()
+        self.screen.fill(self.BLACK)
+        from fonts import linefont
+        for l in linefont("Mathsteroids %"+config.VERSION,50,100):
+            for p1,p2 in zip(l[:-1],l[1:]):
+                pygame.draw.line(self.screen, self.WHITE, p1, p2, 1)
+        pygame.display.flip()
+        while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    done = True
+                    raise EndGame
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_RETURN]:
+                break
+            clock.tick(60)
+        self.play_game()
+
+    def play_game(self):
+        clock = pygame.time.Clock()
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    raise EndGame
             self.tick()
             clock.tick(60)
-        pygame.quit()
 
     def tick(self):
         keys = pygame.key.get_pressed()

@@ -1,1 +1,1 @@
-from .sphere import Sphere
+from .sphere import SphereIsometric, SphereMercator

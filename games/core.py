@@ -35,26 +35,46 @@ class Asteroids:
             self.turn_right()
         self.move_forward()
         self.screen.fill(self.BLACK)
-        xs,ys = self.ship_coords()
+        xs,ys = self.ship_coords([0,self.size[0]],[0,self.size[1]])
         for x1,x2,y1,y2 in zip(xs[:-1],xs[1:],ys[:-1],ys[1:]):
-            self.line(x1,x2,y1,y2)
+            if abs(x1-x2)<self.size[0]/2 and abs(y1-y2)<self.size[1]/2:
+                pygame.draw.line(self.screen, self.WHITE, [x1, y1], [x2, y2], 1)
+            else:
+                points = self.wrap(x1,x2,y1,y2)
+                for p1,p2 in points:
+                    pygame.draw.line(self.screen, self.WHITE, p1, p2, 1)
         pygame.display.flip()
 
-    def line(self, x1, x2, y1, y2):
-        xa = self.size[0]/2 + x1/3 * min(self.size)
-        xb = self.size[0]/2 + x2/3 * min(self.size)
-        ya = self.size[1]/2 + y1/3 * min(self.size)
-        yb = self.size[1]/2 + y2/3 * min(self.size)
-        pygame.draw.line(self.screen, self.WHITE, [xa, ya], [xb, yb], 1)
+    def wrap(self, x1, x2, y1, y2):
+        if abs(x1-x2)>self.size[0]/2 and abs(y1-y2)>self.size[1]/2:
+            return [] # TODO
+        elif abs(x1-x2)>self.size[0]/2:
+            if x1<x2:
+                xa,xb = x2,x1
+                ya,yb = y2,y1
+            else:
+                xa,xb = x1,x2
+                ya,yb = y1,y2
+            ymid = xb*(yb-ya)/(xa-xb-self.size[0]) + yb
+            return (([xa,ya],[self.size[0],ymid]),([0,ymid],[xb,yb]))
+        elif abs(y1-y2)>self.size[1]/2:
+            if y1<y2:
+                xa,xb = x2,x1
+                ya,yb = y2,y1
+            else:
+                xa,xb = x1,x2
+                ya,yb = y1,y2
+            xmid = yb*(xb-xa)/(ya-yb-self.size[1]) + xb
+            return (([xa,ya],[xmid,self.size[1]]),([xmid,0],[xb,yb]))
 
     def reset(self):
         self.speed = 0
         self.vector.reset()
 
-    def to_2d(self, dh=0, dv=0):
+    def to_2d(self, xlim, ylim, dh=0, dv=0):
         raise NotImplementedError
 
-    def ship_coords(self):
+    def ship_coords(self, xlim, ylim):
         raise NotImplementedError
 
     def speed_up(self):

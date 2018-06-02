@@ -8,8 +8,8 @@ class SphericalVector(Vector):
     def reset(self):
         self.set_from_polar(1,0,0,0)
 
-    def polar(self):
-        return self.radius, self.hangle, self.vangle, self.rotation
+    def polar(self, dh=0, dv=0):
+        return self.radius, self.hangle+dh, self.vangle+dv, self.rotation
 
     def set_from_polar(self, radius=1, hangle=0, vangle=0, rotation=0):
         self.radius = radius

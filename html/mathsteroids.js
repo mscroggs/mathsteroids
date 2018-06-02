@@ -82,7 +82,7 @@ function draw_ship(ctx){
             var vangle = points[i][1]
             var x = WIDTH * hangle/(2*Math.PI)
             var y = 0
-            var maxa = 85.05 * Math.PI/180
+            var maxa = 87.05 * Math.PI/180
             if(-maxa <= vangle <= maxa){
                 y = HEIGHT/2 + HEIGHT/2 * Math.log(Math.tan(Math.PI/4+vangle/2))/Math.log(Math.tan(Math.PI/4+maxa/2))
             } else if(vangle > maxa){

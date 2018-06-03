@@ -22,10 +22,12 @@
 
 echo("<script type='text/javascript'>
 var font_data = ".file_get_contents("font.json")."
-var VERSION = ".file_get_contents("../VERSION")."
+var VERSION = ".file_get_contents("VERSION")."
 </script>");
 
 ?>
 <script type='text/javascript' src='mathsteroids.js'></script>
+<script type='text/javascript' src='inputs.js'></script>
+<script type='text/javascript' src='titlescreen.js'></script>
 </body>
 </html>

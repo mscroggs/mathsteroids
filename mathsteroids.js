@@ -21,6 +21,7 @@ var WIDTH=800
 var HEIGHT=450
 
 var score = 0
+var asterN = 1
 
 var fired = 0;
 var fires = Array()
@@ -44,8 +45,12 @@ function reset(){
     score = 0
     fired = 0
     fires = Array()
-    asteroids = Array()
-    for(var i=0;i<5;i++){
+    asterN = 2
+    asteroids = make_new_asteroids(asterN)
+}
+function make_new_asteroids(n){
+    var out = Array()
+    for(var i=0;i<n;i++){
         new_a = {"x":0,"y":0,"hangle":0,"vangle":0,
                  "rotation":Math.random()*Math.PI*2,"speed":0.005+Math.random()*0.005,"direction":Math.random()*Math.PI*2,
                  "size":4,"radius":0.01,"sides":2}
@@ -59,8 +64,9 @@ function reset(){
         new_a["radius"] = as["radius"]
         new_a["sides"] = as["sides"]
 
-        asteroids[i] = new_a
+        out[i] = new_a
     }
+    return out
 }
 
 function too_close(p,q){
@@ -221,6 +227,11 @@ function get_a_s(a){
 }
 
 function move_asteroids(){
+    if(asteroids.length==0){
+        asterN++
+        score += 1000
+        asteroids = make_new_asteroids(asterN)
+    }
     var new_asteroids = Array()
     if(options["surface"]=="sphere"){
         for(var i=0;i<asteroids.length;i++){

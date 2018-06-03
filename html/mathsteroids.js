@@ -10,6 +10,7 @@
 
 
 var options = {"surface":"sphere","projection":"Mercator"}
+var RADIUS = 2
 var upPressed    = false;
 var firePressed  = false;
 var leftPressed  = false;
@@ -66,7 +67,7 @@ function fire(){
     for(var i=0;i<fires.length;i++){
         fires[i]["age"]++
         if(fires[i]["age"]<20){
-            new_pos = add_to_sphere(fires[i]["hangle"],fires[i]["vangle"],fires[i]["rotation"],speed+0.1)
+            new_pos = add_to_sphere(fires[i]["hangle"],fires[i]["vangle"],fires[i]["rotation"],speed+0.05)
             fires[i]["hangle"] = new_pos["hangle"]
             fires[i]["vangle"] = new_pos["vangle"]
             fires[i]["rotation"] = new_pos["rotation"]
@@ -200,7 +201,7 @@ function add_to_sphere(hangle, vangle, rot, badd){
     a = hangle - Math.atan2(Math.cos(rot) * Math.sin(vangle),Math.sin(rot))
     b = Math.atan2(Math.sin(vangle), Math.sin(rot)*Math.cos(vangle))
 
-    b += badd
+    b += badd/RADIUS
 
     hangle = a + Math.atan2(Math.cos(alpha)*Math.sin(b),Math.cos(b))
     vangle = Math.asin(Math.sin(b) * Math.sin(alpha))

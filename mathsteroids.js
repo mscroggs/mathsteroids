@@ -25,7 +25,8 @@ var fires = Array()
 var position = {"x":0,"y":0,"z":0,"hangle":0,"vangle":0,"rotation":0}
 var speed = {"speed":0,"rotation":0}
 
-var interval = 0
+function pass(){}
+var interval = setInterval(pass, 10000)
 
 // Game functions
 function start_game(){
@@ -123,7 +124,7 @@ function rotate_right(){
 }
 
 function draw_fire(ctx){
-    if(options["projection"] == "Mercator"){
+    if(options["surface"] == "sphere"){
         for(var i=0;i<fires.length;i++){
             starth = fires[i]["hangle"]
             startv = fires[i]["vangle"]
@@ -134,12 +135,29 @@ function draw_fire(ctx){
                 endh = new_pos["hangle"]
                 endv = new_pos["vangle"]
                 rot = new_pos["rotation"]
-                Mercator_draw_line(ctx,starth,startv,endh,endv)
+                if(options["projection"] == "Mercator"){
+                    Mercator_draw_line(ctx,starth,startv,endh,endv)
+                }
+                if(options["projection"] == "isometric"){
+                    isometric_draw_line(ctx,starth,startv,endh,endv)
+                }
                 starth = new_pos["hangle"]
                 startv = new_pos["vangle"]
             }
         }
     }
+}
+
+function isometric_xy(hangle,vangle){
+    var x = RADIUS * Math.cos(vangle) * Math.cos(hangle)
+    var y = RADIUS * Math.cos(vangle) * Math.sin(hangle)
+    var z = RADIUS * Math.sin(vangle)
+    var x2 = (x-y) * Math.sin(30)
+    var y2 = z + (x+y) * Math.cos(30)
+    var out = {}
+    out["x"] = WIDTH/2 + x2/(2.2*RADIUS) * Math.min(HEIGHT, WIDTH)
+    out["y"] = HEIGHT/2 + y2/(2.2*RADIUS) * Math.min(HEIGHT, WIDTH)
+    return out
 }
 
 function Mercator_xy(hangle,vangle){
@@ -154,6 +172,43 @@ function Mercator_xy(hangle,vangle){
         y = HEIGHT+5
     }
     return {"x":x,"y":y}
+}
+
+function isometric_move(ctx,h,v){
+    var xy = isometric_xy(h,v)
+    var x = xy["x"]
+    var y = xy["y"]
+    ctx.moveTo(x,y)
+}
+function isometric_draw_line(ctx,preh,prev,h,v){
+    var xy = isometric_xy(preh,prev)
+    var prex = xy["x"]
+    var prey = xy["y"]
+    xy = isometric_xy(h,v)
+    var x = xy["x"]
+    var y = xy["y"]
+/*    if(Math.abs(x-prex)>WIDTH/2){
+        if(x < prex){
+            xa = prex
+            xb = x
+            ya = prey
+            yb = y
+        } else {
+            xa = x
+            xb = prex
+            ya = y
+            yb = prey
+        }
+        ymid = xb*(yb-ya)/(xa-xb-WIDTH) + yb
+        ctx.moveTo(xa,ya)
+        ctx.lineTo(WIDTH,ymid)
+        ctx.moveTo(0,ymid)
+        ctx.lineTo(xb,yb)
+        ctx.moveTo(x,y)
+    } else {*/
+        ctx.moveTo(prex,prey)
+        ctx.lineTo(x,y)
+    //}
 }
 
 function Mercator_move(ctx,h,v){
@@ -194,17 +249,26 @@ function Mercator_draw_line(ctx,preh,prev,h,v){
 }
 
 function draw_ship(ctx){
-    if(options["projection"]=="Mercator"){
+    if(options["surface"]=="sphere"){
         points = ship_sprite()
         var preh = 0
         var prev = 0
         for(var i=0;i<points.length;i++){
             var hangle = points[i][0]
             var vangle = points[i][1]
-            if(i==0){
-                Mercator_move(ctx,hangle,vangle)
-            } else {
-                Mercator_draw_line(ctx,preh,prev,hangle,vangle)
+            if(options["projection"]=="Mercator"){
+                if(i==0){
+                    Mercator_move(ctx,hangle,vangle)
+                } else {
+                    Mercator_draw_line(ctx,preh,prev,hangle,vangle)
+                }
+            }
+            if(options["projection"]=="isometric"){
+                if(i==0){
+                    isometric_move(ctx,hangle,vangle)
+                } else {
+                    isometric_draw_line(ctx,preh,prev,hangle,vangle)
+                }
             }
             preh = hangle
             prev = vangle
@@ -294,6 +358,9 @@ function ship_sprite(){
 
 document.addEventListener('keydown', (event) => {
     const keyName = event.key;
+    if(keyName == "q"){
+        show_menu()
+    }
     process_key(keyName,true)
     button_styles()
 });
@@ -416,6 +483,7 @@ function button_styles(){
 // Menu screen
 function show_menu(){
     menu_tick()
+    clearInterval(interval)
     interval = setInterval(menu_tick,1000/60);
 //    start_game()
 }
@@ -424,8 +492,7 @@ var leftTimer=0
 var rightTimer=0
 var games = [
              ["sphere (mercator projection)","sphere","Mercator"],
-             ["sphere (isometric)","sphere","isometric"],
-             ["abcdefghijklmnopqrstuvwxyz","sphere","Mercator"]
+             ["sphere (isometric)","sphere","isometric"]
             ]
 var game_n = 0
 var game_title = ""

@@ -2,19 +2,22 @@
 <head>
 <title>Mathsteroids</title>
 <style type='text/css'>
-.clickbutton {width:80px;height:80px;border:2px solid green;display:inline-block;margin:2px}
-.buttongroup {width:176px;height:176px;text-align:center;background-color:#CCCCCC;display:inline-block}
-
-.clickbutton#display_up {background-image:url("uparrow.png")}
-.clickbutton#display_left {background-image:url("leftarrow.png")}
-.clickbutton#display_right {background-image:url("rightarrow.png")}
-
+    .clickbutton {border:2px solid green;display:inline-block;margin:2px;background-color:white}
+    .buttongroup {text-align:center;background-color:#CCCCCC;display:inline-block}
+@media (min-width:1000px){
+    .clickbutton {width:80px;height:80px;line-height:80px;font-size:50px}
+    .buttongroup {width:264px;height:176px}
+}
+@media (max-width:1000px){
+    .clickbutton {width:20%}
+    .buttongroup {width:100%;height:216px}
+}
 </style>
 </head>
 <body>
 
 <canvas id='mathsteroids' width='800' height='450'></canvas>
-<div class='buttongroup'><div class='clickbutton' id='display_up'></div><br /><div class='clickbutton' id='display_left'></div><div class='clickbutton' id='display_right'></div></div>
+<div class='buttongroup'><div class='clickbutton' id='display_up'>&uarr;</div><br /><div class='clickbutton' id='display_left'>&larr;</div><div class='clickbutton' id='display_fire'>&uArr;</div><div class='clickbutton' id='display_right'>&rarr;</div></div>
 <script type='text/javascript' src='mathsteroids.js'></script>
 </body>
 </html>

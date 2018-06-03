@@ -11,12 +11,15 @@
 
 var options = {"surface":"sphere","projection":"Mercator"}
 var upPressed    = false;
+var firePressed  = false;
 var leftPressed  = false;
 var rightPressed = false;
 var mouse = "";
 var WIDTH=800
 var HEIGHT=450
 
+var fired = false;
+var fires = Array()
 var position = {"x":0,"y":0,"z":0,"hangle":0,"vangle":0}
 var rotation = 0
 var speed = 0
@@ -25,6 +28,8 @@ function reset(){
     position = {"x":0,"y":0,"z":0,"hangle":Math.PI,"vangle":0}
     rotation = 0
     speed = 0
+    fired = false
+    fires = Array()
 }
 reset()
 
@@ -41,13 +46,44 @@ function tick(){
         rotate_right()
     }
     move_ship()
+    fire()
     var canvas = document.getElementById("mathsteroids");
     var ctx = canvas.getContext("2d");
     ctx.fillStyle = "#000000";
     ctx.fillRect(0,0,WIDTH,HEIGHT);
+    ctx.strokeStyle = "#FFFFFF"
+    ctx.lineWidth = 2;
+    ctx.beginPath()
     draw_ship(ctx)
+    draw_fire(ctx)
+    ctx.stroke();
 }
 tick()
+
+function fire(){
+    var remove = Array()
+    var new_fires = Array()
+    for(var i=0;i<fires.length;i++){
+        fires[i]["age"]++
+        if(fires[i]["age"]<20){
+            new_pos = add_to_sphere(fires[i]["hangle"],fires[i]["vangle"],fires[i]["rotation"],speed+0.1)
+            fires[i]["hangle"] = new_pos["hangle"]
+            fires[i]["vangle"] = new_pos["vangle"]
+            fires[i]["rotation"] = new_pos["rotation"]
+            new_fires[new_fires.length] = fires[i]
+        }
+    }
+    fires = new_fires
+    if(firePressed && !fired){
+        fired = true
+        new_pos = add_to_sphere(position["hangle"],position["vangle"],rotation,0.1)
+        new_pos["age"] = 0
+        fires[fires.length] = new_pos
+    }
+    if(!firePressed){
+        fired=false
+    }
+}
 
 function increase_speed(){
     if(options["surface"]=="sphere"){
@@ -69,56 +105,93 @@ function rotate_right(){
     rotation += 0.1
 }
 
+function draw_fire(ctx){
+    if(options["projection"] == "Mercator"){
+        for(var i=0;i<fires.length;i++){
+            starth = fires[i]["hangle"]
+            startv = fires[i]["vangle"]
+            var N = 10
+            var rot = fires[i]["rotation"]
+            for(var j=0;j<N;j++){
+                var new_pos = add_to_sphere(starth,startv,rot,0.1/N)
+                endh = new_pos["hangle"]
+                endv = new_pos["vangle"]
+                rot = new_pos["rotation"]
+                Mercator_draw_line(ctx,starth,startv,endh,endv)
+                starth = new_pos["hangle"]
+                startv = new_pos["vangle"]
+            }
+        }
+    }
+}
+
+function Mercator_xy(hangle,vangle){
+    var x = WIDTH * hangle/(2*Math.PI)
+    var y = 0
+    var maxa = 87.05 * Math.PI/180
+    if(-maxa <= vangle <= maxa){
+        y = HEIGHT/2 + HEIGHT/2 * Math.log(Math.tan(Math.PI/4+vangle/2))/Math.log(Math.tan(Math.PI/4+maxa/2))
+    } else if(vangle > maxa){
+        y = -5
+    } else {
+        y = HEIGHT+5
+    }
+    return {"x":x,"y":y}
+}
+
+function Mercator_move(ctx,h,v){
+    var xy = Mercator_xy(h,v)
+    var x = xy["x"]
+    var y = xy["y"]
+    ctx.moveTo(x,y)
+}
+function Mercator_draw_line(ctx,preh,prev,h,v){
+    var xy = Mercator_xy(preh,prev)
+    var prex = xy["x"]
+    var prey = xy["y"]
+    xy = Mercator_xy(h,v)
+    var x = xy["x"]
+    var y = xy["y"]
+    if(Math.abs(x-prex)>WIDTH/2){
+        if(x < prex){
+            xa = prex
+            xb = x
+            ya = prey
+            yb = y
+        } else {
+            xa = x
+            xb = prex
+            ya = y
+            yb = prey
+        }
+        ymid = xb*(yb-ya)/(xa-xb-WIDTH) + yb
+        ctx.moveTo(xa,ya)
+        ctx.lineTo(WIDTH,ymid)
+        ctx.moveTo(0,ymid)
+        ctx.lineTo(xb,yb)
+        ctx.moveTo(x,y)
+    } else {
+        ctx.moveTo(prex,prey)
+        ctx.lineTo(x,y)
+    }
+}
+
 function draw_ship(ctx){
     if(options["projection"]=="Mercator"){
-        ctx.strokeStyle = "#FFFFFF"
-        ctx.lineWidth = 2
-        ctx.beginPath()
         points = ship_sprite()
-        var prex = -1
-        var prey = -1
+        var preh = 0
+        var prev = 0
         for(var i=0;i<points.length;i++){
             var hangle = points[i][0]
             var vangle = points[i][1]
-            var x = WIDTH * hangle/(2*Math.PI)
-            var y = 0
-            var maxa = 87.05 * Math.PI/180
-            if(-maxa <= vangle <= maxa){
-                y = HEIGHT/2 + HEIGHT/2 * Math.log(Math.tan(Math.PI/4+vangle/2))/Math.log(Math.tan(Math.PI/4+maxa/2))
-            } else if(vangle > maxa){
-                y = -5
-            } else {
-                y = HEIGHT+5
-            }
             if(i==0){
-                ctx.moveTo(x,y)
+                Mercator_move(ctx,hangle,vangle)
             } else {
-                if(Math.abs(x-prex)>WIDTH/2){
-                    if(x < prex){
-                        xa = prex
-                        xb = x
-                        ya = prey
-                        yb = y
-                    } else {
-                        xa = x
-                        xb = prex
-                        ya = y
-                        yb = prey
-                    }
-                    ymid = xb*(yb-ya)/(xa-xb-WIDTH) + yb
-                    ctx.moveTo(xa,ya)
-                    ctx.lineTo(WIDTH,ymid)
-                    ctx.moveTo(0,ymid)
-                    ctx.lineTo(xb,yb)
-                    ctx.moveTo(x,y)
-                } else {
-                    ctx.lineTo(x,y)
-                }
+                Mercator_draw_line(ctx,preh,prev,hangle,vangle)
             }
-            prex = x
-            prey = y
+            preh = hangle
+            prev = vangle
         }
-        ctx.stroke();
     }
 }
 
@@ -200,21 +273,31 @@ function ship_sprite(){
 
 document.addEventListener('keydown', (event) => {
     const keyName = event.key;
-    if(keyName == "ArrowUp"){
-        upPressed=true;
-    }
-    if(keyName == "ArrowLeft"){
-        leftPressed=true;
-    }
-    if(keyName == "ArrowRight"){
-        rightPressed=true;
-    }
+    process_key(keyName,true)
     button_styles()
 });
+
+function process_key(keyName, result){
+    if(keyName == "ArrowUp" || keyName == "w"){
+        upPressed=result;
+    }
+    if(keyName == "ArrowLeft" || keyName == "a"){
+        leftPressed=result;
+    }
+    if(keyName == "ArrowRight" || keyName == "d"){
+        rightPressed=result;
+    }
+    if(keyName == " " || keyName == "ArrowDown" || keyName == "s" || keyName == "k"){
+        firePressed=result;
+    }
+}
 
 document.addEventListener('mouseup', (event) => {
     if(mouse=="up"){
         upPressed=false;
+    }
+    if(mouse=="fire"){
+        firePressed=false;
     }
     if(mouse=="right"){
         rightPressed=false;
@@ -232,6 +315,16 @@ document.getElementById("display_up").addEventListener('touchstart', (event) => 
 document.getElementById("display_up").addEventListener('mousedown', (event) => {
     upPressed=true;
     mouse = "up"
+    button_styles()
+});
+
+document.getElementById("display_fire").addEventListener('touchstart', (event) => {
+    firePressed=true;
+    button_styles()
+});
+document.getElementById("display_fire").addEventListener('mousedown', (event) => {
+    firePressed=true;
+    mouse = "fire"
     button_styles()
 });
 
@@ -272,15 +365,7 @@ document.getElementById("display_right").addEventListener('touchend', (event) =>
 
 document.addEventListener('keyup', (event) => {
     const keyName = event.key;
-    if(keyName == "ArrowUp"){
-        upPressed=false;
-    }
-    if(keyName == "ArrowLeft"){
-        leftPressed=false;
-    }
-    if(keyName == "ArrowRight"){
-        rightPressed=false;
-    }
+    process_key(keyName,false)
     button_styles()
 });
 
@@ -289,6 +374,11 @@ function button_styles(){
         document.getElementById("display_up").style.backgroundColor="red"
     } else {
         document.getElementById("display_up").style.backgroundColor="white"
+    }
+    if(firePressed){
+        document.getElementById("display_fire").style.backgroundColor="red"
+    } else {
+        document.getElementById("display_fire").style.backgroundColor="white"
     }
     if(leftPressed){
         document.getElementById("display_left").style.backgroundColor="red"
@@ -302,4 +392,4 @@ function button_styles(){
     }
 }
 
-setInterval(tick,10);
+setInterval(tick,1000/60);

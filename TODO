@@ -1,3 +1,6 @@
-* Score.
+* Slow ship down.
 * Die if collide with asteroids.
+* Make bullets last longer.
 * Add flat games.
+* Show use which side of the sphere they are on.
+* Make ship more easily distinguishable from asteroids.

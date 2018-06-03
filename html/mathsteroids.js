@@ -9,6 +9,7 @@
 /********************************/
 
 
+// Global variables
 var options = {"surface":"sphere","projection":"Mercator"}
 var RADIUS = 2
 var upPressed    = false;
@@ -19,20 +20,27 @@ var mouse = "";
 var WIDTH=800
 var HEIGHT=450
 
-var fired = false;
+var fired = 0;
 var fires = Array()
-var position = {"x":0,"y":0,"z":0,"hangle":0,"vangle":0}
-var rotation = 0
-var speed = 0
+var position = {"x":0,"y":0,"z":0,"hangle":0,"vangle":0,"rotation":0}
+var speed = {"speed":0,"rotation":0}
+
+var interval = 0
+
+// Game functions
+function start_game(){
+    reset()
+    tick()
+    clearInterval(interval)
+    interval = setInterval(tick,1000/60);
+}
 
 function reset(){
-    position = {"x":0,"y":0,"z":0,"hangle":Math.PI,"vangle":0}
-    rotation = 0
-    speed = 0
-    fired = false
+    position = {"x":0,"y":0,"z":0,"hangle":Math.PI,"vangle":0,"rotation":0}
+    speed = {"speed":0,"rotation":0}
+    fired = 0
     fires = Array()
 }
-reset()
 
 function tick(){
     if(upPressed){
@@ -59,15 +67,14 @@ function tick(){
     draw_fire(ctx)
     ctx.stroke();
 }
-tick()
 
 function fire(){
     var remove = Array()
     var new_fires = Array()
     for(var i=0;i<fires.length;i++){
         fires[i]["age"]++
-        if(fires[i]["age"]<20){
-            new_pos = add_to_sphere(fires[i]["hangle"],fires[i]["vangle"],fires[i]["rotation"],speed+0.05)
+        if(fires[i]["age"]<40){
+            new_pos = add_to_sphere(fires[i]["hangle"],fires[i]["vangle"],fires[i]["rotation"],fires[i]["speed"])
             fires[i]["hangle"] = new_pos["hangle"]
             fires[i]["vangle"] = new_pos["vangle"]
             fires[i]["rotation"] = new_pos["rotation"]
@@ -75,35 +82,44 @@ function fire(){
         }
     }
     fires = new_fires
-    if(firePressed && !fired){
-        fired = true
-        new_pos = add_to_sphere(position["hangle"],position["vangle"],rotation,0.1)
-        new_pos["age"] = 0
-        fires[fires.length] = new_pos
+    if(firePressed){
+        if(fired==0){
+            new_pos = add_to_sphere(position["hangle"],position["vangle"],position["rotation"],0.1)
+            new_pos["speed"] = 0.05 + speed["speed"]*(Math.cos(position["rotation"]-speed["rotation"]))
+            new_pos["rotation"] = new_pos["rotation"]
+            new_pos["age"] = 0
+            fires[fires.length] = new_pos
+        }
+        fired++
+        fired%=15
     }
     if(!firePressed){
-        fired=false
+        fired=0
     }
 }
 
 function increase_speed(){
     if(options["surface"]=="sphere"){
-        speed = Math.min(0.07,speed+0.001)
+        var new_speed_x = speed["speed"]*Math.cos(speed["rotation"]) + 0.01*Math.cos(position["rotation"])
+        var new_speed_y = speed["speed"]*Math.sin(speed["rotation"]) + 0.01*Math.sin(position["rotation"])
+        var new_speed = Math.sqrt(new_speed_x*new_speed_x+new_speed_y*new_speed_y)
+        speed["speed"] = Math.min(0.07,new_speed)
+        speed["rotation"] = Math.atan2(new_speed_y,new_speed_x)
     }
 }
 
 function decrease_speed(){
     if(options["surface"]=="sphere"){
-        speed = Math.max(0,speed-0.0001)
+        speed["speed"] = Math.max(0,speed["speed"]-0.0001)
     }
 }
 
 function rotate_left(){
-    rotation -= 0.1
+    position["rotation"] -= 0.07
 }
 
 function rotate_right(){
-    rotation += 0.1
+    position["rotation"] += 0.07
 }
 
 function draw_fire(ctx){
@@ -226,8 +242,10 @@ function add_to_sphere(hangle, vangle, rot, badd){
 
 function move_ship(){
     if(options["surface"]=="sphere"){
-        new_pos = add_to_sphere(position["hangle"],position["vangle"],rotation,speed)
-        rotation = new_pos["rotation"]
+        var new_pos = add_to_sphere(position["hangle"],position["vangle"],speed["rotation"],speed["speed"])
+        position["rotation"] -= speed["rotation"]
+        speed["rotation"] = new_pos["rotation"]
+        position["rotation"] += speed["rotation"]
         position["hangle"] = new_pos["hangle"]
         position["vangle"] = new_pos["vangle"]
     }
@@ -238,7 +256,7 @@ function ship_sprite(){
         var out = Array()
         var N = 15
 
-        var p = {"hangle":position["hangle"],"vangle":position["vangle"],"rotation":rotation}
+        var p = {"hangle":position["hangle"],"vangle":position["vangle"],"rotation":position["rotation"]}
         out[out.length] = Array(p["hangle"],p["vangle"])
 
         p = add_to_sphere(p["hangle"],p["vangle"],p["rotation"]+Math.PI/2+Math.atan2(1,Math.cos(0.05)),0)
@@ -271,6 +289,8 @@ function ship_sprite(){
         return out
     }
 }
+
+// inputs
 
 document.addEventListener('keydown', (event) => {
     const keyName = event.key;
@@ -393,4 +413,110 @@ function button_styles(){
     }
 }
 
-setInterval(tick,1000/60);
+// Menu screen
+function show_menu(){
+    menu_tick()
+    interval = setInterval(menu_tick,1000/60);
+//    start_game()
+}
+
+var leftTimer=0
+var rightTimer=0
+var games = [
+             ["sphere (mercator projection)","sphere","Mercator"],
+             ["sphere (isometric)","sphere","isometric"],
+             ["abcdefghijklmnopqrstuvwxyz","sphere","Mercator"]
+            ]
+var game_n = 0
+var game_title = ""
+
+function changeGameN(i){
+    game_n += i
+    if(game_n>=games.length){game_n-=games.length}
+    if(game_n<0){game_n+=games.length}
+    game_title = games[game_n][0]
+    options["surface"] = games[game_n][1]
+    options["projection"] = games[game_n][2]
+}
+changeGameN(0)
+
+
+function menu_tick(){
+    if(leftPressed){
+        if(leftTimer==0){
+            changeGameN(-1)
+        }
+        leftTimer++
+        leftTimer%=15
+    } else {
+        leftTimer = 0
+    }
+    if(rightPressed){
+        if(rightTimer==0){
+            changeGameN(1)
+        }
+        rightTimer++
+        rightTimer%=15
+    } else {
+        rightTimer = 0
+    }
+    if(firePressed){
+        firePressed = false
+        start_game()
+    }
+    var canvas = document.getElementById("mathsteroids");
+    var ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0,0,WIDTH,HEIGHT);
+    ctx.strokeStyle = "#FFFFFF"
+    ctx.lineWidth = 2;
+    ctx.beginPath()
+    draw_titles(ctx)
+    add_scaled_text(ctx,"surface:",20,HEIGHT-45,0.5)
+    add_scaled_text(ctx,"<< "+game_title+" >>",150,HEIGHT-45,0.5)
+    add_scaled_text(ctx,"press <fire> to begin",WIDTH-295,HEIGHT-20,0.5)
+    ctx.stroke();
+}
+
+function draw_titles(ctx){
+    add_text(ctx, "Mathsteroids %"+VERSION, 20, 70)
+}
+
+function add_text(ctx, text, x, y){
+    add_scaled_text(ctx, text, x, y, 1)
+}
+function add_scaled_text(ctx, text, x, y, scale){
+    for (var i=0;i<text.length;i++) {
+        x = add_letter(ctx, text.charAt(i), x, y, scale);
+    }
+}
+
+show_menu()
+
+function add_letter(ctx,letter,x,y,scale){
+    if(letter==" "){
+        return x+20*scale
+    }
+    if(!(letter in font_data)){
+        letter = "??"
+    }
+    var lines = font_data[letter]
+    xout = x
+    for(var j=0;j<lines.length;j++){
+        for(var i=0;i<lines[j].length;i+=lines[j].length-1){
+            ctx.moveTo(x+lines[j][i][0]*scale-1,y+lines[j][i][1]*scale)
+            ctx.lineTo(x+lines[j][i][0]*scale+1,y+lines[j][i][1]*scale)
+            ctx.moveTo(x+lines[j][i][0]*scale,y+lines[j][i][1]*scale-1)
+            ctx.lineTo(x+lines[j][i][0]*scale,y+lines[j][i][1]*scale+1)
+        }
+        for(var i=0;i<lines[j].length;i++){
+            if(i==0){
+                ctx.moveTo(x+lines[j][i][0]*scale,y+lines[j][i][1]*scale)
+            } else {
+                ctx.lineTo(x+lines[j][i][0]*scale,y+lines[j][i][1]*scale)
+            }
+            xout = Math.max(xout,x+lines[j][i][0]*scale)
+        }
+    }
+    return xout+10*scale
+}

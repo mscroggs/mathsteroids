@@ -1,4 +1,8 @@
-* Make bullets last longer.
-* Add flat games.
-* Show use which side of the sphere they are on.
 * Make ship more easily distinguishable from asteroids.
+* More sphere projections
+  * Stereographic (two circles for two halves)
+* Add flat games.
+  * Torus
+  * Projective plane
+  * Klein bottle
+* Game over screen

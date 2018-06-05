@@ -13,7 +13,6 @@ function show_menu(){
     menu_tick()
     clearInterval(interval)
     interval = setInterval(menu_tick,1000/60);
-//    start_game()
 }
 
 function draw_a_sphere(ctx, xcenter){
@@ -49,6 +48,26 @@ function draw_a_plane(ctx, xcenter){
     ctx.lineTo(xcenter-120, HEIGHT/2-80)
 }
 
+function draw_two_circles(ctx, xcenter){
+    var N = 100
+    var angle = 0
+    var R = WIDTH/9
+    for(var circle=0;circle<2;circle++){
+        for(var i=0;i<=N;i++){
+            angle = 2*i*Math.PI/N
+            var x = xcenter + R*Math.cos(angle)
+            if(circle==0){x += R*1.1}
+            else{x -= R*1.1}
+            var y = HEIGHT/2 + R*Math.sin(angle)
+            if(i==0){
+                ctx.moveTo(x,y)
+            } else {
+                ctx.lineTo(x,y)
+            }
+        }
+    }
+}
+
 function draw_surface(ctx){
     if(options["surface"]=="sphere"){
         draw_a_sphere(ctx,WIDTH/4)
@@ -60,14 +79,13 @@ function draw_surface(ctx){
     if(options["projection"]=="Mercator"){
         draw_a_plane(ctx,3*WIDTH/4)
     }
+    if(options["projection"]=="Stereographic"){
+        draw_two_circles(ctx,3*WIDTH/4)
+    }
 }
 
 var leftTimer=0
 var rightTimer=0
-var games = [
-             ["sphere (mercator projection)","sphere","Mercator"],
-             ["sphere (isometric)","sphere","isometric"]
-            ]
 var game_n = 0
 var game_title = ""
 

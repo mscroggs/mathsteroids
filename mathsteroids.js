@@ -10,6 +10,11 @@
 
 
 // Global variables
+var games = [
+             ["sphere (mercator projection)","sphere","Mercator"],
+             ["sphere (isometric)","sphere","isometric"],
+             ["sphere (stereographic projection)","sphere","Stereographic"]
+            ]
 var options = {"surface":"sphere","projection":"Mercator"}
 var RADIUS = 2
 var upPressed    = false;
@@ -30,6 +35,10 @@ var spaceship = {"x":0,"y":0,"hangle":0,"vangle":0,"rotation":0,"speed":0,"direc
 
 var asteroids = Array()
 var explode = Array()
+
+var front_points = Array()
+var back_points = Array()
+
 
 function pass(){}
 var interval = setInterval(pass, 10000)
@@ -99,20 +108,41 @@ function tick(){
     move_explodes()
     move_asteroids()
     if(lives<=0){gameover()}
+
     var canvas = document.getElementById("mathsteroids");
     var ctx = canvas.getContext("2d");
     ctx.fillStyle = "#000000";
     ctx.fillRect(0,0,WIDTH,HEIGHT);
+
     ctx.strokeStyle = "#FFFFFF"
     ctx.lineWidth = 2;
     ctx.beginPath()
     add_scaled_text(ctx,""+score,20,38,0.6)
     draw_lives(ctx)
-    draw_fire(ctx)
-    draw_asteroids(ctx)
-    draw_explodes(ctx)
-    draw_ship(ctx)
     ctx.stroke();
+
+    front_points = Array()
+    back_points = Array()
+
+    draw_shape()
+    draw_fire()
+    draw_asteroids()
+    draw_explodes()
+    draw_ship()
+
+    ctx.beginPath()
+    ctx.strokeStyle = "#444444"
+    for(var i=0;i<back_points.length;i++){
+        sphere_draw_line(ctx,back_points[i][0],back_points[i][1],back_points[i][2],back_points[i][3])
+    }
+    ctx.stroke()
+
+    ctx.beginPath()
+    ctx.strokeStyle = "#FFFFFF"
+    for(var i=0;i<front_points.length;i++){
+        sphere_draw_line(ctx,front_points[i][0],front_points[i][1],front_points[i][2],front_points[i][3])
+    }
+    ctx.stroke()
 }
 
 function gameover(){
@@ -193,29 +223,51 @@ function draw_lives(ctx){
     }
 }
 
-function draw_ship(ctx){
-    draw_sprite(ctx,ship_sprite(15))
+function draw_shape(){
+    if(options["surface"]=="sphere" && options["projection"]=="isometric"){
+        for(var circle=0;circle<2;circle++){
+            var vangle = 0
+            var hangle = 0
+            var prev = 0
+            var preh = 0
+            var N = 100
+            if(circle==1){hangle=3*Math.PI/4}
+            for(var i=0;i<=N;i++){
+                if(i!=0){
+                    add_line_to_draw(Array(preh,prev,hangle,vangle))
+                }
+                prev = vangle
+                preh = hangle
+                if(circle==0){hangle += Math.PI*2/N}
+                else{vangle += Math.PI*2/N}
+            }
+        }
+    }
 }
 
-function draw_asteroids(ctx){
+function draw_ship(){
+    draw_sprite(ship_sprite(15))
+}
+
+function draw_asteroids(){
     for(var i=0;i<asteroids.length;i++){
-        draw_sprite(ctx,asteroid_sprite(asteroids[i]))
+        draw_sprite(asteroid_sprite(asteroids[i]))
     }
 }
 
-function draw_fire(ctx){
+function draw_fire(){
     for(var i=0;i<fires.length;i++){
-        draw_sprite(ctx,fire_sprite(fires[i]))
+        draw_sprite(fire_sprite(fires[i]))
     }
 }
 
-function draw_explodes(ctx){
+function draw_explodes(){
     for(var i=0;i<explode.length;i++){
-        draw_sprite(ctx,explode_sprite(explode[i]))
+        draw_sprite(explode_sprite(explode[i]))
     }
 }
 
-function draw_sprite(ctx, points_list){
+function draw_sprite(points_list){
     if(options["surface"]=="sphere"){
         var preh = 0
         var prev = 0
@@ -225,7 +277,7 @@ function draw_sprite(ctx, points_list){
                 var hangle = points[i][0]
                 var vangle = points[i][1]
                 if(i>0){
-                    sphere_draw_line(ctx,preh,prev,hangle,vangle)
+                    add_line_to_draw(Array(preh,prev,hangle,vangle))
                 }
                 preh = hangle
                 prev = vangle
@@ -306,7 +358,6 @@ function move_asteroids(){
                         spaceship["hangle"] = Math.random()*2*Math.PI
                         spaceship["vangle"] = Math.random()*Math.PI-Math.PI/2
                     }
-                    console.log(points[j])
                     lives--
                     break
                 }
@@ -476,13 +527,18 @@ function asteroid_sprite(a){
 
 
 // sphere code
-function sphere_move(ctx,hangle,vangle){
-    if(options["projection"]=="Mercator"){
-        Mercator_move(ctx,hangle,vangle)
+function add_line_to_draw(thing){
+    if(options["surface"]=="sphere" && options["projection"]=="isometric"){
+        var hangle = (thing[0]+thing[2])/2
+        var vangle = (thing[1]+thing[3])/2
+        var x = Math.cos(vangle) * Math.cos(hangle)
+        var y = Math.cos(vangle) * Math.sin(hangle)
+        if(x+y<-0.1){
+            back_points[back_points.length] = thing
+            return
+        }
     }
-    if(options["projection"]=="isometric"){
-        isometric_move(ctx,hangle,vangle)
-    }
+    front_points[front_points.length] = thing
 }
 
 function sphere_draw_line(ctx,preh,prev,hangle,vangle){
@@ -535,13 +591,6 @@ function isometric_xy(hangle,vangle){
     return out
 }
 
-function isometric_move(ctx,h,v){
-    var xy = isometric_xy(h,v)
-    var x = xy["x"]
-    var y = xy["y"]
-    ctx.moveTo(x,y)
-}
-
 function isometric_draw_line(ctx,preh,prev,h,v){
     var xy = isometric_xy(preh,prev)
     var prex = xy["x"]
@@ -566,13 +615,6 @@ function Mercator_xy(hangle,vangle){
         y = HEIGHT+5
     }
     return {"x":x,"y":y}
-}
-
-function Mercator_move(ctx,h,v){
-    var xy = Mercator_xy(h,v)
-    var x = xy["x"]
-    var y = xy["y"]
-    ctx.moveTo(x,y)
 }
 
 function Mercator_draw_line(ctx,preh,prev,h,v){

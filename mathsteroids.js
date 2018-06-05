@@ -21,6 +21,7 @@ var WIDTH=800
 var HEIGHT=450
 
 var score = 0
+var lives = 3
 var asterN = 1
 
 var fired = 0;
@@ -28,6 +29,7 @@ var fires = Array()
 var spaceship = {"x":0,"y":0,"hangle":0,"vangle":0,"rotation":0,"speed":0,"direction":0}
 
 var asteroids = Array()
+var explode = Array()
 
 function pass(){}
 var interval = setInterval(pass, 10000)
@@ -43,11 +45,14 @@ function start_game(){
 function reset(){
     spaceship = {"x":0,"y":0,"hangle":Math.PI,"vangle":0,"rotation":0,"speed":0,"direction":0}
     score = 0
+    lives = 3
     fired = 0
     fires = Array()
+    explode = Array()
     asterN = 2
     asteroids = make_new_asteroids(asterN)
 }
+
 function make_new_asteroids(n){
     var out = Array()
     for(var i=0;i<n;i++){
@@ -90,8 +95,10 @@ function tick(){
         rotate_right()
     }
     move_ship()
-    fire()
+    move_fire()
+    move_explodes()
     move_asteroids()
+    if(lives<=0){gameover()}
     var canvas = document.getElementById("mathsteroids");
     var ctx = canvas.getContext("2d");
     ctx.fillStyle = "#000000";
@@ -100,14 +107,19 @@ function tick(){
     ctx.lineWidth = 2;
     ctx.beginPath()
     add_scaled_text(ctx,""+score,20,38,0.6)
-    draw_ship(ctx)
+    draw_lives(ctx)
     draw_fire(ctx)
     draw_asteroids(ctx)
+    draw_explodes(ctx)
+    draw_ship(ctx)
     ctx.stroke();
 }
 
-function fire(){
-    var remove = Array()
+function gameover(){
+    show_menu()
+}
+
+function move_fire(){
     var new_fires = Array()
     for(var i=0;i<fires.length;i++){
         fires[i]["age"]++
@@ -136,12 +148,23 @@ function fire(){
     }
 }
 
+function move_explodes(){
+    var new_explode = Array()
+    for(var i=0;i<explode.length;i++){
+        explode[i]["age"]++
+        if(explode[i]["age"]<20){
+            new_explode[new_explode.length] = explode[i]
+        }
+    }
+    explode = new_explode
+}
+
 function increase_speed(){
     if(options["surface"]=="sphere"){
-        var new_speed_x = spaceship["speed"]*Math.cos(spaceship["direction"]) + 0.01*Math.cos(spaceship["rotation"])
-        var new_speed_y = spaceship["speed"]*Math.sin(spaceship["direction"]) + 0.01*Math.sin(spaceship["rotation"])
+        var new_speed_x = spaceship["speed"]*Math.cos(spaceship["direction"]) + 0.002*Math.cos(spaceship["rotation"])
+        var new_speed_y = spaceship["speed"]*Math.sin(spaceship["direction"]) + 0.002*Math.sin(spaceship["rotation"])
         var new_speed = Math.sqrt(new_speed_x*new_speed_x+new_speed_y*new_speed_y)
-        spaceship["speed"] = Math.min(0.07,new_speed)
+        spaceship["speed"] = Math.min(0.05,new_speed)
         spaceship["direction"] = Math.atan2(new_speed_y,new_speed_x)
     }
 }
@@ -160,8 +183,18 @@ function rotate_right(){
     spaceship["rotation"] += 0.07
 }
 
+function draw_lives(ctx){
+    for(var i=0;i<lives;i++){
+        ctx.moveTo(WIDTH-i*25-30,20)
+        ctx.lineTo(WIDTH-i*25-20,40)
+        ctx.lineTo(WIDTH-i*25-30,35)
+        ctx.lineTo(WIDTH-i*25-40,40)
+        ctx.lineTo(WIDTH-i*25-30,20)
+    }
+}
+
 function draw_ship(ctx){
-    draw_sprite(ctx,ship_sprite())
+    draw_sprite(ctx,ship_sprite(15))
 }
 
 function draw_asteroids(ctx){
@@ -176,20 +209,27 @@ function draw_fire(ctx){
     }
 }
 
-function draw_sprite(ctx, points){
+function draw_explodes(ctx){
+    for(var i=0;i<explode.length;i++){
+        draw_sprite(ctx,explode_sprite(explode[i]))
+    }
+}
+
+function draw_sprite(ctx, points_list){
     if(options["surface"]=="sphere"){
         var preh = 0
         var prev = 0
-        for(var i=0;i<points.length;i++){
-            var hangle = points[i][0]
-            var vangle = points[i][1]
-            if(i==0){
-                sphere_move(ctx,hangle,vangle)
-            } else {
-                sphere_draw_line(ctx,preh,prev,hangle,vangle)
+        for(var j=0;j<points_list.length;j++){
+            points = points_list[j]
+            for(var i=0;i<points.length;i++){
+                var hangle = points[i][0]
+                var vangle = points[i][1]
+                if(i>0){
+                    sphere_draw_line(ctx,preh,prev,hangle,vangle)
+                }
+                preh = hangle
+                prev = vangle
             }
-            preh = hangle
-            prev = vangle
         }
     }
 }
@@ -226,6 +266,16 @@ function get_a_s(a){
     return out
 }
 
+function close_to_asteroid(){
+    for(var i=0;i<asteroids.length;i++){
+        var a = asteroids[i]
+        if(Math.abs(a["hangle"]-spaceship["hangle"])<2*a["radius"] && Math.abs(a["vangle"]-spaceship["vangle"])<2*a["radius"]){
+            return true
+        }
+    }
+    return false
+}
+
 function move_asteroids(){
     if(asteroids.length==0){
         asterN++
@@ -244,9 +294,28 @@ function move_asteroids(){
             a["vangle"] = new_pos["vangle"]
 
             var fireRemove = Array()
+
+            var points = ship_sprite(1)[0]
+            for(var j=0;j<points.length;j++){
+                if(Math.abs(a["hangle"]-points[j][0])<0.9*a["radius"] && Math.abs(a["vangle"]-points[j][1])<0.9*a["radius"]){
+                    explode[explode.length] = {"x":0,"y":0,"hangle":points[j][0],"vangle":points[j][1],"age":0,"rotation":Math.random()*Math.PI,"speed":3}
+                    spaceship["rotation"] = Math.random()*2*Math.PI
+                    spaceship["direction"] = spaceship["rotation"]
+                    spaceship["speed"] = 0
+                    while(close_to_asteroid()){
+                        spaceship["hangle"] = Math.random()*2*Math.PI
+                        spaceship["vangle"] = Math.random()*Math.PI-Math.PI/2
+                    }
+                    console.log(points[j])
+                    lives--
+                    break
+                }
+            }
+
             for(var j=0;j<fires.length;j++){
                 if(Math.abs(a["hangle"]-fires[j]["hangle"])<a["radius"] && Math.abs(a["vangle"]-fires[j]["vangle"])<a["radius"]){
                     fireRemove[fireRemove.length]=j
+                    explode[explode.length] = {"x":0,"y":0,"hangle":a["hangle"],"vangle":a["vangle"],"age":0,"rotation":Math.random()*Math.PI,"speed":1}
                 }
             }
             if(fireRemove.length==0){
@@ -289,10 +358,9 @@ function move_asteroids(){
 }
 
 // sprites
-function ship_sprite(){
+function ship_sprite(N){
     if(options["surface"]=="sphere"){
         var out = Array()
-        var N = 15
 
         var p = {"hangle":spaceship["hangle"],"vangle":spaceship["vangle"],"rotation":spaceship["rotation"]}
         out[out.length] = Array(p["hangle"],p["vangle"])
@@ -324,7 +392,7 @@ function ship_sprite(){
             out[out.length] = Array(p["hangle"],p["vangle"])
         }
 
-        return out
+        return Array(out)
     }
 }
 
@@ -338,6 +406,42 @@ function fire_sprite(f){
         for(var j=0;j<N;j++){
             p = add_to_sphere(p["hangle"],p["vangle"],p["rotation"],0.1/N)
             out[out.length] = Array(p["hangle"],p["vangle"])
+        }
+        return Array(out)
+    }
+}
+
+function explode_sprite(f){
+    if(options["surface"] == "sphere"){
+        var out = Array()
+        var angles = Array(1,3,5)
+        if(f["speed"]>1){
+            for(var i=0;i<angles.length;i++){
+                var part = Array()
+                var p = {"hangle":f["hangle"],"vangle":f["vangle"],"rotation":angles[i]+f["rotation"]}
+                p = add_to_sphere(p["hangle"],p["vangle"],p["rotation"],f["speed"]*0.01*f["age"])
+                part[part.length] = Array(p["hangle"],p["vangle"])
+
+                var N = 10
+                for(var j=0;j<N;j++){
+                    p = add_to_sphere(p["hangle"],p["vangle"],p["rotation"],0.1/N)
+                    part[part.length] = Array(p["hangle"],p["vangle"])
+                }
+                out[out.length] = part
+            }
+        }
+        for(var i=0;i<angles.length;i++){
+            var part = Array()
+            var p = {"hangle":f["hangle"],"vangle":f["vangle"],"rotation":angles[i]+3*f["rotation"]}
+            p = add_to_sphere(p["hangle"],p["vangle"],p["rotation"],f["speed"]*0.005*(f["age"]*(200-f["age"]))/60)
+            part[part.length] = Array(p["hangle"],p["vangle"])
+
+            var N = 10
+            for(var j=0;j<N;j++){
+                p = add_to_sphere(p["hangle"],p["vangle"],p["rotation"],0.05/N)
+                part[part.length] = Array(p["hangle"],p["vangle"])
+            }
+            out[out.length] = part
         }
         return out
     }
@@ -366,7 +470,7 @@ function asteroid_sprite(a){
                 out[out.length] = Array(p["hangle"],p["vangle"])
             }
         }
-        return out
+        return Array(out)
     }
 }
 

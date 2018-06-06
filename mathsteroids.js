@@ -59,7 +59,6 @@ function reset(){
             spaceship["hangle"] = Math.PI
         }
         if(options["projection"]=="stereographic"){
-            spaceship["hangle"] = 0
             spaceship["vangle"] = Math.PI/2
         }
     }
@@ -234,35 +233,36 @@ function draw_lives(ctx){
 }
 
 function draw_shape(){
-    if(options["surface"]=="sphere" && options["projection"]=="isometric"){
-        for(var circle=0;circle<2;circle++){
-            var vangle = 0
+    if(options["surface"]=="sphere"){
+        if(options["projection"]=="isometric"){
+            for(var circle=0;circle<2;circle++){
+                var vangle = 0
+                var hangle = 0
+                var N = 100
+                if(circle==1){hangle=3*Math.PI/4}
+                var prev = vangle
+                var preh = hangle
+                for(var i=0;i<N;i++){
+                    if(circle==0){hangle += Math.PI*2/N}
+                    else{vangle += Math.PI*2/N}
+                    add_line_to_draw(Array(preh,prev,hangle,vangle))
+                    prev = vangle
+                    preh = hangle
+                }
+            }
+        }
+        if(options["projection"]=="stereographic"){
             var hangle = 0
             var N = 100
-            if(circle==1){hangle=3*Math.PI/4}
-            var prev = vangle
-            var preh = hangle
+            var preh = 0
             for(var i=0;i<N;i++){
-                if(circle==0){hangle += Math.PI*2/N}
-                else{vangle += Math.PI*2/N}
-                add_line_to_draw(Array(preh,prev,hangle,vangle))
-                prev = vangle
+                hangle += Math.PI*2/N
+                add_line_to_draw(Array(preh,0.01,hangle,0.01))
+                add_line_to_draw(Array(preh,-0.01,hangle,-0.01))
                 preh = hangle
             }
         }
     }
-    if(options["surface"]=="sphere" && options["projection"]=="stereographic"){
-        var hangle = 0
-        var N = 100
-        var preh = 0
-        for(var i=0;i<N;i++){
-            hangle += Math.PI*2/N
-            add_line_to_draw(Array(preh,0.01,hangle,0.01))
-            add_line_to_draw(Array(preh,-0.01,hangle,-0.01))
-            preh = hangle
-        }
-    }
-
 }
 
 function draw_ship(){
@@ -639,7 +639,7 @@ function stereographic_xy(hangle,vangle){
         out["x"] = WIDTH/4+R*x/(1+z)
         out["y"] = HEIGHT/2+R*y/(1+z)
     } else {
-        out["x"] = 3*WIDTH/4+R*x/(1-z)
+        out["x"] = 3*WIDTH/4-R*x/(1-z)
         out["y"] = HEIGHT/2+R*y/(1-z)
     }
     return out

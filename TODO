@@ -1,6 +1,9 @@
-* Make ship more easily distinguishable from asteroids.
+* Game over screen
 * Add flat games.
   * Torus
   * Projective plane
   * Klein bottle
-* Game over screen
+* More sphere projections
+  * gnomonic
+  * Craig retroazimuthal projection
+  * Hammer retroazimuthal projection

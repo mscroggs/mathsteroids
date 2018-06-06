@@ -1,9 +1,8 @@
-* Game over screen
 * Add flat games.
   * Torus
   * Projective plane
   * Klein bottle
 * More sphere projections
-  * gnomonic
+  * gnomonic (?)
   * Craig retroazimuthal projection
-  * Hammer retroazimuthal projection
+  * Hammer retroazimuthal projection (?)

@@ -116,7 +116,6 @@ function tick(){
     move_fire()
     move_explodes()
     move_asteroids()
-    if(lives<=0){gameover()}
 
     var canvas = document.getElementById("mathsteroids");
     var ctx = canvas.getContext("2d");
@@ -152,10 +151,46 @@ function tick(){
         sphere_draw_line(ctx,front_points[i][0],front_points[i][1],front_points[i][2],front_points[i][3])
     }
     ctx.stroke()
+
+    if(lives<=0){gameover()}
 }
 
 function gameover(){
-    show_menu()
+    clearInterval(interval)
+    var canvas = document.getElementById("mathsteroids");
+    var ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#000000";
+    ctx.fillRect((WIDTH-270)/2,(HEIGHT-50)/2,270,50);
+
+    ctx.strokeStyle = "#FFFFFF"
+    ctx.lineWidth = 2;
+    ctx.beginPath()
+    console.log("GO")
+    add_text(ctx, "game over", (WIDTH-270)/2+10, (HEIGHT-50)/2+40)
+    ctx.stroke();
+
+    setTimeout(gameoveron,1000)
+}
+
+function gameoveron(){
+    var canvas = document.getElementById("mathsteroids");
+    var ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#000000";
+    ctx.fillRect((WIDTH-440)/2,(HEIGHT-50)/2+60,440,40);
+
+    ctx.strokeStyle = "#FFFFFF"
+    ctx.lineWidth = 2;
+    ctx.beginPath()
+    console.log("GO")
+    add_scaled_text(ctx, "press any key to continue", (WIDTH-440)/2+10, (HEIGHT-50)/2+90, 0.6)
+    ctx.stroke();
+
+    interval = setInterval(overtick,1000/60);
+}
+function overtick(){
+    if(upPressed || firePressed || leftPressed || rightPressed){
+        show_menu()
+    }
 }
 
 function move_fire(){
@@ -266,7 +301,9 @@ function draw_shape(){
 }
 
 function draw_ship(){
-    draw_sprite(ship_sprite(15))
+    if(lives>0){
+        draw_sprite(ship_sprite(15))
+    }
 }
 
 function draw_asteroids(){

@@ -1,6 +1,4 @@
 * Make ship more easily distinguishable from asteroids.
-* More sphere projections
-  * Stereographic (two circles for two halves)
 * Add flat games.
   * Torus
   * Projective plane

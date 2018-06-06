@@ -1,4 +1,4 @@
-/********************************/
+//********************************/
 /*                              */
 /*         Mathsteroids         */
 /*                              */
@@ -13,7 +13,8 @@
 var games = [
              ["sphere (mercator projection)","sphere","Mercator"],
              ["sphere (isometric)","sphere","isometric"],
-             ["sphere (stereographic projection)","sphere","Stereographic"]
+             ["sphere (stereographic projection)","sphere","stereographic"],
+             ["sphere (gall-peters projection)","sphere","Gall"]
             ]
 var options = {"surface":"sphere","projection":"Mercator"}
 var RADIUS = 2
@@ -52,7 +53,16 @@ function start_game(){
 }
 
 function reset(){
-    spaceship = {"x":0,"y":0,"hangle":Math.PI,"vangle":0,"rotation":0,"speed":0,"direction":0}
+    spaceship = {"x":0,"y":0,"hangle":0,"vangle":0,"rotation":0,"speed":0,"direction":0}
+    if(options["surface"]=="sphere"){
+        if(options["projection"]=="Mercator" || options["projection"]=="Gall"){
+            spaceship["hangle"] = Math.PI
+        }
+        if(options["projection"]=="stereographic"){
+            spaceship["hangle"] = 0
+            spaceship["vangle"] = Math.PI/2
+        }
+    }
     score = 0
     lives = 3
     fired = 0
@@ -228,21 +238,31 @@ function draw_shape(){
         for(var circle=0;circle<2;circle++){
             var vangle = 0
             var hangle = 0
-            var prev = 0
-            var preh = 0
             var N = 100
             if(circle==1){hangle=3*Math.PI/4}
-            for(var i=0;i<=N;i++){
-                if(i!=0){
-                    add_line_to_draw(Array(preh,prev,hangle,vangle))
-                }
-                prev = vangle
-                preh = hangle
+            var prev = vangle
+            var preh = hangle
+            for(var i=0;i<N;i++){
                 if(circle==0){hangle += Math.PI*2/N}
                 else{vangle += Math.PI*2/N}
+                add_line_to_draw(Array(preh,prev,hangle,vangle))
+                prev = vangle
+                preh = hangle
             }
         }
     }
+    if(options["surface"]=="sphere" && options["projection"]=="stereographic"){
+        var hangle = 0
+        var N = 100
+        var preh = 0
+        for(var i=0;i<N;i++){
+            hangle += Math.PI*2/N
+            add_line_to_draw(Array(preh,0.01,hangle,0.01))
+            add_line_to_draw(Array(preh,-0.01,hangle,-0.01))
+            preh = hangle
+        }
+    }
+
 }
 
 function draw_ship(){
@@ -545,8 +565,14 @@ function sphere_draw_line(ctx,preh,prev,hangle,vangle){
     if(options["projection"]=="Mercator"){
         Mercator_draw_line(ctx,preh,prev,hangle,vangle)
     }
+    if(options["projection"]=="Gall"){
+        Gall_draw_line(ctx,preh,prev,hangle,vangle)
+    }
     if(options["projection"]=="isometric"){
         isometric_draw_line(ctx,preh,prev,hangle,vangle)
+    }
+    if(options["projection"]=="stereographic"){
+        stereographic_draw_line(ctx,preh,prev,hangle,vangle)
     }
 }
 
@@ -602,6 +628,45 @@ function isometric_draw_line(ctx,preh,prev,h,v){
     ctx.lineTo(x,y)
 }
 
+// stereographic
+function stereographic_xy(hangle,vangle){
+    var x = Math.cos(vangle) * Math.cos(hangle)
+    var y = Math.cos(vangle) * Math.sin(hangle)
+    var z = Math.sin(vangle)
+    var out = {}
+    var R = WIDTH/5
+    if(z>0){
+        out["x"] = WIDTH/4+R*x/(1+z)
+        out["y"] = HEIGHT/2+R*y/(1+z)
+    } else {
+        out["x"] = 3*WIDTH/4+R*x/(1-z)
+        out["y"] = HEIGHT/2+R*y/(1-z)
+    }
+    return out
+}
+
+function stereographic_draw_line(ctx,preh,prev,h,v){
+    var xy = stereographic_xy(preh,prev)
+    var prex = xy["x"]
+    var prey = xy["y"]
+    xy = stereographic_xy(h,v)
+    var x = xy["x"]
+    var y = xy["y"]
+
+    if(Math.max(x,prex)>WIDTH/2 && Math.min(x,prex)<WIDTH/2){
+        hmid = preh+Math.tan(preh-h)*Math.sin(prev)/Math.sin(prev-v)
+        var mid1 = stereographic_xy(hmid,0.01)
+        var mid2 = stereographic_xy(hmid,-0.01)
+        ctx.moveTo(mid1["x"],mid1["y"])
+        if(x<prex){ctx.lineTo(x,y)} else {ctx.lineTo(prex,prey)}
+        ctx.moveTo(mid2["x"],mid2["y"])
+        if(x>prex){ctx.lineTo(x,y)} else {ctx.lineTo(prex,prey)}
+    } else {
+        ctx.moveTo(prex,prey)
+        ctx.lineTo(x,y)
+    }
+}
+
 // Mercator
 function Mercator_xy(hangle,vangle){
     var x = WIDTH * hangle/(2*Math.PI)
@@ -622,6 +687,44 @@ function Mercator_draw_line(ctx,preh,prev,h,v){
     var prex = xy["x"]
     var prey = xy["y"]
     xy = Mercator_xy(h,v)
+    var x = xy["x"]
+    var y = xy["y"]
+    if(Math.abs(x-prex)>WIDTH/2){
+        if(x < prex){
+            xa = prex
+            xb = x
+            ya = prey
+            yb = y
+        } else {
+            xa = x
+            xb = prex
+            ya = y
+            yb = prey
+        }
+        ymid = xb*(yb-ya)/(xa-xb-WIDTH) + yb
+        ctx.moveTo(xa,ya)
+        ctx.lineTo(WIDTH,ymid)
+        ctx.moveTo(0,ymid)
+        ctx.lineTo(xb,yb)
+        ctx.moveTo(x,y)
+    } else {
+        ctx.moveTo(prex,prey)
+        ctx.lineTo(x,y)
+    }
+}
+
+// Gall
+function Gall_xy(hangle,vangle){
+    var x = WIDTH * hangle/(2*Math.PI)
+    var y = HEIGHT/2+HEIGHT/2*Math.sin(vangle)
+    return {"x":x,"y":y}
+}
+
+function Gall_draw_line(ctx,preh,prev,h,v){
+    var xy = Gall_xy(preh,prev)
+    var prex = xy["x"]
+    var prey = xy["y"]
+    xy = Gall_xy(h,v)
     var x = xy["x"]
     var y = xy["y"]
     if(Math.abs(x-prex)>WIDTH/2){

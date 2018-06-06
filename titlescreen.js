@@ -76,10 +76,10 @@ function draw_surface(ctx){
     if(options["projection"]=="isometric"){
         draw_a_sphere(ctx,3*WIDTH/4)
     }
-    if(options["projection"]=="Mercator"){
+    if(options["projection"]=="Mercator" || options["projection"] == "Gall"){
         draw_a_plane(ctx,3*WIDTH/4)
     }
-    if(options["projection"]=="Stereographic"){
+    if(options["projection"]=="stereographic"){
         draw_two_circles(ctx,3*WIDTH/4)
     }
 }

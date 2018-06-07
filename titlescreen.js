@@ -68,15 +68,21 @@ function draw_two_circles(ctx, xcenter){
     }
 }
 
+function draw_a_torus(ctx, xcenter){
+}
+
 function draw_surface(ctx){
     if(options["surface"]=="sphere"){
         draw_a_sphere(ctx,WIDTH/4)
+    }
+    if(options["surface"]=="torus"){
+        draw_a_torus(ctx,WIDTH/4)
     }
 
     if(options["projection"]=="isometric"){
         draw_a_sphere(ctx,3*WIDTH/4)
     }
-    if(options["projection"]=="Mercator" || options["projection"] == "Gall"){
+    if(options["projection"]=="Mercator" || options["projection"] == "Gall" || options["projection"]=="flat"){
         draw_a_plane(ctx,3*WIDTH/4)
     }
     if(options["projection"]=="stereographic"){

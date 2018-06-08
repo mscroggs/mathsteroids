@@ -22,7 +22,7 @@
 
 echo("<script type='text/javascript'>
 var font_data = ".file_get_contents("font.json")."
-var VERSION = ".file_get_contents("VERSION")."
+var VERSION = \"".explode("\n",file_get_contents("VERSION"))[0]."\"
 </script>");
 
 ?>

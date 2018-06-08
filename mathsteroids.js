@@ -81,7 +81,7 @@ function make_new_asteroids(n){
     var out = Array()
 
     for(var i=0;i<n;i++){
-        new_a = {"hangle":0,"vangle":0,
+        new_a = {"hangle":spaceship["hangle"],"vangle":spaceship["vangle"],
                  "rotation":Math.random()*Math.PI*2,"direction":Math.random()*Math.PI*2,
                  "size":4,"sides":2,
                  "radius":1,"speed":1}
@@ -114,13 +114,26 @@ function make_new_asteroids(n){
 
 function too_close(p,q){
     if(options["surface"]=="sphere"){
-        var d = 0.5
+        var d = 0.15
+        var x1 = Math.cos(p["hangle"])*Math.cos(p["vangle"])
+        var x2 = Math.cos(q["hangle"])*Math.cos(q["vangle"])
+        var y1 = Math.cos(p["hangle"])*Math.sin(p["vangle"])
+        var y2 = Math.cos(q["hangle"])*Math.sin(q["vangle"])
+        var z1 = Math.sin(p["vangle"])
+        var z2 = Math.sin(q["vangle"])
     }
-    if(options["flat"]=="flat"){
-        var d = 50
+    if(options["projection"]=="flat"){
+        var d = 80
+        var x1 = p["hangle"]
+        var x2 = q["hangle"]
+        var y1 = p["vangle"]
+        var y2 = q["vangle"]
+        var z1 = 0
+        var z2 = 0
     }
-    if(Math.abs(p["hangle"]-q["hangle"])<d){return true}
-    if(Math.abs(p["vangle"]-q["vangle"])<d){return true}
+    if(Math.abs(x1-x2)<d && Math.abs(y1-y2)<d && Math.abs(z1-z2)<d){
+        return true
+    }
     return false
 }
 
@@ -424,13 +437,9 @@ function get_a_s(a){
 }
 
 function close_to_asteroid(){
-    var mult = 1
-    if(options["projection"]=="flat"){
-        mult = 100
-    }
     for(var i=0;i<asteroids.length;i++){
         var a = asteroids[i]
-        if(Math.abs(a["hangle"]-spaceship["hangle"])<2*a["radius"] && Math.abs(a["vangle"]-spaceship["vangle"])<2*mult*a["radius"]){
+        if(too_close(a,spaceship)){
             return true
         }
     }

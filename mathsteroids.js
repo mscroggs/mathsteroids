@@ -339,12 +339,6 @@ function draw_shape(){
             }
         }
     }
-    if(options["surface"]=="torus"){
-        // TODO
-    }
-    if(options["surface"]=="Klein"){
-        // TODO
-    }
 }
 
 function draw_ship(){

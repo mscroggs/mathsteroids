@@ -1,5 +1,16 @@
+For version 1.0
+---------------
 * More sphere projections
-  * gnomonic (?)
   * Craig retroazimuthal projection
-  * Hammer retroazimuthal projection (?)
 * Improve mobile device controls
+
+
+Other
+-----
+* More sphere projections
+  * gnomonic
+  * Hammer retroazimuthal projection
+* Isometric Klein bottle
+* Isometric Torus
+* Isometric Projective plane
+* Non-flat torus

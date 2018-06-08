@@ -46,6 +46,44 @@ function draw_a_plane(ctx, xcenter){
     ctx.lineTo(xcenter+120, HEIGHT/2+80)
     ctx.lineTo(xcenter-120, HEIGHT/2+80)
     ctx.lineTo(xcenter-120, HEIGHT/2-80)
+    if(options["projection"]=="flat"){
+        var al = 10
+        ctx.moveTo(xcenter-al,HEIGHT/2-80-al)
+        ctx.lineTo(xcenter+al,HEIGHT/2-80)
+        ctx.lineTo(xcenter-al,HEIGHT/2-80+al)
+
+        ctx.moveTo(xcenter-120-al,HEIGHT/2+2*al)
+        ctx.lineTo(xcenter-120,HEIGHT/2)
+        ctx.lineTo(xcenter-120+al,HEIGHT/2+2*al)
+        ctx.moveTo(xcenter-120-al,HEIGHT/2)
+        ctx.lineTo(xcenter-120,HEIGHT/2-2*al)
+        ctx.lineTo(xcenter-120+al,HEIGHT/2)
+
+        if(options["surface"]=="real-pp") {
+            ctx.moveTo(xcenter+al,HEIGHT/2+80-al)
+            ctx.lineTo(xcenter-al,HEIGHT/2+80)
+            ctx.lineTo(xcenter+al,HEIGHT/2+80+al)
+        } else {
+            ctx.moveTo(xcenter-al,HEIGHT/2+80-al)
+            ctx.lineTo(xcenter+al,HEIGHT/2+80)
+            ctx.lineTo(xcenter-al,HEIGHT/2+80+al)
+        }
+        if(options["surface"]=="real-pp" || options["surface"]=="Klein") {
+            ctx.moveTo(xcenter+120-al,HEIGHT/2-2*al)
+            ctx.lineTo(xcenter+120,HEIGHT/2)
+            ctx.lineTo(xcenter+120+al,HEIGHT/2-2*al)
+            ctx.moveTo(xcenter+120-al,HEIGHT/2)
+            ctx.lineTo(xcenter+120,HEIGHT/2+2*al)
+            ctx.lineTo(xcenter+120+al,HEIGHT/2)
+        } else {
+            ctx.moveTo(xcenter+120-al,HEIGHT/2+2*al)
+            ctx.lineTo(xcenter+120,HEIGHT/2)
+            ctx.lineTo(xcenter+120+al,HEIGHT/2+2*al)
+            ctx.moveTo(xcenter+120-al,HEIGHT/2)
+            ctx.lineTo(xcenter+120,HEIGHT/2-2*al)
+            ctx.lineTo(xcenter+120+al,HEIGHT/2)
+        }
+    }
 }
 
 function draw_two_circles(ctx, xcenter){
@@ -68,8 +106,59 @@ function draw_two_circles(ctx, xcenter){
     }
 }
 
+function draw_a_real_pp(ctx, xcenter){
+    ctx.translate(xcenter-95,HEIGHT/2-110)
+
+    ctx.moveTo(102.90,113.12);
+    ctx.bezierCurveTo(102.90,113.12,114.97,114.99,111.72,119.80);
+    ctx.bezierCurveTo(108.23,124.97,102.90,113.12,102.90,113.12);
+    ctx.lineTo(101.03,34.54);
+    ctx.bezierCurveTo(-4.68,106.09,9.37,197.42,87.40,199.45);
+    ctx.bezierCurveTo(189.05,194.99,201.79,-6.06,101.03,34.54);
+
+    // dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.lineWidth = 1
+    ctx.setLineDash([7,7])
+
+    ctx.moveTo(102.90,113.12);
+    ctx.bezierCurveTo(87.79,98.21,72.51,83.58,54.43,73.62);
+
+    ctx.moveTo(27.21,125.40);
+    ctx.bezierCurveTo(39.71,147.73,104.61,140.03,107.35,120.11);
+
+    ctx.moveTo(35.91,177.56);
+    ctx.bezierCurveTo(69.62,195.30,116.98,168.18,110.94,120.86);
+
+    ctx.moveTo(98.27,197.78);
+    ctx.bezierCurveTo(131.22,170.18,120.51,144.66,112.40,119.02);
+
+    ctx.moveTo(138.72,176.05);
+    ctx.bezierCurveTo(139.59,146.10,122.59,136.12,112.59,118.31);
+
+    ctx.moveTo(159.03,143.99);
+    ctx.bezierCurveTo(140.70,136.12,126.06,127.43,112.22,118.56);
+
+    ctx.moveTo(170.66,99.32);
+    ctx.bezierCurveTo(158.68,117.42,135.39,118.90,111.53,119.53);
+
+    ctx.moveTo(158.49,46.03);
+    ctx.bezierCurveTo(164.18,79.67,109.62,122.04,107.04,113.92);
+
+    ctx.moveTo(134.44,29.20);
+    ctx.bezierCurveTo(135.61,45.13,127.94,71.63,107.04,113.92);
+
+    // end dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.lineWidth = 2
+    ctx.setLineDash([])
+
+    ctx.translate(-xcenter+95,-HEIGHT/2+110)
+}
+
 function draw_a_Klein(ctx, xcenter){
-    /* generated with svg2canvas by Pierre Lindenbaum http://plindenbaum.blogspot.com plindenbaum@yahoo.fr */
     ctx.translate(xcenter-70,HEIGHT/2-115)
     ctx.moveTo(91.87,4.13);
     ctx.bezierCurveTo(72.40,-2.18,45.62,1.26,28.05,11.46);
@@ -92,6 +181,17 @@ function draw_a_Klein(ctx, xcenter){
     ctx.bezierCurveTo(67.02,188.39,36.85,194.02,31.40,171.88);
     ctx.closePath();
 
+    ctx.moveTo(87.64,13.64);
+    ctx.bezierCurveTo(110.53,22.88,60.42,38.37,36.18,38.37);
+    ctx.bezierCurveTo(11.95,38.37,24.68,26.39,24.68,26.39);
+    ctx.bezierCurveTo(50,8,87.64,13.64,87.64,13.64);
+
+    ctx.moveTo(40.49,73.99);
+    ctx.bezierCurveTo(37.34,83.32,32.40,91.73,27.24,100.03);
+
+    ctx.moveTo(65.39,99.14);
+    ctx.bezierCurveTo(70.51,87.46,46.77,57.13,40.49,73.99);
+
     // dash this
     ctx.stroke()
     ctx.beginPath()
@@ -113,17 +213,6 @@ function draw_a_Klein(ctx, xcenter){
     ctx.stroke()
     ctx.beginPath()
     ctx.setLineDash([])
-
-    ctx.moveTo(87.64,13.64);
-    ctx.bezierCurveTo(110.53,22.88,60.42,38.37,36.18,38.37);
-    ctx.bezierCurveTo(11.95,38.37,24.68,26.39,24.68,26.39);
-    ctx.bezierCurveTo(50,8,87.64,13.64,87.64,13.64);
-
-    ctx.moveTo(40.49,73.99);
-    ctx.bezierCurveTo(37.34,83.32,32.40,91.73,27.24,100.03);
-
-    ctx.moveTo(65.39,99.14);
-    ctx.bezierCurveTo(70.51,87.46,46.77,57.13,40.49,73.99);
 
     ctx.translate(-xcenter+70,-HEIGHT/2+115)
 }
@@ -182,6 +271,9 @@ function draw_surface(ctx){
     }
     if(options["surface"]=="Klein"){
         draw_a_Klein(ctx,WIDTH/4)
+    }
+    if(options["surface"]=="real-pp"){
+        draw_a_real_pp(ctx,WIDTH/4)
     }
 
     if(options["projection"]=="isometric"){

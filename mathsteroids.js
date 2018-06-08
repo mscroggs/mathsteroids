@@ -16,7 +16,8 @@ var games = [
              ["sphere (stereographic projection)","sphere","stereographic"],
              ["sphere (gall-peters projection)","sphere","Gall"],
              ["(flat) torus","torus","flat"],
-             ["(flat) klein bottle","Klein","flat"]
+             ["(flat) klein bottle","Klein","flat"],
+             ["(flat) real projective plane","real-pp","flat"]
             ]
 var options = {"surface":"sphere","projection":"Mercator"}
 var RADIUS = 2
@@ -383,12 +384,18 @@ function draw_sprite(points_list){
 }
 
 function move_ship(){
-    var new_pos = add_to_surface(spaceship["hangle"],spaceship["vangle"],spaceship["direction"],spaceship["speed"],1)
-    spaceship["rotation"] -= spaceship["direction"]
-    spaceship["direction"] = new_pos["rotation"]
-    spaceship["rotation"] += spaceship["direction"]
-    spaceship["hangle"] = new_pos["hangle"]
-    spaceship["vangle"] = new_pos["vangle"]
+    spaceship = move_sprite(spaceship)
+}
+
+function move_sprite(sprite){
+    var new_pos = add_to_surface(sprite["hangle"],sprite["vangle"],sprite["direction"],sprite["speed"],1)
+    sprite["rotation"] *= new_pos["flip"]
+    sprite["rotation"] -= sprite["direction"]
+    sprite["direction"] = new_pos["rotation"]
+    sprite["rotation"] += new_pos["flip"]*sprite["direction"] // TODO
+    sprite["hangle"] = new_pos["hangle"]
+    sprite["vangle"] = new_pos["vangle"]
+    return sprite
 }
 
 function get_a_s(a){
@@ -417,9 +424,13 @@ function get_a_s(a){
 }
 
 function close_to_asteroid(){
+    var mult = 1
+    if(options["projection"]=="flat"){
+        mult = 100
+    }
     for(var i=0;i<asteroids.length;i++){
         var a = asteroids[i]
-        if(Math.abs(a["hangle"]-spaceship["hangle"])<2*a["radius"] && Math.abs(a["vangle"]-spaceship["vangle"])<2*a["radius"]){
+        if(Math.abs(a["hangle"]-spaceship["hangle"])<2*a["radius"] && Math.abs(a["vangle"]-spaceship["vangle"])<2*mult*a["radius"]){
             return true
         }
     }
@@ -435,12 +446,7 @@ function move_asteroids(){
     var new_asteroids = Array()
     for(var i=0;i<asteroids.length;i++){
         var a = asteroids[i]
-        var new_pos = add_to_surface(a["hangle"],a["vangle"],a["direction"],a["speed"],1)
-        a["rotation"] -= a["direction"]
-        a["direction"] = new_pos["rotation"]
-        a["rotation"] += a["direction"]
-        a["hangle"] = new_pos["hangle"]
-        a["vangle"] = new_pos["vangle"]
+        move_sprite(a)
 
         var fireRemove = Array()
 
@@ -680,6 +686,8 @@ function draw_line(ctx,preh,prev,hangle,vangle){
             flat_torus_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["surface"]=="Klein"){
             flat_Klein_draw_line(ctx,preh,prev,hangle,vangle)
+        } else if(options["surface"]=="real-pp"){
+            flat_real_pp_draw_line(ctx,preh,prev,hangle,vangle)
         }
     } else if(options["surface"]=="sphere"){
         if(options["projection"]=="Mercator"){
@@ -719,6 +727,32 @@ function add_to_surface(hangle, vangle, rot, badd, flip){
             }
             if(vangle>HEIGHT){vangle-=HEIGHT}
             if(vangle<0){vangle+=HEIGHT}
+        }
+        if(options["surface"]=="real-pp"){
+            if(hangle>WIDTH){
+                hangle-=WIDTH
+                vangle = HEIGHT - vangle
+                rot *= -1
+                flip *= -1
+            }
+            if(hangle<0){
+                hangle+=WIDTH
+                vangle = HEIGHT - vangle
+                flip *= -1
+                rot *= -1
+            }
+            if(vangle>HEIGHT){
+                vangle-=HEIGHT
+                hangle = WIDTH - hangle
+                rot = Math.PI - rot
+                flip *= -1
+            }
+            if(vangle<0){
+                vangle+=HEIGHT
+                hangle = WIDTH - hangle
+                rot = Math.PI - rot
+                flip *= -1
+            }
         }
 
         return {"hangle":hangle,"vangle":vangle,"rotation":rot,"flip":flip}
@@ -982,6 +1016,52 @@ function flat_Klein_draw_line(ctx,prex,prey,x,y){
         xmid = yb*(xb-xa)/(ya-yb-HEIGHT) + xb
         ctx.moveTo(xa,ya)
         ctx.lineTo(xmid,HEIGHT)
+        ctx.moveTo(xmid,0)
+        ctx.lineTo(xb,yb)
+        ctx.moveTo(x,y)
+    } else {
+        ctx.moveTo(prex,prey)
+        ctx.lineTo(x,y)
+    }
+}
+
+// flat_real_pp
+function flat_real_pp_draw_line(ctx,prex,prey,x,y){
+    if(Math.abs(x-prex)>WIDTH/2 && Math.abs(y-prey)>HEIGHT/2){
+        // currently hide these lines
+    } else if(Math.abs(x-prex)>WIDTH/2){
+        if(x < prex){
+            xa = prex
+            xb = x
+            ya = prey
+            yb = y
+        } else {
+            xa = x
+            xb = prex
+            ya = y
+            yb = prey
+        }
+        ymid = xb*(yb-HEIGHT+ya)/(xa-xb-WIDTH) + yb
+        ctx.moveTo(xa,ya)
+        ctx.lineTo(WIDTH,HEIGHT-ymid)
+        ctx.moveTo(0,ymid)
+        ctx.lineTo(xb,yb)
+        ctx.moveTo(x,y)
+    } else if(Math.abs(y-prey)>HEIGHT/2){
+        if(y < prey){
+            xa = prex
+            xb = x
+            ya = prey
+            yb = y
+        } else {
+            xa = x
+            xb = prex
+            ya = y
+            yb = prey
+        }
+        xmid = yb*(xb-WIDTH+xa)/(ya-yb-HEIGHT) + xb
+        ctx.moveTo(xa,ya)
+        ctx.lineTo(WIDTH-xmid,HEIGHT)
         ctx.moveTo(xmid,0)
         ctx.lineTo(xb,yb)
         ctx.moveTo(x,y)

@@ -10,17 +10,22 @@
 
 
 // inputs
+var quitPressed    = false;
+var upPressed    = false;
+var firePressed  = false;
+var leftPressed  = false;
+var rightPressed = false;
 
 document.addEventListener('keydown', (event) => {
     const keyName = event.key;
-    if(keyName == "q"){
-        show_menu()
-    }
     process_key(keyName,true)
     button_styles()
 });
 
 function process_key(keyName, result){
+    if(keyName == "q"){
+        quitPressed=result;
+    }
     if(keyName == "ArrowUp" || keyName == "w"){
         upPressed=result;
     }
@@ -38,6 +43,9 @@ function process_key(keyName, result){
 document.addEventListener('mouseup', (event) => {
     if(mouse=="up"){
         upPressed=false;
+    }
+    if(mouse=="quit"){
+        quitPressed=false;
     }
     if(mouse=="fire"){
         firePressed=false;
@@ -60,6 +68,24 @@ document.getElementById("display_up").addEventListener('mousedown', (event) => {
     mouse = "up"
     button_styles()
 });
+document.getElementById("display_up").addEventListener('touchend', (event) => {
+    upPressed=false;
+    button_styles()
+});
+
+document.getElementById("display_quit").addEventListener('touchstart', (event) => {
+    quitPressed=true;
+    button_styles()
+});
+document.getElementById("display_quit").addEventListener('mousedown', (event) => {
+    quitPressed=true;
+    mouse = "quit"
+    button_styles()
+});
+document.getElementById("display_quit").addEventListener('touchend', (event) => {
+    quitPressed=false;
+    button_styles()
+});
 
 document.getElementById("display_fire").addEventListener('touchstart', (event) => {
     firePressed=true;
@@ -70,9 +96,8 @@ document.getElementById("display_fire").addEventListener('mousedown', (event) =>
     mouse = "fire"
     button_styles()
 });
-
-document.getElementById("display_up").addEventListener('touchend', (event) => {
-    upPressed=false;
+document.getElementById("display_fire").addEventListener('touchend', (event) => {
+    firePressed=false;
     button_styles()
 });
 
@@ -85,7 +110,6 @@ document.getElementById("display_left").addEventListener('mousedown', (event) =>
     mouse = "left"
     button_styles()
 });
-
 document.getElementById("display_left").addEventListener('touchend', (event) => {
     leftPressed=false;
     button_styles()
@@ -100,7 +124,6 @@ document.getElementById("display_right").addEventListener('mousedown', (event) =
     mouse = "right"
     button_styles()
 });
-
 document.getElementById("display_right").addEventListener('touchend', (event) => {
     rightPressed=false;
     button_styles()
@@ -113,6 +136,11 @@ document.addEventListener('keyup', (event) => {
 });
 
 function button_styles(){
+    if(quitPressed){
+        document.getElementById("display_quit").style.backgroundColor="red"
+    } else {
+        document.getElementById("display_quit").style.backgroundColor="white"
+    }
     if(upPressed){
         document.getElementById("display_up").style.backgroundColor="red"
     } else {

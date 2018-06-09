@@ -21,10 +21,6 @@ var games = [
             ]
 var options = {"surface":"sphere","projection":"Mercator"}
 var RADIUS = 2
-var upPressed    = false;
-var firePressed  = false;
-var leftPressed  = false;
-var rightPressed = false;
 var mouse = "";
 var WIDTH=800
 var HEIGHT=450
@@ -138,6 +134,10 @@ function too_close(p,q){
 }
 
 function tick(){
+    if(quitPressed){
+        show_menu()
+        return
+    }
     if(upPressed){
         increase_speed()
     } else {

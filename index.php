@@ -46,7 +46,8 @@ Destroy the asteroids to win points.
 <tr><td>Fire</td><td>K</td></tr>
 <tr><td>Return to menu</td><td>Q</td></tr>
 </table>
-Alternatively, you can click the buttons above to turn/move/fire/quit.</div>
+Alternatively, you can click the buttons above to turn/move/fire/quit.
+</div>
 <?php
 
 echo("<script type='text/javascript'>

@@ -928,7 +928,7 @@ function Craig_draw_line(ctx,preh,prev,h,v){
         var x = xy["x"]
         var y = xy["y"]
 
-        if(Math.abs(y-prey < HEIGHT/2)){
+        if(Math.abs(y-prey) < HEIGHT/2 && Math.abs(x-prey) < WIDTH/2){
             ctx.moveTo(prex,prey)
             ctx.lineTo(x,y)
         }

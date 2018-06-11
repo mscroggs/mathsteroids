@@ -131,6 +131,22 @@ function draw_two_circles(ctx, xcenter){
     }
 }
 
+function draw_a_circle(ctx, xcenter){
+    var N = 100
+    var angle = 0
+    var R = WIDTH/6
+    for(var i=0;i<=N;i++){
+        angle = 2*i*Math.PI/N
+        var x = xcenter + R*Math.cos(angle)
+        var y = HEIGHT/2 + R*Math.sin(angle)
+        if(i==0){
+            ctx.moveTo(x,y)
+        } else {
+            ctx.lineTo(x,y)
+        }
+    }
+}
+
 function draw_a_real_pp(ctx, xcenter){
     ctx.translate(xcenter-95,HEIGHT/2-110)
 
@@ -304,6 +320,9 @@ function draw_surface(ctx){
     if(options["projection"]=="isometric"){
         draw_a_sphere(ctx,3*WIDTH/4)
     }
+    if(options["projection"]=="azim"){
+        draw_a_circle(ctx,3*WIDTH/4)
+    }
     if(options["projection"]=="Craig"){
         draw_a_Craig(ctx,3*WIDTH/4)
     }
@@ -319,6 +338,15 @@ var leftTimer=0
 var rightTimer=0
 var game_n = 0
 var game_title = ""
+
+if(game_n_start!=""){
+    for(var i=0;i<games.length;i++){
+        if(games[i][1]+games[i][2]==game_n_start){
+            game_n = i
+            break
+        }
+    }
+}
 
 function changeGameN(i){
     game_n += i

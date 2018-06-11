@@ -11,12 +11,12 @@
 
 // Global variables
 var games = [
-             ["sphere (azimuthal projection)","sphere","azim"],
              ["sphere (mercator projection)","sphere","Mercator"],
              ["sphere (isometric)","sphere","isometric"],
              ["sphere (stereographic projection)","sphere","stereographic"],
              ["sphere (gall-peters projection)","sphere","Gall"],
              ["sphere (craig retroazimuthal projection)","sphere","Craig"],
+             ["sphere (azimuthal projection)","sphere","azim"],
              ["(flat) torus","torus","flat"],
              ["(flat) klein bottle","Klein","flat"],
              ["(flat) real projective plane","real-pp","flat"]

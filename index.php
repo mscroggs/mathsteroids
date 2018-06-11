@@ -30,7 +30,7 @@
 <div class='buttongroup'>
 <div class='clickbutton' id='display_left'>&larr;</div>
 <div class='clickbutton' id='display_up'>&uarr;</div>
-<div class='clickbutton' id='display_fire'>&#x1F52B;</div>
+<div class='clickbutton' id='display_fire'>&#x1F3F9;</div>
 <div class='clickbutton' id='display_right'>&rarr;</div>
 <div class='clickbutton' id='display_quit'>&#x274C;</div>
 </div>

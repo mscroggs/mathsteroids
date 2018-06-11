@@ -11,6 +11,7 @@
 
 // Global variables
 var games = [
+             ["sphere (azimuthal projection)","sphere","azim"],
              ["sphere (mercator projection)","sphere","Mercator"],
              ["sphere (isometric)","sphere","isometric"],
              ["sphere (stereographic projection)","sphere","stereographic"],
@@ -62,6 +63,9 @@ function reset(){
             spaceship["hangle"] = Math.PI
         }
         if(options["projection"]=="stereographic"){
+            spaceship["vangle"] = Math.PI/2
+        }
+        if(options["projection"]=="azim"){
             spaceship["vangle"] = Math.PI/2
         }
     }
@@ -349,6 +353,16 @@ function draw_shape(){
                 hangle += Math.PI*2/N
                 add_line_to_draw(Array(preh,0.01,hangle,0.01))
                 add_line_to_draw(Array(preh,-0.01,hangle,-0.01))
+                preh = hangle
+            }
+        }
+        if(options["projection"]=="azim"){
+            var hangle = 0
+            var N = 100
+            var preh = 0
+            for(var i=0;i<N;i++){
+                hangle += Math.PI*2/N
+                add_line_to_draw(Array(preh,-Math.PI/2,hangle,-Math.PI/2))
                 preh = hangle
             }
         }
@@ -732,6 +746,8 @@ function draw_line(ctx,preh,prev,hangle,vangle){
             Mercator_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="Gall"){
             Gall_draw_line(ctx,preh,prev,hangle,vangle)
+        } else if(options["projection"]=="azim"){
+            azim_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="Craig"){
             Craig_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="isometric"){
@@ -916,6 +932,27 @@ function Craig_draw_line(ctx,preh,prev,h,v){
             ctx.moveTo(prex,prey)
             ctx.lineTo(x,y)
         }
+    }
+}
+
+// azim
+function azim_xy(hangle,vangle){
+    var p = HEIGHT/6 * (Math.PI/2 - vangle)
+    y = HEIGHT/2 -p*Math.cos(hangle)
+    x = WIDTH/2 + p*Math.sin(hangle)
+    return {"x":x,"y":y}
+}
+
+function azim_draw_line(ctx,preh,prev,h,v){
+    var xy = azim_xy(preh,prev)
+    var prex = xy["x"]
+    var prey = xy["y"]
+    xy = azim_xy(h,v)
+    var x = xy["x"]
+    var y = xy["y"]
+    if(Math.abs(x-prex) + Math.abs(y-prey) < 50){
+        ctx.moveTo(prex,prey)
+        ctx.lineTo(x,y)
     }
 }
 

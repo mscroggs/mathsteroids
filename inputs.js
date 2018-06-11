@@ -26,16 +26,20 @@ function process_key(keyName, result){
     if(keyName == "q"){
         quitPressed=result;
     }
-    if(keyName == "ArrowUp" || keyName == "w"){
+    //if(keyName == "ArrowUp" || keyName == "w"){
+    if(keyName == "w"){
         upPressed=result;
     }
-    if(keyName == "ArrowLeft" || keyName == "a"){
+    //if(keyName == "ArrowLeft" || keyName == "a"){
+    if(keyName == "a"){
         leftPressed=result;
     }
-    if(keyName == "ArrowRight" || keyName == "d"){
+    //if(keyName == "ArrowRight" || keyName == "d"){
+    if(keyName == "d"){
         rightPressed=result;
     }
-    if(keyName == " " || keyName == "ArrowDown" || keyName == "s" || keyName == "k"){
+    //if(keyName == " " || keyName == "ArrowDown" || keyName == "s" || keyName == "k"){
+    if(keyName == "k"){
         firePressed=result;
     }
 }

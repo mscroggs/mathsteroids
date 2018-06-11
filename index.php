@@ -38,10 +38,10 @@
 <div>
 <h3>Controls</h3>
 <table>
-<tr><td>Turn left</td><td>&lt;left&gt;, A</td></tr>
-<tr><td>Turn right</td><td>&lt;right&gt;, D</td></tr>
-<tr><td>Move forwards</td><td>&lt;up&gt;, W</td></tr>
-<tr><td>Fire</td><td>&lt;down&gt;, S, K</td></tr>
+<tr><td>Turn left</td><td>A</td></tr>
+<tr><td>Turn right</td><td>D</td></tr>
+<tr><td>Move forwards</td><td>W</td></tr>
+<tr><td>Fire</td><td>K</td></tr>
 <tr><td>Return to menu</td><td>Q</td></tr>
 </table>
 </div>

@@ -15,6 +15,7 @@ var games = [
              ["sphere (isometric)","sphere","isometric"],
              ["sphere (stereographic projection)","sphere","stereographic"],
              ["sphere (gall-peters projection)","sphere","Gall"],
+             ["sphere (craig retroazimuthal projection)","sphere","Craig"],
              ["(flat) torus","torus","flat"],
              ["(flat) klein bottle","Klein","flat"],
              ["(flat) real projective plane","real-pp","flat"]
@@ -57,7 +58,7 @@ function reset(){
         spaceship["hangle"] = WIDTH/2
         spaceship["vangle"] = HEIGHT/2
     } else if(options["surface"]=="sphere"){
-        if(options["projection"]=="Mercator" || options["projection"]=="Gall"){
+        if(options["projection"]=="Mercator" || options["projection"]=="Gall" || options["projection"]=="Craig"){
             spaceship["hangle"] = Math.PI
         }
         if(options["projection"]=="stereographic"){
@@ -212,18 +213,18 @@ function gameoveron(){
     var canvas = document.getElementById("mathsteroids");
     var ctx = canvas.getContext("2d");
     ctx.fillStyle = "#000000";
-    ctx.fillRect((WIDTH-440)/2,(HEIGHT-50)/2+60,440,40);
+    ctx.fillRect((WIDTH-430)/2,(HEIGHT-50)/2+60,430,40);
 
     ctx.strokeStyle = "#FFFFFF"
     ctx.lineWidth = 2;
     ctx.beginPath()
-    add_scaled_text(ctx, "press any key to continue", (WIDTH-440)/2+10, (HEIGHT-50)/2+90, 0.6)
+    add_scaled_text(ctx, "press button to continue", (WIDTH-430)/2+10, (HEIGHT-50)/2+90, 0.6)
     ctx.stroke();
 
     interval = setInterval(overtick,1000/60);
 }
 function overtick(){
-    if(upPressed || firePressed || leftPressed || rightPressed){
+    if(upPressed || firePressed || leftPressed || rightPressed || quitPressed){
         show_menu()
     }
 }
@@ -321,7 +322,6 @@ function draw_lives(ctx){
         ctx.lineTo(WIDTH-i*25-30,20)
     }
 }
-
 function draw_shape(){
     if(options["surface"]=="sphere"){
         if(options["projection"]=="isometric"){
@@ -350,6 +350,27 @@ function draw_shape(){
                 add_line_to_draw(Array(preh,0.01,hangle,0.01))
                 add_line_to_draw(Array(preh,-0.01,hangle,-0.01))
                 preh = hangle
+            }
+        }
+        if(options["projection"]=="Craig"){
+            var leng = 0.02
+            add_line_to_draw(Array(Math.PI+leng,Craig_zeroang+leng,Math.PI-leng,Craig_zeroang-leng))
+            add_line_to_draw(Array(Math.PI+leng,Craig_zeroang-leng,Math.PI-leng,Craig_zeroang+leng))
+
+            var hangle = 0
+            var N = 100
+            var preh = 0
+            var prev = 0
+            for(var i=0;i<=N;i++){
+                vangle = Math.atan(-Math.cos(hangle-Math.PI)/Math.tan(Craig_zeroang))-0.01
+                if(i>0){
+                    add_line_to_draw(Array(preh,Math.PI/2,hangle,Math.PI/2))
+                    add_line_to_draw(Array(preh,-Math.PI/2,hangle,-Math.PI/2))
+                    add_line_to_draw(Array(preh,prev,hangle,vangle))
+                }
+                preh = hangle
+                prev = vangle
+                hangle += Math.PI*2/N
             }
         }
     }
@@ -405,7 +426,7 @@ function move_sprite(sprite){
     sprite["rotation"] *= new_pos["flip"]
     sprite["rotation"] -= sprite["direction"]
     sprite["direction"] = new_pos["rotation"]
-    sprite["rotation"] += new_pos["flip"]*sprite["direction"] // TODO
+    sprite["rotation"] += new_pos["flip"]*sprite["direction"]
     sprite["hangle"] = new_pos["hangle"]
     sprite["vangle"] = new_pos["vangle"]
     return sprite
@@ -686,6 +707,14 @@ function add_line_to_draw(thing){
             return
         }
     }
+    if(options["surface"]=="sphere" && options["projection"]=="Craig"){
+        var hangle = (thing[0]+thing[2])/2
+        var vangle = (thing[1]+thing[3])/2
+        if(vangle > Math.atan(-Math.cos(hangle-Math.PI)/Math.tan(Craig_zeroang))){
+            back_points[back_points.length] = thing
+            return
+        }
+    }
     front_points[front_points.length] = thing
 }
 
@@ -703,6 +732,8 @@ function draw_line(ctx,preh,prev,hangle,vangle){
             Mercator_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="Gall"){
             Gall_draw_line(ctx,preh,prev,hangle,vangle)
+        } else if(options["projection"]=="Craig"){
+            Craig_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="isometric"){
             isometric_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="stereographic"){
@@ -855,6 +886,36 @@ function stereographic_draw_line(ctx,preh,prev,h,v){
     } else {
         ctx.moveTo(prex,prey)
         ctx.lineTo(x,y)
+    }
+}
+
+// Craig
+var Craig_zeroang = -0.3
+function Craig_xy(hangle,vangle){
+    hangle -= Math.PI
+    var x = WIDTH/2 + hangle * WIDTH/(2*Math.PI)
+    if(Math.abs(hangle)<0.01){
+        var k = 1
+    } else {
+        var k = hangle/Math.sin(hangle)
+    }
+    var y = HEIGHT/2 + WIDTH/(2*Math.PI)*k*(Math.sin(vangle)*Math.cos(hangle) - Math.tan(Craig_zeroang)*Math.cos(vangle))
+    return {"x":x,"y":y}
+}
+
+function Craig_draw_line(ctx,preh,prev,h,v){
+    if(Math.abs(prev) < Math.PI/2-0.02 || Math.abs(h-preh)<0.1){
+        var xy = Craig_xy(preh,prev)
+        var prex = xy["x"]
+        var prey = xy["y"]
+        xy = Craig_xy(h,v)
+        var x = xy["x"]
+        var y = xy["y"]
+
+        if(Math.abs(y-prey < HEIGHT/2)){
+            ctx.moveTo(prex,prey)
+            ctx.lineTo(x,y)
+        }
     }
 }
 

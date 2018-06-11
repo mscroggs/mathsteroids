@@ -40,6 +40,31 @@ function draw_a_sphere(ctx, xcenter){
     }
 }
 
+function draw_a_Craig(ctx, xcenter){
+    N = 100
+    for(var circle=0;circle<3;circle++){
+        var vangle = 0
+        var hangle = 0
+        if(circle==0){vangle=Math.PI/2}
+        if(circle==1){vangle=-Math.PI/2}
+        for(var i=0;i<=N;i++){
+            if(circle==2){
+                vangle = Math.atan(-Math.cos(hangle-Math.PI)/Math.tan(Craig_zeroang))-0.01
+            }
+
+            var c_xy = Craig_xy(hangle, vangle)
+            var x = xcenter+(c_xy["x"]-WIDTH/2)/2
+            var y = HEIGHT/4+c_xy["y"]/2
+            if(i==0 || (i%2==0 && circle==0) || y<150 || y>HEIGHT-100){
+                ctx.moveTo(x,y)
+            } else {
+                ctx.lineTo(x,y)
+            }
+            hangle += Math.PI*2/N
+        }
+    }
+}
+
 function draw_a_plane(ctx, xcenter){
     ctx.moveTo(xcenter-120, HEIGHT/2-80)
     ctx.lineTo(xcenter+120, HEIGHT/2-80)
@@ -278,6 +303,9 @@ function draw_surface(ctx){
 
     if(options["projection"]=="isometric"){
         draw_a_sphere(ctx,3*WIDTH/4)
+    }
+    if(options["projection"]=="Craig"){
+        draw_a_Craig(ctx,3*WIDTH/4)
     }
     if(options["projection"]=="Mercator" || options["projection"] == "Gall" || options["projection"]=="flat"){
         draw_a_plane(ctx,3*WIDTH/4)

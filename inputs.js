@@ -59,7 +59,11 @@ document.addEventListener('mouseup', (event) => {
     button_styles()
 });
 
+document.getElementById("display_up").addEventListener('touchmove', (event) => {
+    event.preventDefault()
+});
 document.getElementById("display_up").addEventListener('touchstart', (event) => {
+    event.preventDefault()
     upPressed=true;
     button_styles()
 });
@@ -73,7 +77,11 @@ document.getElementById("display_up").addEventListener('touchend', (event) => {
     button_styles()
 });
 
+document.getElementById("display_quit").addEventListener('touchmove', (event) => {
+    event.preventDefault()
+});
 document.getElementById("display_quit").addEventListener('touchstart', (event) => {
+    event.preventDefault()
     quitPressed=true;
     button_styles()
 });
@@ -87,7 +95,11 @@ document.getElementById("display_quit").addEventListener('touchend', (event) => 
     button_styles()
 });
 
+document.getElementById("display_fire").addEventListener('touchmove', (event) => {
+    event.preventDefault()
+});
 document.getElementById("display_fire").addEventListener('touchstart', (event) => {
+    event.preventDefault()
     firePressed=true;
     button_styles()
 });
@@ -101,7 +113,11 @@ document.getElementById("display_fire").addEventListener('touchend', (event) => 
     button_styles()
 });
 
+document.getElementById("display_left").addEventListener('touchmove', (event) => {
+    event.preventDefault()
+});
 document.getElementById("display_left").addEventListener('touchstart', (event) => {
+    event.preventDefault()
     leftPressed=true;
     button_styles()
 });
@@ -115,7 +131,11 @@ document.getElementById("display_left").addEventListener('touchend', (event) => 
     button_styles()
 });
 
+document.getElementById("display_right").addEventListener('touchmove', (event) => {
+    event.preventDefault()
+});
 document.getElementById("display_right").addEventListener('touchstart', (event) => {
+    event.preventDefault()
     rightPressed=true;
     button_styles()
 });

@@ -334,11 +334,6 @@ function draw_surface(ctx){
     }
 }
 
-var leftTimer=0
-var rightTimer=0
-var game_n = 0
-var game_title = ""
-
 if(game_n_start!=""){
     for(var i=0;i<games.length;i++){
         if(games[i][1]+games[i][2]==game_n_start){

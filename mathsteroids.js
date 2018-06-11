@@ -1,4 +1,4 @@
-//********************************/
+/********************************/
 /*                              */
 /*         Mathsteroids         */
 /*                              */
@@ -7,6 +7,20 @@
 /*           by Matthew Scroggs */
 /*  mscroggs.co.uk/mathsteroids */
 /********************************/
+
+// inputs
+var quitPressed  = false;
+var upPressed    = false;
+var firePressed  = false;
+var leftPressed  = false;
+var rightPressed = false;
+
+// titlescreen
+var leftTimer=0
+var rightTimer=0
+var game_n = 0
+var game_title = ""
+
 
 
 // Global variables
@@ -26,6 +40,8 @@ var RADIUS = 2
 var mouse = "";
 var WIDTH=800
 var HEIGHT=450
+
+var Craig_zeroang = -0.3
 
 var score = 0
 var lives = 3
@@ -906,7 +922,6 @@ function stereographic_draw_line(ctx,preh,prev,h,v){
 }
 
 // Craig
-var Craig_zeroang = -0.3
 function Craig_xy(hangle,vangle){
     hangle -= Math.PI
     var x = WIDTH/2 + hangle * WIDTH/(2*Math.PI)

@@ -9,13 +9,6 @@
 /********************************/
 
 
-// inputs
-var quitPressed    = false;
-var upPressed    = false;
-var firePressed  = false;
-var leftPressed  = false;
-var rightPressed = false;
-
 document.addEventListener('keydown', (event) => {
     const keyName = event.key;
     process_key(keyName,true)

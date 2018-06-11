@@ -36,6 +36,8 @@
 </div>
 
 <div>
+Mathsteroids is a game based on asteroids that can be played on a selection of interesting mathematical surfaces.
+Destroy the asteroids to win points.
 <h3>Controls</h3>
 <table>
 <tr><td>Turn left</td><td>A</td></tr>
@@ -44,7 +46,7 @@
 <tr><td>Fire</td><td>K</td></tr>
 <tr><td>Return to menu</td><td>Q</td></tr>
 </table>
-</div>
+Alternatively, you can click the buttons above to turn/move/fire/quit.</div>
 <?php
 
 echo("<script type='text/javascript'>

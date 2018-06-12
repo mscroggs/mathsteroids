@@ -774,6 +774,13 @@ function draw_line(ctx,preh,prev,hangle,vangle){
     }
 }
 
+function draw_xy(ctx,prex,prey,x,y){
+    if( ( ( x>0 && x<WIDTH ) || ( prex>0 && prex<WIDTH) ) && ( ( y>0 && y<HEIGHT ) || ( prey>0 && prey<HEIGHT ) ) ){
+        ctx.moveTo(prex,prey)
+        ctx.lineTo(x,y)
+    }
+}
+
 function add_to_surface(hangle, vangle, rot, badd, flip){
     if(options["projection"]=="flat"){
         hangle += badd*Math.cos(rot)
@@ -878,8 +885,7 @@ function isometric_draw_line(ctx,preh,prev,h,v){
     xy = isometric_xy(h,v)
     var x = xy["x"]
     var y = xy["y"]
-    ctx.moveTo(prex,prey)
-    ctx.lineTo(x,y)
+    draw_xy(ctx,prex,prey,x,y)
 }
 
 // stereographic
@@ -912,12 +918,18 @@ function stereographic_draw_line(ctx,preh,prev,h,v){
         var mid1 = stereographic_xy(hmid,0.01)
         var mid2 = stereographic_xy(hmid,-0.01)
         ctx.moveTo(mid1["x"],mid1["y"])
-        if(x<prex){ctx.lineTo(x,y)} else {ctx.lineTo(prex,prey)}
-        ctx.moveTo(mid2["x"],mid2["y"])
-        if(x>prex){ctx.lineTo(x,y)} else {ctx.lineTo(prex,prey)}
+        if(x<prex){
+            draw_xy(mid1["x"],mid1["y"],x,y)
+        } else {
+            draw_xy(mid1["x"],mid1["y"],prex,prey)
+        }
+        if(x>prex){
+            draw_xy(mid2["x"],mid2["y"],x,y)
+        } else {
+            draw_xy(mid2["x"],mid2["y"],prex,prey)
+        }
     } else {
-        ctx.moveTo(prex,prey)
-        ctx.lineTo(x,y)
+        draw_xy(ctx,prex,prey,x,y)
     }
 }
 
@@ -942,10 +954,8 @@ function Craig_draw_line(ctx,preh,prev,h,v){
         xy = Craig_xy(h,v)
         var x = xy["x"]
         var y = xy["y"]
-
-        if(Math.abs(y-prey) < HEIGHT/2 && Math.abs(x-prey) < WIDTH/2){
-            ctx.moveTo(prex,prey)
-            ctx.lineTo(x,y)
+        if(Math.abs(y-prey) < HEIGHT/2 && Math.abs(x-prex) < WIDTH/2){
+            draw_xy(ctx,prex,prey,x,y)
         }
     }
 }
@@ -966,8 +976,7 @@ function azim_draw_line(ctx,preh,prev,h,v){
     var x = xy["x"]
     var y = xy["y"]
     if(Math.abs(x-prex) + Math.abs(y-prey) < 50){
-        ctx.moveTo(prex,prey)
-        ctx.lineTo(x,y)
+        draw_xy(ctx,prex,prey,x,y)
     }
 }
 
@@ -1006,14 +1015,10 @@ function Mercator_draw_line(ctx,preh,prev,h,v){
             yb = prey
         }
         ymid = xb*(yb-ya)/(xa-xb-WIDTH) + yb
-        ctx.moveTo(xa,ya)
-        ctx.lineTo(WIDTH,ymid)
-        ctx.moveTo(0,ymid)
-        ctx.lineTo(xb,yb)
-        ctx.moveTo(x,y)
+        draw_xy(ctx,xa,ya,WIDTH,ymid)
+        draw_xy(ctx,0,ymid,xd,yb)
     } else {
-        ctx.moveTo(prex,prey)
-        ctx.lineTo(x,y)
+        draw_xy(ctx,prex,prey,x,y)
     }
 }
 
@@ -1044,14 +1049,10 @@ function Gall_draw_line(ctx,preh,prev,h,v){
             yb = prey
         }
         ymid = xb*(yb-ya)/(xa-xb-WIDTH) + yb
-        ctx.moveTo(xa,ya)
-        ctx.lineTo(WIDTH,ymid)
-        ctx.moveTo(0,ymid)
-        ctx.lineTo(xb,yb)
-        ctx.moveTo(x,y)
+        draw_xy(ctx,xa,ya,WIDTH,ymid)
+        draw_xy(ctx,0,ymid,xd,yb)
     } else {
-        ctx.moveTo(prex,prey)
-        ctx.lineTo(x,y)
+        draw_xy(ctx,prex,prey,x,y)
     }
 }
 
@@ -1072,11 +1073,8 @@ function flat_torus_draw_line(ctx,prex,prey,x,y){
             yb = prey
         }
         ymid = xb*(yb-ya)/(xa-xb-WIDTH) + yb
-        ctx.moveTo(xa,ya)
-        ctx.lineTo(WIDTH,ymid)
-        ctx.moveTo(0,ymid)
-        ctx.lineTo(xb,yb)
-        ctx.moveTo(x,y)
+        draw_xy(ctx,xa,ya,WIDTH,ymid)
+        draw_xy(ctx,0,ymid,xb,yb)
     } else if(Math.abs(y-prey)>HEIGHT/2){
         if(y < prey){
             xa = prex
@@ -1090,14 +1088,10 @@ function flat_torus_draw_line(ctx,prex,prey,x,y){
             yb = prey
         }
         xmid = yb*(xb-xa)/(ya-yb-HEIGHT) + xb
-        ctx.moveTo(xa,ya)
-        ctx.lineTo(xmid,HEIGHT)
-        ctx.moveTo(xmid,0)
-        ctx.lineTo(xb,yb)
-        ctx.moveTo(x,y)
+        draw_xy(ctx,xa,ya,xmid,HEIGHT)
+        draw_xy(ctx,xmid,0,xb,yb)
     } else {
-        ctx.moveTo(prex,prey)
-        ctx.lineTo(x,y)
+        draw_xy(ctx,prex,prey,x,y)
     }
 }
 
@@ -1118,11 +1112,8 @@ function flat_Klein_draw_line(ctx,prex,prey,x,y){
             yb = prey
         }
         ymid = xb*(yb-HEIGHT+ya)/(xa-xb-WIDTH) + yb
-        ctx.moveTo(xa,ya)
-        ctx.lineTo(WIDTH,HEIGHT-ymid)
-        ctx.moveTo(0,ymid)
-        ctx.lineTo(xb,yb)
-        ctx.moveTo(x,y)
+        draw_xy(ctx,xa,ya,WIDTH,HEIGHT-ymid)
+        draw_xy(ctx,0,ymid,xb,yb)
     } else if(Math.abs(y-prey)>HEIGHT/2){
         if(y < prey){
             xa = prex
@@ -1136,14 +1127,10 @@ function flat_Klein_draw_line(ctx,prex,prey,x,y){
             yb = prey
         }
         xmid = yb*(xb-xa)/(ya-yb-HEIGHT) + xb
-        ctx.moveTo(xa,ya)
-        ctx.lineTo(xmid,HEIGHT)
-        ctx.moveTo(xmid,0)
-        ctx.lineTo(xb,yb)
-        ctx.moveTo(x,y)
+        draw_xy(ctx,xa,ya,xmid,HEIGHT)
+        draw_xy(ctx,xmid,0,xb,yb)
     } else {
-        ctx.moveTo(prex,prey)
-        ctx.lineTo(x,y)
+        draw_xy(ctx,prex,prey,x,y)
     }
 }
 
@@ -1164,11 +1151,8 @@ function flat_real_pp_draw_line(ctx,prex,prey,x,y){
             yb = prey
         }
         ymid = xb*(yb-HEIGHT+ya)/(xa-xb-WIDTH) + yb
-        ctx.moveTo(xa,ya)
-        ctx.lineTo(WIDTH,HEIGHT-ymid)
-        ctx.moveTo(0,ymid)
-        ctx.lineTo(xb,yb)
-        ctx.moveTo(x,y)
+        draw_xy(ctx,xa,ya,WIDTH,HEIGHT-ymid)
+        draw_xy(ctx,0,ymid,xb,yb)
     } else if(Math.abs(y-prey)>HEIGHT/2){
         if(y < prey){
             xa = prex
@@ -1182,13 +1166,9 @@ function flat_real_pp_draw_line(ctx,prex,prey,x,y){
             yb = prey
         }
         xmid = yb*(xb-WIDTH+xa)/(ya-yb-HEIGHT) + xb
-        ctx.moveTo(xa,ya)
-        ctx.lineTo(WIDTH-xmid,HEIGHT)
-        ctx.moveTo(xmid,0)
-        ctx.lineTo(xb,yb)
-        ctx.moveTo(x,y)
+        draw_xy(ctx,xa,ya,WIDTH-xmid,HEIGHT)
+        draw_xy(ctx,xmid,0,xb,yb)
     } else {
-        ctx.moveTo(prex,prey)
-        ctx.lineTo(x,y)
+        draw_xy(ctx,prex,prey,x,y)
     }
 }

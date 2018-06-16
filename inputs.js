@@ -9,35 +9,48 @@
 /********************************/
 
 
-document.addEventListener('keydown', (event) => {
-    const keyName = event.key;
+document.addEventListener('keydown', function(event){
+    const currentCode = event.which || event.code;
+    var currentKey = event.key;
+    if (!currentKey) {
+        currentKey = String.fromCharCode(currentCode);
+    }
+    const keyName = "" + currentKey
     process_key(keyName,true)
     button_styles()
 });
 
+document.addEventListener('keyup', function(event){
+    const currentCode = event.which || event.code;
+    var currentKey = event.key;
+    if (!currentKey) {
+        currentKey = String.fromCharCode(currentCode);
+    }
+    const keyName = "" + currentKey
+    process_key(keyName,false)
+    button_styles()
+});
+
+
 function process_key(keyName, result){
-    if(keyName == "q"){
+    if(keyName == "q" || keyName == "Q"){
         quitPressed=result;
     }
-    //if(keyName == "ArrowUp" || keyName == "w"){
-    if(keyName == "w"){
+    if(keyName == "w" || keyName == "W"){
         upPressed=result;
     }
-    //if(keyName == "ArrowLeft" || keyName == "a"){
-    if(keyName == "a"){
+    if(keyName == "a" || keyName == "A"){
         leftPressed=result;
     }
-    //if(keyName == "ArrowRight" || keyName == "d"){
-    if(keyName == "d"){
+    if(keyName == "d" || keyName == "D"){
         rightPressed=result;
     }
-    //if(keyName == " " || keyName == "ArrowDown" || keyName == "s" || keyName == "k"){
-    if(keyName == "k"){
+    if(keyName == "k" || keyName == "K"){
         firePressed=result;
     }
 }
 
-document.addEventListener('mouseup', (event) => {
+document.addEventListener('mouseup', function(event){
     if(mouse=="up"){
         upPressed=false;
     }
@@ -56,99 +69,93 @@ document.addEventListener('mouseup', (event) => {
     button_styles()
 });
 
-document.getElementById("display_up").addEventListener('touchmove', (event) => {
+document.getElementById("display_up").addEventListener('touchmove', function(event){
     event.preventDefault()
 });
-document.getElementById("display_up").addEventListener('touchstart', (event) => {
+document.getElementById("display_up").addEventListener('touchstart', function(event){
     event.preventDefault()
     upPressed=true;
     button_styles()
 });
-document.getElementById("display_up").addEventListener('mousedown', (event) => {
+document.getElementById("display_up").addEventListener('mousedown', function(event){
     upPressed=true;
     mouse = "up"
     button_styles()
 });
-document.getElementById("display_up").addEventListener('touchend', (event) => {
+document.getElementById("display_up").addEventListener('touchend', function(event){
     upPressed=false;
     button_styles()
 });
 
-document.getElementById("display_quit").addEventListener('touchmove', (event) => {
+document.getElementById("display_quit").addEventListener('touchmove', function(event){
     event.preventDefault()
 });
-document.getElementById("display_quit").addEventListener('touchstart', (event) => {
+document.getElementById("display_quit").addEventListener('touchstart', function(event){
     event.preventDefault()
     quitPressed=true;
     button_styles()
 });
-document.getElementById("display_quit").addEventListener('mousedown', (event) => {
+document.getElementById("display_quit").addEventListener('mousedown', function(event){
     quitPressed=true;
     mouse = "quit"
     button_styles()
 });
-document.getElementById("display_quit").addEventListener('touchend', (event) => {
+document.getElementById("display_quit").addEventListener('touchend', function(event){
     quitPressed=false;
     button_styles()
 });
 
-document.getElementById("display_fire").addEventListener('touchmove', (event) => {
+document.getElementById("display_fire").addEventListener('touchmove', function(event){
     event.preventDefault()
 });
-document.getElementById("display_fire").addEventListener('touchstart', (event) => {
+document.getElementById("display_fire").addEventListener('touchstart', function(event){
     event.preventDefault()
     firePressed=true;
     button_styles()
 });
-document.getElementById("display_fire").addEventListener('mousedown', (event) => {
+document.getElementById("display_fire").addEventListener('mousedown', function(event){
     firePressed=true;
     mouse = "fire"
     button_styles()
 });
-document.getElementById("display_fire").addEventListener('touchend', (event) => {
+document.getElementById("display_fire").addEventListener('touchend', function(event){
     firePressed=false;
     button_styles()
 });
 
-document.getElementById("display_left").addEventListener('touchmove', (event) => {
+document.getElementById("display_left").addEventListener('touchmove', function(event){
     event.preventDefault()
 });
-document.getElementById("display_left").addEventListener('touchstart', (event) => {
+document.getElementById("display_left").addEventListener('touchstart', function(event){
     event.preventDefault()
     leftPressed=true;
     button_styles()
 });
-document.getElementById("display_left").addEventListener('mousedown', (event) => {
+document.getElementById("display_left").addEventListener('mousedown', function(event){
     leftPressed=true;
     mouse = "left"
     button_styles()
 });
-document.getElementById("display_left").addEventListener('touchend', (event) => {
+document.getElementById("display_left").addEventListener('touchend', function(event){
     leftPressed=false;
     button_styles()
 });
 
-document.getElementById("display_right").addEventListener('touchmove', (event) => {
+document.getElementById("display_right").addEventListener('touchmove', function(event){
     event.preventDefault()
 });
-document.getElementById("display_right").addEventListener('touchstart', (event) => {
+document.getElementById("display_right").addEventListener('touchstart', function(event){
     event.preventDefault()
     rightPressed=true;
     button_styles()
 });
-document.getElementById("display_right").addEventListener('mousedown', (event) => {
+document.getElementById("display_right").addEventListener('mousedown', function(event){
     rightPressed=true;
     mouse = "right"
     button_styles()
 });
-document.getElementById("display_right").addEventListener('touchend', (event) => {
+document.getElementById("display_right").addEventListener('touchend', function(event){
     rightPressed=false;
-    button_styles()
-});
-
-document.addEventListener('keyup', (event) => {
-    const keyName = event.key;
-    process_key(keyName,false)
     button_styles()
 });
 

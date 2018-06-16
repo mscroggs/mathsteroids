@@ -919,14 +919,14 @@ function stereographic_draw_line(ctx,preh,prev,h,v){
         var mid2 = stereographic_xy(hmid,-0.01)
         ctx.moveTo(mid1["x"],mid1["y"])
         if(x<prex){
-            draw_xy(mid1["x"],mid1["y"],x,y)
+            draw_xy(ctx,mid1["x"],mid1["y"],x,y)
         } else {
-            draw_xy(mid1["x"],mid1["y"],prex,prey)
+            draw_xy(ctx,mid1["x"],mid1["y"],prex,prey)
         }
         if(x>prex){
-            draw_xy(mid2["x"],mid2["y"],x,y)
+            draw_xy(ctx,mid2["x"],mid2["y"],x,y)
         } else {
-            draw_xy(mid2["x"],mid2["y"],prex,prey)
+            draw_xy(ctx,mid2["x"],mid2["y"],prex,prey)
         }
     } else {
         draw_xy(ctx,prex,prey,x,y)
@@ -1016,7 +1016,7 @@ function Mercator_draw_line(ctx,preh,prev,h,v){
         }
         ymid = xb*(yb-ya)/(xa-xb-WIDTH) + yb
         draw_xy(ctx,xa,ya,WIDTH,ymid)
-        draw_xy(ctx,0,ymid,xd,yb)
+        draw_xy(ctx,0,ymid,xb,yb)
     } else {
         draw_xy(ctx,prex,prey,x,y)
     }
@@ -1050,7 +1050,7 @@ function Gall_draw_line(ctx,preh,prev,h,v){
         }
         ymid = xb*(yb-ya)/(xa-xb-WIDTH) + yb
         draw_xy(ctx,xa,ya,WIDTH,ymid)
-        draw_xy(ctx,0,ymid,xd,yb)
+        draw_xy(ctx,0,ymid,xb,yb)
     } else {
         draw_xy(ctx,prex,prey,x,y)
     }

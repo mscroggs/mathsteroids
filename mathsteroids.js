@@ -962,7 +962,7 @@ function Craig_draw_line(ctx,preh,prev,h,v){
 
 // azim
 function azim_xy(hangle,vangle){
-    var p = HEIGHT/6 * (Math.PI/2 - vangle)
+    var p = HEIGHT/7 * (Math.PI/2 - vangle)
     y = HEIGHT/2 -p*Math.cos(hangle)
     x = WIDTH/2 + p*Math.sin(hangle)
     return {"x":x,"y":y}

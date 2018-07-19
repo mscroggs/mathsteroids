@@ -40,6 +40,22 @@ function draw_a_sphere(ctx, xcenter){
     }
 }
 
+function draw_loop(ctx, xcenter){
+    N = 100
+    var angle = 0
+    var r = 0
+    for(var i=0;i<=N;i++){
+        var x = xcenter+285*Math.cos(angle)
+        var y = HEIGHT/2+150*Math.sin(angle)
+        if(i==0){
+            ctx.moveTo(x,y)
+        } else {
+            ctx.lineTo(x,y)
+        }
+        angle += Math.PI*2/N
+    }
+}
+
 function draw_a_Craig(ctx, xcenter){
     N = 100
     for(var circle=0;circle<3;circle++){
@@ -304,6 +320,10 @@ function draw_a_torus(ctx, xcenter){
 }
 
 function draw_surface(ctx){
+    if(options["surface"]=="loop"){
+        draw_loop(ctx,WIDTH/2)
+    }
+
     if(options["surface"]=="sphere"){
         draw_a_sphere(ctx,WIDTH/4)
     }
@@ -350,6 +370,7 @@ function changeGameN(i){
     game_title = games[game_n][0]
     options["surface"] = games[game_n][1]
     options["projection"] = games[game_n][2]
+    redraw_menu()
 }
 changeGameN(0)
 
@@ -377,6 +398,9 @@ function menu_tick(){
         firePressed = false
         start_game()
     }
+}
+
+function redraw_menu(){
     var canvas = document.getElementById("mathsteroids");
     var ctx = canvas.getContext("2d");
     ctx.fillStyle = "#000000";

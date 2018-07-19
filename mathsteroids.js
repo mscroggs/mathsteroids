@@ -33,7 +33,8 @@ var games = [
              ["sphere (azimuthal projection)","sphere","azim"],
              ["(flat) torus","torus","flat"],
              ["(flat) klein bottle","Klein","flat"],
-             ["(flat) real projective plane","real-pp","flat"]
+             ["(flat) real projective plane","real-pp","flat"],
+             ["loop (elliptical pool table)","loop","loop"]
             ]
 var options = {"surface":"sphere","projection":"Mercator"}
 var RADIUS = 2

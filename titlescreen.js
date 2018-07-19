@@ -84,7 +84,7 @@ function draw_a_plane(ctx, xcenter){
         ctx.lineTo(xcenter-120,HEIGHT/2-2*al)
         ctx.lineTo(xcenter-120+al,HEIGHT/2)
 
-        if(options["surface"]=="real-pp") {
+        if(options["surface"]=="flatreal-pp") {
             ctx.moveTo(xcenter+al,HEIGHT/2+80-al)
             ctx.lineTo(xcenter-al,HEIGHT/2+80)
             ctx.lineTo(xcenter+al,HEIGHT/2+80+al)
@@ -93,7 +93,7 @@ function draw_a_plane(ctx, xcenter){
             ctx.lineTo(xcenter+al,HEIGHT/2+80)
             ctx.lineTo(xcenter-al,HEIGHT/2+80+al)
         }
-        if(options["surface"]=="real-pp" || options["surface"]=="Klein") {
+        if(options["surface"]=="flatreal-pp" || options["surface"]=="flatKlein") {
             ctx.moveTo(xcenter+120-al,HEIGHT/2-2*al)
             ctx.lineTo(xcenter+120,HEIGHT/2)
             ctx.lineTo(xcenter+120+al,HEIGHT/2-2*al)
@@ -307,18 +307,26 @@ function draw_surface(ctx){
     if(options["surface"]=="sphere"){
         draw_a_sphere(ctx,WIDTH/4)
     }
+    if(options["surface"]=="flattorus"){
+        draw_a_torus(ctx,WIDTH/4)
+    }
+    if(options["surface"]=="flatKlein"){
+        draw_a_Klein(ctx,WIDTH/4)
+    }
+    if(options["surface"]=="flatreal-pp"){
+        draw_a_real_pp(ctx,WIDTH/4)
+    }
     if(options["surface"]=="torus"){
         draw_a_torus(ctx,WIDTH/4)
     }
-    if(options["surface"]=="Klein"){
-        draw_a_Klein(ctx,WIDTH/4)
-    }
-    if(options["surface"]=="real-pp"){
-        draw_a_real_pp(ctx,WIDTH/4)
-    }
 
     if(options["projection"]=="isometric"){
-        draw_a_sphere(ctx,3*WIDTH/4)
+        if(options["surface"]=="sphere"){
+            draw_a_sphere(ctx,3*WIDTH/4)
+        }
+        if(options["surface"]=="torus"){
+            draw_a_torus(ctx,3*WIDTH/4)
+        }
     }
     if(options["projection"]=="azim"){
         draw_a_circle(ctx,3*WIDTH/4)

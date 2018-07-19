@@ -375,6 +375,11 @@ function draw_shape(){
             prey = y
             angle += Math.PI*2/N
         }
+        var D = Math.sqrt(Math.pow(LOOPSIZE[0],2)-Math.pow(LOOPSIZE[1],2))
+        add_line_to_draw(Array(WIDTH/2+D-3,HEIGHT/2-3,WIDTH/2+D+3,HEIGHT/2+3))
+        add_line_to_draw(Array(WIDTH/2+D-3,HEIGHT/2+3,WIDTH/2+D+3,HEIGHT/2-3))
+        add_line_to_draw(Array(WIDTH/2-D-3,HEIGHT/2-3,WIDTH/2-D+3,HEIGHT/2+3))
+        add_line_to_draw(Array(WIDTH/2-D-3,HEIGHT/2+3,WIDTH/2-D+3,HEIGHT/2-3))
     }
     if(options["surface"]=="sphere"){
         if(options["projection"]=="isometric"){
@@ -680,7 +685,7 @@ function ship_sprite(N){
 
 function fire_sprite(f){
     var out = Array()
-    if(options["projection"]=="space"){
+    if(options["surface"]=="sphere"){
         var leng = 0.1
     }
     if(options["projection"]=="flat" || options["projection"]=="loop"){

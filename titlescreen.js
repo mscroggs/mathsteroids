@@ -13,6 +13,7 @@ function show_menu(){
     menu_tick()
     clearInterval(interval)
     interval = setInterval(menu_tick,1000/60);
+    redraw_menu()
 }
 
 function draw_a_sphere(ctx, xcenter){

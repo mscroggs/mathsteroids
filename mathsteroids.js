@@ -43,6 +43,7 @@ var HEIGHT=450
 
 var RADIUS = 2
 var LOOPSIZE = [380,200]
+var LOOPFOCUS = Math.sqrt(Math.pow(LOOPSIZE[0],2)-Math.pow(LOOPSIZE[1],2))
 var Craig_zeroang = -0.3
 
 var score = 0
@@ -87,7 +88,7 @@ function reset(){
             spaceship["vangle"] = Math.PI/2
         }
     } else if(options["projection"]=="loop"){
-        spaceship["hangle"] = WIDTH/2
+        spaceship["hangle"] = WIDTH/2-LOOPFOCUS
         spaceship["vangle"] = HEIGHT/2
     }
     score = 0
@@ -375,11 +376,10 @@ function draw_shape(){
             prey = y
             angle += Math.PI*2/N
         }
-        var D = Math.sqrt(Math.pow(LOOPSIZE[0],2)-Math.pow(LOOPSIZE[1],2))
-        add_line_to_draw(Array(WIDTH/2+D-3,HEIGHT/2-3,WIDTH/2+D+3,HEIGHT/2+3))
-        add_line_to_draw(Array(WIDTH/2+D-3,HEIGHT/2+3,WIDTH/2+D+3,HEIGHT/2-3))
-        add_line_to_draw(Array(WIDTH/2-D-3,HEIGHT/2-3,WIDTH/2-D+3,HEIGHT/2+3))
-        add_line_to_draw(Array(WIDTH/2-D-3,HEIGHT/2+3,WIDTH/2-D+3,HEIGHT/2-3))
+        add_line_to_draw(Array(WIDTH/2+LOOPFOCUS-3,HEIGHT/2-3,WIDTH/2+LOOPFOCUS+3,HEIGHT/2+3))
+        add_line_to_draw(Array(WIDTH/2+LOOPFOCUS-3,HEIGHT/2+3,WIDTH/2+LOOPFOCUS+3,HEIGHT/2-3))
+        add_line_to_draw(Array(WIDTH/2-LOOPFOCUS-3,HEIGHT/2-3,WIDTH/2-LOOPFOCUS+3,HEIGHT/2+3))
+        add_line_to_draw(Array(WIDTH/2-LOOPFOCUS-3,HEIGHT/2+3,WIDTH/2-LOOPFOCUS+3,HEIGHT/2-3))
     }
     if(options["surface"]=="sphere"){
         if(options["projection"]=="isometric"){

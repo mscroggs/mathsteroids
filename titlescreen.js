@@ -321,7 +321,7 @@ function draw_a_torus(ctx, xcenter){
 }
 
 function draw_surface(ctx){
-    if(options["surface"]=="loop"){
+    if(options["projection"]=="loop"){
         draw_loop(ctx,WIDTH/2)
     }
 
@@ -364,6 +364,12 @@ function draw_surface(ctx){
 }
 
 if(game_n_start!=""){
+    // Compatability with old links
+    if(game_n_start=="looploop"){game_n_start = "poolloop"}
+    if(game_n_start=="torusflat"){game_n_start = "flattorusflat"}
+    if(game_n_start=="Kleinflat"){game_n_start = "flatKleinflat"}
+    if(game_n_start=="real-ppflat"){game_n_start = "flatreal-ppflat"}
+
     for(var i=0;i<games.length;i++){
         if(games[i][1]+games[i][2]==game_n_start){
             game_n = i
@@ -419,6 +425,18 @@ function redraw_menu(){
     ctx.beginPath()
     draw_titles(ctx)
     draw_surface(ctx)
+    add_scaled_text(ctx,"controls",WIDTH-330,25,0.5)
+    add_scaled_text(ctx,"a",WIDTH-330,50,0.5)
+    add_scaled_text(ctx,"left",WIDTH-305,50,0.35)
+    add_scaled_text(ctx,"d",WIDTH-210,50,0.5)
+    add_scaled_text(ctx,"right",WIDTH-185,50,0.35)
+    add_scaled_text(ctx,"k",WIDTH-90,50,0.5)
+    add_scaled_text(ctx,"fire",WIDTH-65,50,0.35)
+    add_scaled_text(ctx,"w",WIDTH-330,75,0.5)
+    add_scaled_text(ctx,"forward",WIDTH-305,75,0.35)
+    add_scaled_text(ctx,"q",WIDTH-210,75,0.5)
+    add_scaled_text(ctx,"return to menu",WIDTH-185,75,0.35)
+
     add_scaled_text(ctx,"surface:",20,HEIGHT-45,0.5)
     add_scaled_text(ctx,"<< "+game_title+" >>",150,HEIGHT-45,0.5)
     add_scaled_text(ctx,"press <fire> to begin",WIDTH-295,HEIGHT-20,0.5)
@@ -427,7 +445,7 @@ function redraw_menu(){
 
 function draw_titles(ctx){
     add_text(ctx, "Mathsteroids", 20, 70)
-    add_scaled_text(ctx, "v"+VERSION, 410, 70, 0.6)
+    add_scaled_text(ctx, "v"+VERSION, 405, 70, 0.6)
 }
 
 function add_text(ctx, text, x, y){

@@ -42,14 +42,16 @@ var games = [
              ["(flat) real projective plane","flatreal-pp","flat"],
 //             ["torus (top view)","torus","isometric"],
 //             ["torus (projected)","torus","projected"]
+             ["loop (elliptical pool table)","pool","loop"]
             ]
 var options = {"surface":"sphere","projection":"Mercator"}
-var RADIUS = 2
-var TRADIUS = [1.32,0.66]
 var mouse = "";
 var WIDTH=800
 var HEIGHT=450
 
+var RADIUS = 2
+var TRADIUS = [1.32,0.66]
+var LOOPSIZE = [380,200]
 var Craig_zeroang = -0.3
 
 var score = 0
@@ -96,6 +98,9 @@ function reset(){
     } else if(options["surface"]=="torus"){
         spaceship["hangle"] = 0
         spaceship["vangle"] = 0
+    } else if(options["surface"]=="pool"){
+        spaceship["hangle"] = WIDTH/2
+        spaceship["vangle"] = HEIGHT/2
     }
     score = 0
     lives = 3
@@ -124,6 +129,10 @@ function make_new_asteroids(n){
             new_a["speed"] = 0.005+Math.random()*0.005
             new_a["radius"] = 0.01
         }
+        if(options["surface"] == "pool"){
+            new_a["speed"] = 0.5+Math.random()*0.5
+            new_a["radius"] = 0.1
+        }
         while(too_close(new_a,spaceship)){
             if(options["surface"].substring(0,4) == "flat"){
                 new_a["hangle"] = Math.random()*WIDTH
@@ -134,6 +143,11 @@ function make_new_asteroids(n){
             } else if(options["surface"]=="torus"){
                 new_a["hangle"] = Math.random()*Math.PI*2
                 new_a["vangle"] = Math.random()*Math.PI*2
+            } else if(options["surface"] == "pool"){
+                var angle = Math.random()*Math.PI*2
+                var rad = Math.random()
+                new_a["hangle"] = WIDTH/2+rad*LOOPSIZE[0]*Math.cos(angle)
+                new_a["vangle"] = HEIGHT/2+rad*LOOPSIZE[1]*Math.sin(angle)
             }
         }
         var as = get_a_s(new_a)
@@ -146,7 +160,7 @@ function make_new_asteroids(n){
 }
 
 function too_close(p,q){
-    if(options["surface"].substring(0,4)=="flat"){
+    if(options["surface"].substring(0,4)=="flat" || options["surface"]=="pool"){
         var d = 80
         var x1 = p["hangle"]
         var x2 = q["hangle"]
@@ -277,7 +291,7 @@ function move_fire(){
     for(var i=0;i<fires.length;i++){
         fires[i]["age"]++
         if(fires[i]["age"]<40){
-            new_pos = add_to_surface(fires[i]["hangle"],fires[i]["vangle"],fires[i]["rotation"],fires[i]["speed"],1)
+            new_pos = move_on_surface(fires[i]["hangle"],fires[i]["vangle"],fires[i]["rotation"],fires[i]["speed"],1)
             fires[i]["hangle"] = new_pos["hangle"]
             fires[i]["vangle"] = new_pos["vangle"]
             fires[i]["rotation"] = new_pos["rotation"]
@@ -287,7 +301,7 @@ function move_fire(){
     fires = new_fires
     if(firePressed){
         if(fired==0){
-            if(options["surface"].substring(0,4) == "flat"){
+            if(options["surface"].substring(0,4) == "flat" || options["surface"]=="pool"){
                 var leng = 10
                 var speed = 5
             } else if(options["surface"] == "sphere"){
@@ -297,7 +311,7 @@ function move_fire(){
                 var leng = 0.1
                 var speed = 0.05
             }
-            new_pos = add_to_surface(spaceship["hangle"],spaceship["vangle"],spaceship["rotation"],leng,1)
+            new_pos = move_on_surface(spaceship["hangle"],spaceship["vangle"],spaceship["rotation"],leng,1)
             new_pos["speed"] = speed + spaceship["speed"]*(Math.cos(spaceship["rotation"]-spaceship["direction"]))
             new_pos["rotation"] = new_pos["rotation"]
             new_pos["age"] = 0
@@ -323,7 +337,7 @@ function move_explodes(){
 }
 
 function increase_speed(){
-    if(options["surface"].substring(0,4)=="flat"){
+    if(options["surface"].substring(0,4)=="flat" || options["surface"]=="pool"){
         var speed_add = 0.2
         var speed_max = 5
     } else if(options["surface"]=="sphere"){
@@ -342,7 +356,7 @@ function increase_speed(){
 }
 
 function decrease_speed(){
-    if(options["surface"].substring(0,4)=="flat"){
+    if(options["surface"].substring(0,4)=="flat" || options["surface"]=="pool"){
         var slow=0.01
     } else if(options["surface"]=="sphere"){
         var slow=0.0001
@@ -370,7 +384,30 @@ function draw_lives(ctx){
         ctx.lineTo(WIDTH-i*25-30,20)
     }
 }
+
 function draw_shape(){
+    if(options["projection"]=="loop"){
+        N = 100
+        var angle = 0
+        var r = 0
+        var prex=0
+        var prey=0
+        for(var i=0;i<=N;i++){
+            var x = WIDTH/2+LOOPSIZE[0]*Math.cos(angle)
+            var y = HEIGHT/2+LOOPSIZE[1]*Math.sin(angle)
+            if(i>0){
+                add_line_to_draw(Array(prex,prey,x,y))
+            }
+            prex = x
+            prey = y
+            angle += Math.PI*2/N
+        }
+        var D = Math.sqrt(Math.pow(LOOPSIZE[0],2)-Math.pow(LOOPSIZE[1],2))
+        add_line_to_draw(Array(WIDTH/2+D-3,HEIGHT/2-3,WIDTH/2+D+3,HEIGHT/2+3))
+        add_line_to_draw(Array(WIDTH/2+D-3,HEIGHT/2+3,WIDTH/2+D+3,HEIGHT/2-3))
+        add_line_to_draw(Array(WIDTH/2-D-3,HEIGHT/2-3,WIDTH/2-D+3,HEIGHT/2+3))
+        add_line_to_draw(Array(WIDTH/2-D-3,HEIGHT/2+3,WIDTH/2-D+3,HEIGHT/2-3))
+    }
     if(options["surface"]=="sphere"){
         if(options["projection"]=="isometric"){
             for(var circle=0;circle<2;circle++){
@@ -493,19 +530,21 @@ function move_ship(){
 }
 
 function move_sprite(sprite){
-    var new_pos = add_to_surface(sprite["hangle"],sprite["vangle"],sprite["direction"],sprite["speed"],1)
+    var new_pos = move_on_surface(sprite["hangle"],sprite["vangle"],sprite["direction"],sprite["speed"],1)
+    var rot = sprite["rotation"]
     sprite["rotation"] *= new_pos["flip"]
     sprite["rotation"] -= sprite["direction"]
     sprite["direction"] = new_pos["rotation"]
     sprite["rotation"] += new_pos["flip"]*sprite["direction"]
     sprite["hangle"] = new_pos["hangle"]
     sprite["vangle"] = new_pos["vangle"]
+    if(options["surface"]=="pool"){sprite["rotation"]=rot}
     return sprite
 }
 
 function get_a_s(a){
     var mult = 1
-    if(options["surface"].substring(0,4)=="flat"){
+    if(options["surface"].substring(0,4)=="flat" || options["surface"]=="pool"){
         mult = 100
     }
     var out = {}
@@ -571,6 +610,12 @@ function move_asteroids(){
                         spaceship["hangle"] = Math.random()*2*Math.PI
                         spaceship["vangle"] = Math.random()*Math.PI-Math.PI/2
                     }
+                    if(options["projection"] == "loop"){
+                        var angle = Math.random()*Math.PI*2
+                        var rad = Math.random()
+                        spaceship["hangle"] = WIDTH/2+rad*LOOPSIZE[0]*Math.cos(angle)
+                        spaceship["vangle"] = HEIGHT/2+rad*LOOPSIZE[1]*Math.sin(angle)
+                    }
                 }
                 lives--
                 break
@@ -598,7 +643,7 @@ function move_asteroids(){
             }
             fires = new_fires
             if(a["size"]>1){
-                if(options["surface"].substring(0,4)=="flat"){
+                if(options["surface"].substring(0,4)=="flat" || options["surface"]=="pool"){
                     var speed_start = 0.5
                 } else if(options["surface"]=="sphere"){
                     var speed_start = 0.005
@@ -631,7 +676,7 @@ function move_asteroids(){
 
 // sprites
 function ship_sprite(N){
-    if(options["surface"].substring(0,4)=="flat"){
+    if(options["surface"].substring(0,4)=="flat" || options["surface"]=="pool"){
         var size1 = 10
         var size2 = 15
         var leng = size1
@@ -689,7 +734,7 @@ function ship_sprite(N){
 
 function fire_sprite(f){
     var out = Array()
-    if(options["surface"].substring(0,4)=="flat"){
+    if(options["surface"].substring(0,4)=="flat" || options["surface"]=="pool"){
         var leng = 10
     } else if(options["surface"] == "sphere"){
         var leng = 0.1
@@ -711,7 +756,7 @@ function explode_sprite(f){
     var out = Array()
     var angles = Array(1,3,5)
     var mult = 1
-    if(options["surface"].substring(0,4) == "flat"){
+    if(options["surface"].substring(0,4) == "flat" || options["surface"]=="pool"){
         mult = 100
     }
 
@@ -749,7 +794,7 @@ function asteroid_sprite(a){
     var out = Array()
     var r = a["radius"]
     var sides = a["sides"]
-    if(options["surface"].substring(0,4) == "flat"){
+    if(options["surface"].substring(0,4) == "flat" || options["surface"]=="pool"){
         var side_l = r*Math.sqrt(2-2*Math.cos(2*Math.PI/sides))
         var angle = (sides-2)*Math.PI/(2*sides)
     } else if(options["surface"] == "sphere"){
@@ -845,6 +890,10 @@ function draw_line(ctx,preh,prev,hangle,vangle){
         if(options["projection"]=="projected"){
             torus_projected_draw_line(ctx,preh,prev,hangle,vangle)
         }
+    } else if(options["surface"]=="pool"){
+        if(options["projection"]=="loop"){
+            loop_draw_line(ctx,preh,prev,hangle,vangle)
+        }
     }
 }
 
@@ -855,7 +904,43 @@ function draw_xy(ctx,prex,prey,x,y){
     }
 }
 
-function add_to_surface(hangle, vangle, rot, badd, flip){
+function add_to_surface(hangle,vangle,rot,badd,flip){
+    return _add_to_surface_internal(hangle,vangle,rot,badd,flip,false)
+}
+
+function move_on_surface(hangle,vangle,rot,badd,flip){
+    return _add_to_surface_internal(hangle,vangle,rot,badd,flip,true)
+}
+
+function _add_to_surface_internal(hangle, vangle, rot, badd, flip, moving){
+    if(options["surface"]=="pool"){
+        hangle += badd*Math.cos(rot)
+        vangle += badd*Math.sin(rot)
+        if(moving){
+            var sin = (vangle - HEIGHT/2) / LOOPSIZE[1]
+            var cos = (hangle - WIDTH/2) / LOOPSIZE[0]
+            if(Math.pow(sin,2)+Math.pow(cos,2) > 1){
+                var Aa = Math.pow(LOOPSIZE[1],2) + Math.pow(LOOPSIZE[0]*Math.tan(rot),2)
+                var Bb = Math.pow(LOOPSIZE[0],2) * (2*(vangle-HEIGHT/2)*Math.tan(rot) - 2*(hangle-WIDTH/2)*Math.pow(Math.tan(rot),2))
+                var Cc = Math.pow(LOOPSIZE[0],2) * (Math.pow((hangle-WIDTH/2)*Math.tan(rot),2)-2*(hangle-WIDTH/2)*(vangle-HEIGHT/2)*Math.tan(rot)+Math.pow(vangle-HEIGHT/2,2)-Math.pow(LOOPSIZE[1],2))
+                var x1 = WIDTH/2+(-Bb + Math.sqrt(Bb*Bb-4*Aa*Cc))/(2*Aa)
+                var x2 = WIDTH/2+(-Bb - Math.sqrt(Bb*Bb-4*Aa*Cc))/(2*Aa)
+                if(Math.abs(x1-hangle)<Math.abs(x2-hangle)){
+                    var Xx = x1
+                } else {
+                    var Xx = x2
+                }
+                var Yy = (Xx-hangle)*Math.tan(rot) + vangle
+
+                var dydx = Math.atan2((Xx-WIDTH/2)*LOOPSIZE[1]*LOOPSIZE[1], (Yy-HEIGHT/2)*LOOPSIZE[0]*LOOPSIZE[0])
+                rot = 2*Math.PI - 2*dydx - rot // TODO: only make this happen when moving object, not drawing
+                dist = Math.sqrt(Math.pow(hangle-Xx,2)+Math.pow(vangle-Yy,2))
+                hangle = Xx + dist*Math.cos(rot)
+                vangle = Yy + dist*Math.sin(rot)
+            }
+        }
+        return {"hangle":hangle,"vangle":vangle,"rotation":rot,"flip":flip}
+    }
     if(options["surface"].substring(0,4)=="flat"){
         hangle += badd*Math.cos(rot)
         vangle += badd*Math.sin(rot)
@@ -1321,3 +1406,7 @@ function torus_projected_draw_line(ctx,preh,prev,h,v){
     draw_xy(ctx,prex,prey,x,y)
 }
 
+// flat_real_pp
+function loop_draw_line(ctx,prex,prey,x,y){
+    draw_xy(ctx,prex,prey,x,y)
+}

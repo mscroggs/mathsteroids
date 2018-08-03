@@ -40,8 +40,8 @@ var games = [
              ["(flat) torus","flattorus","flat"],
              ["(flat) klein bottle","flatKlein","flat"],
              ["(flat) real projective plane","flatreal-pp","flat"],
-//             ["torus (top view)","torus","isometric"],
-//             ["torus (projected)","torus","projected"]
+             ["torus (top view)","torus","isometric"],
+             ["torus (projected)","torus","projected"],
              ["loop (elliptical pool table)","pool","loop"]
             ]
 var options = {"surface":"sphere","projection":"Mercator"}
@@ -1020,22 +1020,30 @@ function _add_to_surface_internal(hangle, vangle, rot, badd, flip, moving){
         }
         return {"hangle":hangle,"vangle":vangle,"rotation":rot,"flip":flip}
     } else if(options["surface"]=="torus"){
-        var c=TRADIUS[0]
-        var a=TRADIUS[1]
-        var l=1/(a*a)
-        //var k=rot
-        if(rot % Math.PI == Math.PI/2){
-            var k = 0
-        } else {
-            var k=l*Math.pow(a*(c+Math.cos(vangle)),2) / (Math.pow(Math.tan(rot),2)+1)
-        }
-        dh = badd * k/Math.pow(c+a*Math.cos(vangle),2)
-        inside = l-k*k/Math.pow(a*(c+a*Math.cos(vangle)),2)
-        dv = badd * Math.pow(inside,1/2)
+        // CONST = (c+a*cos(vangle)) * sin(rot)
+        //var constant = (TRADIUS[0])
+        // TODO
+        // h = hangle, v = vangle
+        // a = TRADIUS[0], b = TRADIUS[1]
+        // a_h = 2 speed_h speed_v sin(v) / b(a+b cos(v))
+        // a_v = 2 sin(v) [speed_h]^2 / (a+b cos(v))
+        var a=TRADIUS[0]
+        var b=TRADIUS[1]
+        // (hangle, vangle, rot, badd, flip, moving){
+        var speed_h = badd * Math.cos(rot)
+        var speed_v = badd * Math.sin(rot)
+
+        var end_speed_h = speed_h + 2*speed_h*speed_v*Math.sin(vangle) / (b*(a+b*Math.cos(vangle)))
+        var end_speed_v = speed_v + 2*Math.sin(vangle) * Math.pow(speed_h,2) / (a+b*Math.cos(vangle))
+
+        dh = (speed_h + end_speed_h)/2
+        dv = (speed_v + end_speed_v)/2
+
         hangle += dh
         vangle += dv
-        //rot = Math.atan2(dv,dh)
-
+        if(badd>0){
+            rot = Math.atan2(dv,dh)
+        }
         if(vangle > 2*Math.PI){
             vangle -= 2*Math.PI
         }
@@ -1364,8 +1372,8 @@ function flat_real_pp_draw_line(ctx,prex,prey,x,y){
 
 // Torus isometric
 function torus_isometric_xy(hangle,vangle){
-    var x = Math.cos(hangle)*(TRADIUS[0]+TRADIUS[1]*Math.cos(vangle))
-    var y = Math.sin(hangle)*(TRADIUS[0]+TRADIUS[1]*Math.cos(vangle))
+    var x = Math.cos(-hangle)*(TRADIUS[0]+TRADIUS[1]*Math.cos(vangle))
+    var y = Math.sin(-hangle)*(TRADIUS[0]+TRADIUS[1]*Math.cos(vangle))
     var z = TRADIUS[1]*Math.sin(vangle)
     //var x2 = (x-y) * Math.sin(30)
     //var y2 = z + (x+y) * Math.cos(30)

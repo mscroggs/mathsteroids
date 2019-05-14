@@ -320,6 +320,38 @@ function draw_a_torus(ctx, xcenter){
     }
 }
 
+function draw_a_top_torus(ctx, xcenter){
+    var ratio = 2
+    var A = WIDTH/7
+    var N = 100
+    var x = 0
+    var y = 0
+    for(var i=0;i<=N;i++){
+        x = xcenter + A*Math.cos(Math.PI*2*i/N)
+        y = HEIGHT/2 + A*Math.sin(Math.PI*2*i/N)
+        if(i==0){
+            ctx.moveTo(x,y)
+        } else {
+            ctx.lineTo(x,y)
+        }
+    }
+
+    var ratio = 2
+    var A = WIDTH/18
+    var N = 100
+    var x = 0
+    var y = 0
+    for(var i=0;i<=N;i++){
+        x = xcenter + A*Math.cos(Math.PI*2*i/N)
+        y = HEIGHT/2 + A*Math.sin(Math.PI*2*i/N)
+        if(i==0){
+            ctx.moveTo(x,y)
+        } else {
+            ctx.lineTo(x,y)
+        }
+    }
+}
+
 function draw_surface(ctx){
     if(options["projection"]=="loop"){
         draw_loop(ctx,WIDTH/2)
@@ -345,9 +377,9 @@ function draw_surface(ctx){
         if(options["surface"]=="sphere"){
             draw_a_sphere(ctx,3*WIDTH/4)
         }
-        if(options["surface"]=="torus"){
-            draw_a_torus(ctx,3*WIDTH/4)
-        }
+    }
+    if(options["projection"]=="top_v"){
+        draw_a_top_torus(ctx,3*WIDTH/4)
     }
     if(options["projection"]=="azim"){
         draw_a_circle(ctx,3*WIDTH/4)
@@ -355,7 +387,7 @@ function draw_surface(ctx){
     if(options["projection"]=="Craig"){
         draw_a_Craig(ctx,3*WIDTH/4)
     }
-    if(options["projection"]=="Mercator" || options["projection"] == "Gall" || options["projection"]=="flat"){
+    if(options["projection"]=="Mercator" || options["projection"] == "Gall" || options["projection"]=="flat" || options["projection"] == "projected"){
         draw_a_plane(ctx,3*WIDTH/4)
     }
     if(options["projection"]=="stereographic"){

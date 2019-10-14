@@ -1026,8 +1026,9 @@ function _add_to_surface_internal(hangle, vangle, rot, badd, flip, moving){
         return {"hangle":hangle,"vangle":vangle,"rotation":rot,"flip":flip}
     } else if(options["surface"]=="torus"){
 
-        var steps = 1 + Math.floor(badd * 100)
+        var steps = 1 + Math.floor(badd * 1000)
         var stepsize = badd / steps
+        var h = (TRADIUS[0]+TRADIUS[1]*Math.cos(vangle)) * Math.sin(-rot)
         for(var i=0;i<steps;i++){
             while(rot < 0){
                 rot += 2*Math.PI
@@ -1039,13 +1040,12 @@ function _add_to_surface_internal(hangle, vangle, rot, badd, flip, moving){
             if(Math.PI/2 < rot && rot < 3*Math.PI/2){
                 negative = true
             }
-            var h = (TRADIUS[0]+TRADIUS[1]*Math.cos(vangle)) * Math.sin(-rot)
             vangle += stepsize * Math.cos(-rot)
             hangle += stepsize * Math.sin(-rot)
             sinrot = h / (TRADIUS[0]+TRADIUS[1]*Math.cos(vangle))
             if(sinrot > 1){
                 rot = 3*Math.PI/2
-            } else if(sinrot < -1){
+             } else if(sinrot < -1){
                 rot = Math.PI/2
             } else {
                 rot = -Math.asin(sinrot)

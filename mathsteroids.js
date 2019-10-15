@@ -31,6 +31,8 @@ var games = [
              ["sphere (gall-peters projection)","sphere","Gall"],
              ["sphere (craig retroazimuthal projection)","sphere","Craig"],
              ["sphere (azimuthal projection)","sphere","azim"],
+             ["(flat) cylinder","cylinder","flat"],
+             ["(flat) möbius strip","mobius","flat"],
              ["(flat) torus","torus","flat"],
              ["(flat) klein bottle","Klein","flat"],
              ["(flat) real projective plane","real-pp","flat"],
@@ -44,6 +46,7 @@ var HEIGHT=450
 var RADIUS = 2
 var LOOPSIZE = [380,200]
 var LOOPFOCUS = Math.sqrt(Math.pow(LOOPSIZE[0],2)-Math.pow(LOOPSIZE[1],2))
+var MOBIUSY = 50
 var Craig_zeroang = -0.3
 
 var score = 0
@@ -127,7 +130,11 @@ function make_new_asteroids(n){
             }
             if(options["projection"] == "flat"){
                 new_a["hangle"] = Math.random()*WIDTH
-                new_a["vangle"] = Math.random()*HEIGHT
+                if(options["surface"]=="mobius" || options["surface"]=="cylinder"){
+                    new_a["vangle"] = Math.random()*(HEIGHT-2*MOBIUSY) + MOBIUSY
+                } else {
+                    new_a["vangle"] = Math.random()*HEIGHT
+                }
             }
             if(options["projection"] == "loop"){
                 var angle = Math.random()*Math.PI*2
@@ -360,6 +367,12 @@ function draw_lives(ctx){
 }
 
 function draw_shape(){
+    if(options["surface"]=="mobius" || options["surface"]=="cylinder"){
+        for(var i=0;i<10;i++){
+            add_line_to_draw(Array(i*WIDTH/10,MOBIUSY,(i+1)*WIDTH/10,MOBIUSY))
+            add_line_to_draw(Array(i*WIDTH/10,HEIGHT-MOBIUSY,(i+1)*WIDTH/10,HEIGHT-MOBIUSY))
+        }
+    }
     if(options["surface"]=="loop"){
         N = 100
         var angle = 0
@@ -499,6 +512,8 @@ function move_sprite(sprite){
     sprite["hangle"] = new_pos["hangle"]
     sprite["vangle"] = new_pos["vangle"]
     if(options["surface"]=="loop"){sprite["rotation"]=rot}
+    if(options["surface"]=="mobius" && new_pos["flip"]==1){sprite["rotation"]=rot}
+    if(options["surface"]=="cylinder"){sprite["rotation"]=rot}
     return sprite
 }
 
@@ -802,6 +817,10 @@ function draw_line(ctx,preh,prev,hangle,vangle){
             flat_Klein_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["surface"]=="real-pp"){
             flat_real_pp_draw_line(ctx,preh,prev,hangle,vangle)
+        } else if(options["surface"]=="mobius"){
+            flat_mobius_draw_line(ctx,preh,prev,hangle,vangle)
+        } else if(options["surface"]=="cylinder"){
+            flat_cylinder_draw_line(ctx,preh,prev,hangle,vangle)
         }
     } else if(options["surface"]=="sphere"){
         if(options["projection"]=="Mercator"){
@@ -838,6 +857,54 @@ function move_on_surface(hangle,vangle,rot,badd,flip){
 }
 
 function _add_to_surface_internal(hangle, vangle, rot, badd, flip, moving){
+    if(options["surface"]=="mobius"){
+        hangle += badd*Math.cos(rot)
+        vangle += badd*Math.sin(rot)
+        if(hangle>WIDTH){
+            hangle-=WIDTH
+            vangle = HEIGHT - vangle
+            rot *= -1
+            flip *= -1
+        }
+        if(hangle<0){
+            hangle+=WIDTH
+            vangle = HEIGHT - vangle
+            flip *= -1
+            rot *= -1
+        }
+        if(moving){
+            if(vangle < MOBIUSY){
+                vangle = MOBIUSY + (MOBIUSY-vangle)
+                rot = 2*Math.PI - rot
+            }
+            if(vangle > HEIGHT-MOBIUSY){
+                vangle = HEIGHT-MOBIUSY + (HEIGHT-MOBIUSY-vangle)
+                rot = 2*Math.PI - rot
+            }
+        }
+        return {"hangle":hangle,"vangle":vangle,"rotation":rot,"flip":flip}
+    }
+    if(options["surface"]=="cylinder"){
+        hangle += badd*Math.cos(rot)
+        vangle += badd*Math.sin(rot)
+        if(hangle>WIDTH){
+            hangle-=WIDTH
+        }
+        if(hangle<0){
+            hangle+=WIDTH
+        }
+        if(moving){
+            if(vangle < MOBIUSY){
+                vangle = MOBIUSY + (MOBIUSY-vangle)
+                rot = 2*Math.PI - rot
+            }
+            if(vangle > HEIGHT-MOBIUSY){
+                vangle = HEIGHT-MOBIUSY + (HEIGHT-MOBIUSY-vangle)
+                rot = 2*Math.PI - rot
+            }
+        }
+        return {"hangle":hangle,"vangle":vangle,"rotation":rot,"flip":flip}
+    }
     if(options["surface"]=="loop"){
         hangle += badd*Math.cos(rot)
         vangle += badd*Math.sin(rot)
@@ -858,7 +925,7 @@ function _add_to_surface_internal(hangle, vangle, rot, badd, flip, moving){
                 var Yy = (Xx-hangle)*Math.tan(rot) + vangle
 
                 var dydx = Math.atan2((Xx-WIDTH/2)*LOOPSIZE[1]*LOOPSIZE[1], (Yy-HEIGHT/2)*LOOPSIZE[0]*LOOPSIZE[0])
-                rot = 2*Math.PI - 2*dydx - rot // TODO: only make this happen when moving object, not drawing
+                rot = 2*Math.PI - 2*dydx - rot
                 dist = Math.sqrt(Math.pow(hangle-Xx,2)+Math.pow(vangle-Yy,2))
                 hangle = Xx + dist*Math.cos(rot)
                 vangle = Yy + dist*Math.sin(rot)
@@ -1257,7 +1324,52 @@ function flat_real_pp_draw_line(ctx,prex,prey,x,y){
     }
 }
 
-// flat_real_pp
+// loop
 function loop_draw_line(ctx,prex,prey,x,y){
     draw_xy(ctx,prex,prey,x,y)
 }
+// mobius
+function flat_mobius_draw_line(ctx,prex,prey,x,y){
+    if(Math.abs(x-prex)>WIDTH/2){
+        if(x < prex){
+            xa = prex
+            xb = x
+            ya = prey
+            yb = y
+        } else {
+            xa = x
+            xb = prex
+            ya = y
+            yb = prey
+        }
+        ymid = xb*(yb-HEIGHT+ya)/(xa-xb-WIDTH) + yb
+        draw_xy(ctx,xa,ya,WIDTH,HEIGHT-ymid)
+        draw_xy(ctx,0,ymid,xb,yb)
+    } else {
+        draw_xy(ctx,prex,prey,x,y)
+    }
+}
+
+
+// cylinder
+function flat_cylinder_draw_line(ctx,prex,prey,x,y){
+    if(Math.abs(x-prex)>WIDTH/2){
+        if(x < prex){
+            xa = prex
+            xb = x
+            ya = prey
+            yb = y
+        } else {
+            xa = x
+            xb = prex
+            ya = y
+            yb = prey
+        }
+        ymid = xb*(yb-ya)/(xa-xb-WIDTH) + yb
+        draw_xy(ctx,xa,ya,WIDTH,ymid)
+        draw_xy(ctx,0,ymid,xb,yb)
+    } else {
+        draw_xy(ctx,prex,prey,x,y)
+    }
+}
+

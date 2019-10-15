@@ -14,6 +14,8 @@ The following surfaces are currently available:
 #### Gall–Peters projection
 #### Craig retroazimuthal projection
 #### Distance preserving azimuthal projection
+### Flat cylinder
+### Flat Mobius strip
 ### Flat torus
 ### Flat Klein bottle
 ### Flat real projective plane

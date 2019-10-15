@@ -7,15 +7,16 @@ You can play mathsteroids at [mscroggs.co.uk/mathsteroids](http://www.mscroggs.c
 ## Surfaces
 The following surfaces are currently available:
 
-### Sphere
-#### Mercator projection
-#### Isometric
-#### Stereographic projection
-#### Gall–Peters projection
-#### Craig retroazimuthal projection
-#### Distance preserving azimuthal projection
-### Flat cylinder
-### Flat Mobius strip
-### Flat torus
-### Flat Klein bottle
-### Flat real projective plane
+* Sphere
+  * Mercator projection
+  * Isometric
+  * Stereographic projection
+  * Gall–Peters projection
+  * Craig retroazimuthal projection
+  * Distance preserving azimuthal projection
+* Flat
+  * cylinder
+  * Mobius strip
+  * torus
+  * Klein bottle
+  * real projective plane

@@ -1099,31 +1099,26 @@ function _add_to_surface_internal(hangle, vangle, rot, badd, flip, moving){
 
         var steps = 1 + Math.floor(badd * 1000)
         var stepsize = badd / steps
-        var h = (TRADIUS[0]+TRADIUS[1]*Math.cos(vangle)) * Math.sin(-rot)
         for(var i=0;i<steps;i++){
-            while(rot < 0){
-                rot += 2*Math.PI
-            }
-            while(rot >= 2*Math.PI){
-                rot -= 2*Math.PI
-            }
-            var negative = false
-            if(Math.PI/2 < rot && rot < 3*Math.PI/2){
-                negative = true
-            }
-            vangle += stepsize * Math.cos(-rot)
-            hangle += stepsize * Math.sin(-rot)
-            sinrot = h / (TRADIUS[0]+TRADIUS[1]*Math.cos(vangle))
-            if(sinrot > 1){
-                rot = 3*Math.PI/2
-             } else if(sinrot < -1){
-                rot = Math.PI/2
-            } else {
-                rot = -Math.asin(sinrot)
-            }
-            if(negative){
-                rot = Math.PI - rot
-            }
+            var x = (TRADIUS[0] + TRADIUS[1]*Math.cos(vangle)) * Math.cos(hangle)
+            var y = (TRADIUS[0] + TRADIUS[1]*Math.cos(vangle)) * Math.sin(hangle)
+            var z = TRADIUS[1]*Math.sin(vangle)
+
+            var dx = -Math.sin(hangle)*Math.cos(rot) - Math.cos(hangle)*Math.sin(vangle)*Math.sin(rot)
+            var dy = Math.cos(hangle)*Math.cos(rot) - Math.sin(hangle)*Math.sin(vangle)*Math.sin(rot)
+            var dz = Math.cos(vangle)*Math.sin(rot)
+
+            x += stepsize * dx
+            y += stepsize * dy
+            z += stepsize * dz
+
+            hangle = Math.atan2(y,x)
+            vangle = Math.atan2(z,Math.sqrt(x*x + y*y)-TRADIUS[0])
+
+            v1 = -Math.sin(hangle)*dx + Math.cos(hangle)*dy
+            v2 = -Math.cos(hangle)*Math.sin(vangle)*dx - Math.sin(hangle)*Math.sin(vangle)*dy + Math.cos(vangle)*dz
+            rot = Math.atan2(v2, v1)
+
             if(vangle > 2*Math.PI){
                 vangle -= 2*Math.PI
             }
@@ -1135,6 +1130,12 @@ function _add_to_surface_internal(hangle, vangle, rot, badd, flip, moving){
             }
             while(hangle > 2*Math.PI){
                 hangle -= 2*Math.PI
+            }
+            while(rot < 0){
+                rot += 2*Math.PI
+            }
+            while(rot >= 2*Math.PI){
+                rot -= 2*Math.PI
             }
         }
 

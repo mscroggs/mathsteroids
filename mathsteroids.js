@@ -315,8 +315,8 @@ function move_fire(){
                 var leng = 0.1
                 var speed = 0.05
             } else if(options["surface"] == "torus"){
-                var leng = 0.1
-                var speed = 0.05
+                var leng = 0.05
+                var speed = 0.025
             }
             new_pos = move_on_surface(spaceship["hangle"],spaceship["vangle"],spaceship["rotation"],leng,1)
             new_pos["speed"] = speed + spaceship["speed"]*(Math.cos(spaceship["rotation"]-spaceship["direction"]))

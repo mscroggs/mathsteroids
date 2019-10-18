@@ -20,3 +20,6 @@ The following surfaces are currently available:
   * torus
   * Klein bottle
   * real projective plane
+* Torus
+  * Top view
+  * Projected flat

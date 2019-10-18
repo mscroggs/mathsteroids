@@ -90,7 +90,7 @@ function draw_a_plane(ctx, xcenter){
     ctx.lineTo(xcenter-120, HEIGHT/2-80)
     if(options["projection"]=="flat"){
         var al = 10
-        if(options["surface"]!="mobius" && options["surface"]!="cylinder") {
+        if(options["surface"]!="flatmobius" && options["surface"]!="flatcylinder") {
             ctx.moveTo(xcenter-al,HEIGHT/2-80-al)
             ctx.lineTo(xcenter+al,HEIGHT/2-80)
             ctx.lineTo(xcenter-al,HEIGHT/2-80+al)
@@ -102,16 +102,16 @@ function draw_a_plane(ctx, xcenter){
         ctx.lineTo(xcenter-120,HEIGHT/2-2*al)
         ctx.lineTo(xcenter-120+al,HEIGHT/2)
 
-        if(options["surface"]=="real-pp") {
+        if(options["surface"]=="flatreal-pp") {
             ctx.moveTo(xcenter+al,HEIGHT/2+80-al)
             ctx.lineTo(xcenter-al,HEIGHT/2+80)
             ctx.lineTo(xcenter+al,HEIGHT/2+80+al)
-        } else if(options["surface"]!="mobius" && options["surface"]!="cylinder") {
+        } else if(options["surface"]!="flatmobius" && options["surface"]!="flatcylinder") {
             ctx.moveTo(xcenter-al,HEIGHT/2+80-al)
             ctx.lineTo(xcenter+al,HEIGHT/2+80)
             ctx.lineTo(xcenter-al,HEIGHT/2+80+al)
         }
-        if(options["surface"]=="real-pp" || options["surface"]=="Klein" || options["surface"]=="mobius") {
+        if(options["surface"]=="flatreal-pp" || options["surface"]=="flatKlein" || options["surface"]=="flatmobius") {
             ctx.moveTo(xcenter+120-al,HEIGHT/2-2*al)
             ctx.lineTo(xcenter+120,HEIGHT/2)
             ctx.lineTo(xcenter+120+al,HEIGHT/2-2*al)
@@ -406,32 +406,72 @@ function draw_a_torus(ctx, xcenter){
     }
 }
 
+function draw_a_top_torus(ctx, xcenter){
+    var ratio = 2
+    var A = WIDTH/7
+    var N = 100
+    var x = 0
+    var y = 0
+    for(var i=0;i<=N;i++){
+        x = xcenter + A*Math.cos(Math.PI*2*i/N)
+        y = HEIGHT/2 + A*Math.sin(Math.PI*2*i/N)
+        if(i==0){
+            ctx.moveTo(x,y)
+        } else {
+            ctx.lineTo(x,y)
+        }
+    }
+
+    var ratio = 2
+    var A = WIDTH/18
+    var N = 100
+    var x = 0
+    var y = 0
+    for(var i=0;i<=N;i++){
+        x = xcenter + A*Math.cos(Math.PI*2*i/N)
+        y = HEIGHT/2 + A*Math.sin(Math.PI*2*i/N)
+        if(i==0){
+            ctx.moveTo(x,y)
+        } else {
+            ctx.lineTo(x,y)
+        }
+    }
+}
+
 function draw_surface(ctx){
-    if(options["surface"]=="loop"){
+    if(options["projection"]=="loop"){
         draw_loop(ctx,WIDTH/2)
     }
 
     if(options["surface"]=="sphere"){
         draw_a_sphere(ctx,WIDTH/4)
     }
+    if(options["surface"]=="flattorus"){
+        draw_a_torus(ctx,WIDTH/4)
+    }
+    if(options["surface"]=="flatKlein"){
+        draw_a_Klein(ctx,WIDTH/4)
+    }
+    if(options["surface"]=="flatreal-pp"){
+        draw_a_real_pp(ctx,WIDTH/4)
+    }
     if(options["surface"]=="torus"){
         draw_a_torus(ctx,WIDTH/4)
     }
-    if(options["surface"]=="Klein"){
-        draw_a_Klein(ctx,WIDTH/4)
-    }
-    if(options["surface"]=="real-pp"){
-        draw_a_real_pp(ctx,WIDTH/4)
-    }
-    if(options["surface"]=="mobius"){
+    if(options["surface"]=="flatmobius"){
         draw_a_mobius(ctx,WIDTH/4)
     }
-    if(options["surface"]=="cylinder"){
+    if(options["surface"]=="flatcylinder"){
         draw_a_cylinder(ctx,WIDTH/4)
     }
 
     if(options["projection"]=="isometric"){
-        draw_a_sphere(ctx,3*WIDTH/4)
+        if(options["surface"]=="sphere"){
+            draw_a_sphere(ctx,3*WIDTH/4)
+        }
+    }
+    if(options["projection"]=="top_v"){
+        draw_a_top_torus(ctx,3*WIDTH/4)
     }
     if(options["projection"]=="azim"){
         draw_a_circle(ctx,3*WIDTH/4)
@@ -439,7 +479,7 @@ function draw_surface(ctx){
     if(options["projection"]=="Craig"){
         draw_a_Craig(ctx,3*WIDTH/4)
     }
-    if(options["projection"]=="Mercator" || options["projection"] == "Gall" || options["projection"]=="flat"){
+    if(options["projection"]=="Mercator" || options["projection"] == "Gall" || options["projection"]=="flat" || options["projection"] == "projected"){
         draw_a_plane(ctx,3*WIDTH/4)
     }
     if(options["projection"]=="stereographic"){
@@ -448,6 +488,12 @@ function draw_surface(ctx){
 }
 
 if(game_n_start!=""){
+    // Compatability with old links
+    if(game_n_start=="looploop"){game_n_start = "poolloop"}
+    if(game_n_start=="torusflat"){game_n_start = "flattorusflat"}
+    if(game_n_start=="Kleinflat"){game_n_start = "flatKleinflat"}
+    if(game_n_start=="real-ppflat"){game_n_start = "flatreal-ppflat"}
+
     for(var i=0;i<games.length;i++){
         if(games[i][1]+games[i][2]==game_n_start){
             game_n = i

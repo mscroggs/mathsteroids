@@ -8,12 +8,6 @@
 /*  mscroggs.co.uk/mathsteroids */
 /********************************/
 
-function testNaN(n){
-    if(isNaN(n)){
-        alert(n)
-    }
-}
-
 // inputs
 var quitPressed  = false;
 var upPressed    = false;
@@ -190,7 +184,7 @@ function too_close(p,q){
         var z1 = Math.sin(p["vangle"])
         var z2 = Math.sin(q["vangle"])
     } else if(options["surface"]=="torus"){
-        var d = 0.15
+        var d = 0.2
         var x1 = Math.cos(p["hangle"])*(TRADIUS[0]+TRADIUS[1]*Math.cos(p["vangle"]))
         var x2 = Math.cos(q["hangle"])*(TRADIUS[0]+TRADIUS[1]*Math.cos(q["vangle"]))
         var y1 = Math.sin(p["hangle"])*(TRADIUS[0]+TRADIUS[1]*Math.cos(p["vangle"]))
@@ -714,13 +708,7 @@ function ship_sprite(N){
         var bngle = Math.atan2(Math.sin(0.05),Math.sin(0.15)*Math.cos(0.05))
         var cngle = Math.atan2(1,Math.cos(0.05))
     } else if(options["surface"]=="torus"){
-        var size1 = 0.05
-        var size2 = 0.15
-        var leng = size1
-        var leng2 = Math.sqrt(size1*size1+size2*size2+Math.sqrt(2)*size1*size2)
-        var angle = Math.asin(size2/(Math.sqrt(2)*leng2))
-        var bngle = Math.asin(size1/(Math.sqrt(2)*leng2))
-        var cngle = Math.PI/4
+        return torus_ship_sprite(N)
     }
     var out = Array()
     var p = {"hangle":spaceship["hangle"],"vangle":spaceship["vangle"],"rotation":spaceship["rotation"],"flip":1}
@@ -750,6 +738,80 @@ function ship_sprite(N){
         out[out.length] = Array(p["hangle"],p["vangle"])
     }
     return Array(out)
+}
+
+function torus_ship_sprite(N){
+    ship2d = Array(Array(0,0))
+    var size1 = 0.1
+    var size2 = 0.15
+    var leng = size1
+    var leng2 = Math.sqrt(size1*size1 + size2*size2 + Math.sqrt(2)*size1*size2)
+    var angle = Math.asin(size2/(Math.sqrt(2)*leng2))
+    var cngle = Math.PI/4
+
+    var px = 0
+    var py = 0
+    for(var i=1;i<=N;i++){
+        px -= leng/N * Math.sin(cngle)
+        py -= leng/N * Math.cos(cngle)
+        ship2d[ship2d.length] = Array(px,py)
+    }
+    for(var i=1;i<=N;i++){
+        px += leng2/N * Math.sin(cngle + angle)
+        py += leng2/N * Math.cos(cngle + angle)
+        ship2d[ship2d.length] = Array(px,py)
+    }
+    for(var i=1;i<=N;i++){
+        px -= leng2/N * Math.sin(cngle + angle)
+        py += leng2/N * Math.cos(cngle + angle)
+        ship2d[ship2d.length] = Array(px,py)
+    }
+    for(var i=1;i<=N;i++){
+        px += leng/N * Math.cos(cngle)
+        py -= leng/N * Math.sin(cngle)
+        ship2d[ship2d.length] = Array(px,py)
+    }
+    return Array(sprite_to_torus(ship2d, spaceship["hangle"], spaceship["vangle"], spaceship["rotation"]))
+}
+
+function sprite_to_torus(sprite2d, hangle, vangle, rot){
+    var x = (TRADIUS[0] + TRADIUS[1]*Math.cos(vangle)) * Math.cos(hangle)
+    var y = (TRADIUS[0] + TRADIUS[1]*Math.cos(vangle)) * Math.sin(hangle)
+    var z = TRADIUS[1]*Math.sin(vangle)
+
+    var dx = -Math.sin(hangle)*Math.cos(rot) - Math.cos(hangle)*Math.sin(vangle)*Math.sin(rot)
+    var dy = Math.cos(hangle)*Math.cos(rot) - Math.sin(hangle)*Math.sin(vangle)*Math.sin(rot)
+    var dz = Math.cos(vangle)*Math.sin(rot)
+
+    var tx = Math.sin(hangle)*Math.sin(rot) - Math.cos(hangle)*Math.sin(vangle)*Math.cos(rot)
+    var ty = -Math.cos(hangle)*Math.sin(rot) - Math.sin(hangle)*Math.sin(vangle)*Math.cos(rot)
+    var tz = Math.cos(vangle)*Math.cos(rot)
+
+    sprite_torus = Array()
+    for(var i=0;i<sprite2d.length;i++){
+        var px = sprite2d[i][0]
+        var py = sprite2d[i][1]
+        var x3 = x+dx*px+tx*py
+        var y3 = y+dy*px+ty*py
+        var z3 = z+dz*px+tz*py
+
+        var hangle = Math.atan2(y3,x3)
+        var vangle = Math.atan2(z3,Math.sqrt(x3*x3 + y3*y3)-TRADIUS[0])
+        if(vangle > 2*Math.PI){
+            vangle -= 2*Math.PI
+        }
+        if(vangle < 0){
+            vangle += Math.PI*2
+        }
+        while(hangle < 0){
+            hangle += 2*Math.PI
+        }
+        while(hangle > 2*Math.PI){
+            hangle -= 2*Math.PI
+        }
+        sprite_torus[sprite_torus.length] = Array(hangle, vangle)
+    }
+    return sprite_torus
 }
 
 function fire_sprite(f){
@@ -821,8 +883,7 @@ function asteroid_sprite(a){
         var side_l = Math.acos(Math.cos(r)*Math.cos(r)+Math.sin(r)*Math.sin(r)*Math.cos(2*Math.PI/sides))
         var angle = Math.acos(Math.cos(r)*(1-Math.cos(side_l)) / (Math.sin(r)*Math.sin(side_l)))
     } else if(options["surface"] == "torus"){
-        var side_l = Math.acos(Math.cos(r)*Math.cos(r)+Math.sin(r)*Math.sin(r)*Math.cos(2*Math.PI/sides))
-        var angle = Math.acos(Math.cos(r)*(1-Math.cos(side_l)) / (Math.sin(r)*Math.sin(side_l)))
+        return torus_asteroid_sprite(a)
     }
     var p = {"hangle":a["hangle"],"vangle":a["vangle"],"rotation":a["rotation"],"flip":1}
     p = add_to_surface(p["hangle"],p["vangle"],p["rotation"],r,p["flip"])
@@ -840,6 +901,30 @@ function asteroid_sprite(a){
         }
     }
     return Array(out)
+}
+
+function torus_asteroid_sprite(a){
+    var out = Array()
+    var r = a["radius"]
+    var sides = a["sides"]
+    var side_l = r*Math.sqrt(2-2*Math.cos(2*Math.PI/sides))
+    var angle = 2*Math.PI/(sides)
+
+    var asteroid2d = Array()
+    var x=r
+    var y=0
+    asteroid2d[asteroid2d.length] = Array(x,y)
+
+    for(var i=0;i<sides;i++){
+        var N = 10
+        for(var j=0;j<N;j++){
+            x += side_l/N * Math.cos(i*angle)
+            y -= side_l/N * Math.sin(i*angle)
+            asteroid2d[asteroid2d.length] = Array(x,y)
+        }
+    }
+
+    return Array(sprite_to_torus(asteroid2d, a["hangle"], a["vangle"], a["rotation"]))
 }
 
 

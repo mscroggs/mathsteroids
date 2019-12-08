@@ -13,19 +13,11 @@
     .clickbutton#display_fire {float:right}
 
     .buttongroup {width:800px}
-
-/*@media (min-width:1000px){
-    .mathsteroids {width:800px}
-    .buttongroup {width:800px}
-}
-@media (max-width:1000px){
-    .mathsteroids {width:100%}
-    .buttongroup {width:100%}
-}*/
 </style>
 </head>
 <body>
-
+<br /><br />
+<center>
 <canvas id='mathsteroids' width='800' height='450'></canvas>
 <div class='buttongroup'>
 <div class='clickbutton' id='display_left'>&larr;</div>
@@ -34,20 +26,7 @@
 <div class='clickbutton' id='display_right'>&rarr;</div>
 <div class='clickbutton' id='display_quit'>&#x274C;</div>
 </div>
-
-<div>
-Mathsteroids is a game based on asteroids that can be played on a selection of interesting mathematical surfaces.
-Destroy the asteroids to win points.
-<h3>Controls</h3>
-<table>
-<tr><td>Turn left</td><td>A</td></tr>
-<tr><td>Turn right</td><td>D</td></tr>
-<tr><td>Move forwards</td><td>W</td></tr>
-<tr><td>Fire</td><td>K</td></tr>
-<tr><td>Return to menu</td><td>Q</td></tr>
-</table>
-Alternatively, you can click the buttons above to turn/move/fire/quit.
-</div>
+</center>
 <?php
 
 echo("<script type='text/javascript'>

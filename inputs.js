@@ -52,14 +52,14 @@ function process_key(keyName, result){
 function do_gamepad(){
     gp = navigator.getGamepads()[0];
     if(gp.buttons[5].pressed || gp.buttons[4].pressed){
-        upPressed = true
-    } else {
-        upPressed = false
-    }
-    if(gp.buttons[2].pressed){
         firePressed = true
     } else {
         firePressed = false
+    }
+    if(gp.buttons[2].pressed){
+        upPressed = true
+    } else {
+        upPressed = false
     }
     if(gp.axes[0] == 1){
         rightPressed = true

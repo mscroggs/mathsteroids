@@ -27,7 +27,6 @@
 <body>
 
 <canvas id='mathsteroids' width='800' height='450'></canvas>
-<div id='debug'>
 <div class='buttongroup'>
 <div class='clickbutton' id='display_left'>&larr;</div>
 <div class='clickbutton' id='display_up'>&uarr;</div>

@@ -46,7 +46,7 @@ var WIDTH=800
 var HEIGHT=450
 
 var RADIUS = 2
-var TRADIUS = [1.32,0.66]
+var TRADIUS = [2,1]
 var LOOPSIZE = [380,200]
 var LOOPFOCUS = Math.sqrt(Math.pow(LOOPSIZE[0],2)-Math.pow(LOOPSIZE[1],2))
 var MOBIUSY = 50
@@ -315,8 +315,8 @@ function move_fire(){
                 var leng = 0.1
                 var speed = 0.05
             } else if(options["surface"] == "torus"){
-                var leng = 0.05
-                var speed = 0.025
+                var leng = 0.1
+                var speed = 0.05
             }
             new_pos = move_on_surface(spaceship["hangle"],spaceship["vangle"],spaceship["rotation"],leng,1)
             new_pos["speed"] = speed + spaceship["speed"]*(Math.cos(spaceship["rotation"]-spaceship["direction"]))
@@ -592,6 +592,25 @@ function close_to_asteroid(){
     return false
 }
 
+function in_contact(points, a){
+    if(options["surface"]=="torus"){
+        var r = TRADIUS[1]
+        var R = TRADIUS[0] + TRADIUS[1] * Math.cos(a["vangle"])
+        for(var j=0;j<points.length;j++){
+            if(Math.abs(a["hangle"]-points[j][0])<1.5*a["radius"]/R && Math.abs(a["vangle"]-points[j][1])<1.5*a["radius"]/r){
+                return true;
+            }
+        }
+        return false;
+    }
+    for(var j=0;j<points.length;j++){
+        if(Math.abs(a["hangle"]-points[j][0])<0.9*a["radius"] && Math.abs(a["vangle"]-points[j][1])<0.9*a["radius"]){
+            return true;
+        }
+    }
+    return false;
+}
+
 function move_asteroids(){
     if(asteroids.length==0){
         asterN++
@@ -606,39 +625,36 @@ function move_asteroids(){
         var fireRemove = Array()
 
         var points = ship_sprite(1)[0]
-        for(var j=0;j<points.length;j++){
-            if(Math.abs(a["hangle"]-points[j][0])<0.9*a["radius"] && Math.abs(a["vangle"]-points[j][1])<0.9*a["radius"]){
-                explode[explode.length] = {"hangle":points[j][0],"vangle":points[j][1],"age":0,"rotation":Math.random()*Math.PI,"speed":3}
-                spaceship["rotation"] = Math.random()*2*Math.PI
-                spaceship["direction"] = spaceship["rotation"]
-                spaceship["speed"] = 0
-                var counter = 0
-                while(close_to_asteroid() && counter<50){
-                    counter ++
-                    if(options["surface"].substring(0,4)=="flat"){
-                        spaceship["hangle"] = Math.random()*WIDTH
-                        spaceship["vangle"] = Math.random()*HEIGHT
-                    } else if(options["surface"]=="sphere"){
-                        spaceship["hangle"] = Math.random()*2*Math.PI
-                        spaceship["vangle"] = Math.random()*Math.PI-Math.PI/2
-                    } else if(options["surface"]=="torus"){
-                        spaceship["hangle"] = Math.random()*2*Math.PI
-                        spaceship["vangle"] = Math.random()*Math.PI-Math.PI/2
-                    }
-                    if(options["projection"] == "loop"){
-                        var angle = Math.random()*Math.PI*2
-                        var rad = Math.random()
-                        spaceship["hangle"] = WIDTH/2+rad*LOOPSIZE[0]*Math.cos(angle)
-                        spaceship["vangle"] = HEIGHT/2+rad*LOOPSIZE[1]*Math.sin(angle)
-                    }
+        if(in_contact(ship_sprite(1)[0], a)){
+            explode[explode.length] = {"hangle":points[j][0],"vangle":points[j][1],"age":0,"rotation":Math.random()*Math.PI,"speed":3}
+            spaceship["rotation"] = Math.random()*2*Math.PI
+            spaceship["direction"] = spaceship["rotation"]
+            spaceship["speed"] = 0
+            var counter = 0
+            while(close_to_asteroid() && counter<50){
+                counter ++
+                if(options["surface"].substring(0,4)=="flat"){
+                    spaceship["hangle"] = Math.random()*WIDTH
+                    spaceship["vangle"] = Math.random()*HEIGHT
+                } else if(options["surface"]=="sphere"){
+                    spaceship["hangle"] = Math.random()*2*Math.PI
+                    spaceship["vangle"] = Math.random()*Math.PI-Math.PI/2
+                } else if(options["surface"]=="torus"){
+                    spaceship["hangle"] = Math.random()*2*Math.PI
+                    spaceship["vangle"] = Math.random()*Math.PI-Math.PI/2
                 }
-                lives--
-                break
+                if(options["projection"] == "loop"){
+                    var angle = Math.random()*Math.PI*2
+                    var rad = Math.random()
+                    spaceship["hangle"] = WIDTH/2+rad*LOOPSIZE[0]*Math.cos(angle)
+                    spaceship["vangle"] = HEIGHT/2+rad*LOOPSIZE[1]*Math.sin(angle)
+                }
             }
+            lives--
         }
 
         for(var j=0;j<fires.length;j++){
-            if(Math.abs(a["hangle"]-fires[j]["hangle"])<a["radius"] && Math.abs(a["vangle"]-fires[j]["vangle"])<a["radius"]){
+            if(in_contact([[fires[j]["hangle"],fires[j]["vangle"]]], a)){
                 fireRemove[fireRemove.length]=j
                 explode[explode.length] = {"hangle":a["hangle"],"vangle":a["vangle"],"age":0,"rotation":Math.random()*Math.PI,"speed":1}
             }
@@ -1546,8 +1562,8 @@ function torus_top_v_xy(hangle,vangle){
     var x2 = x
     var y2 = y
     var out = {}
-    out["x"] = WIDTH/2 + x2/(2.2*RADIUS) * Math.min(HEIGHT, WIDTH)
-    out["y"] = HEIGHT/2 + y2/(2.2*RADIUS) * Math.min(HEIGHT, WIDTH)
+    out["x"] = WIDTH/2 + x2/(3.2*RADIUS) * Math.min(HEIGHT, WIDTH)
+    out["y"] = HEIGHT/2 + y2/(3.2*RADIUS) * Math.min(HEIGHT, WIDTH)
     return out
 }
 

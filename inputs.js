@@ -51,7 +51,7 @@ function process_key(keyName, result){
 }
 function do_gamepad(){
     gp = navigator.getGamepads()[0];
-    if(gp.buttons[5].pressed || gp.buttons[4].pressed){
+    if(gp.buttons[3].pressed){ //gp.buttons[5].pressed || gp.buttons[4].pressed){
         firePressed = true
     } else {
         firePressed = false

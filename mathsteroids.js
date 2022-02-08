@@ -31,6 +31,7 @@ var games = [
              ["sphere (gall-peters projection)","sphere","Gall"],
              ["sphere (craig retroazimuthal projection)","sphere","Craig"],
              ["sphere (azimuthal projection)","sphere","azim"],
+             ["sphere (robinson projection)","sphere","Robinson"],
              ["(flat) cylinder","flatcylinder","flat"],
              ["(flat) möbius strip","flatmobius","flat"],
              ["(flat) torus","flattorus","flat"],
@@ -84,7 +85,7 @@ function reset(){
         spaceship["hangle"] = WIDTH/2
         spaceship["vangle"] = HEIGHT/2
     } else if(options["surface"]=="sphere"){
-        if(options["projection"]=="Mercator" || options["projection"]=="Gall" || options["projection"]=="Craig"){
+        if(options["projection"]=="Mercator" || options["projection"]=="Gall" || options["projection"]=="Craig" || options["projection"]=="Robinson"){
             spaceship["hangle"] = Math.PI
         }
         if(options["projection"]=="stereographic"){
@@ -480,6 +481,30 @@ function draw_shape(){
                 hangle += Math.PI*2/N
             }
         }
+        if(options["projection"]=="Robinson"){
+            var N = 100
+
+            var vangle = -Math.PI / 2
+            var prev = 0
+            for(var i=0;i<=N;i++){
+                if(i>0){
+                    add_line_to_draw(Array(0,prev,0,vangle))
+                    add_line_to_draw(Array(2*Math.PI,prev,2*Math.PI,vangle))
+                }
+                prev = vangle
+                vangle += Math.PI/N
+            }
+            var hangle = 0
+            var preh = 0
+            for(var i=0;i<=N;i++){
+                if(i>0){
+                    add_line_to_draw(Array(preh,Math.PI/2,hangle,Math.PI/2))
+                    add_line_to_draw(Array(preh,-Math.PI/2,hangle,-Math.PI/2))
+                }
+                preh = hangle
+                hangle += 2 * Math.PI/N
+            }
+        }
     }
     if(options["surface"]=="torus"){
         if(options["projection"]=="top_v"){
@@ -626,7 +651,7 @@ function move_asteroids(){
 
         var points = ship_sprite(1)[0]
         if(in_contact(ship_sprite(1)[0], a)){
-            explode[explode.length] = {"hangle":points[j][0],"vangle":points[j][1],"age":0,"rotation":Math.random()*Math.PI,"speed":3}
+            explode[explode.length] = {"hangle":spaceship["hangle"],"vangle":spaceship["vangle"],"age":0,"rotation":Math.random()*Math.PI,"speed":3}
             spaceship["rotation"] = Math.random()*2*Math.PI
             spaceship["direction"] = spaceship["rotation"]
             spaceship["speed"] = 0
@@ -1001,6 +1026,8 @@ function draw_line(ctx,preh,prev,hangle,vangle){
     } else if(options["surface"]=="sphere"){
         if(options["projection"]=="Mercator"){
             Mercator_draw_line(ctx,preh,prev,hangle,vangle)
+        } else if(options["projection"]=="Robinson"){
+            Robinson_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="Gall"){
             Gall_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="azim"){
@@ -1397,6 +1424,67 @@ function Mercator_draw_line(ctx,preh,prev,h,v){
         draw_xy(ctx,xa,ya,WIDTH,ymid)
         draw_xy(ctx,0,ymid,xb,yb)
     } else {
+        draw_xy(ctx,prex,prey,x,y)
+    }
+}
+
+// Robinson
+function Robinson_compute(vangle){
+    var Robinson_interpolation = {
+       0: [1.0000, 0.0000],
+       5: [0.9986, 0.0620],
+      10: [0.9954, 0.1240],
+      15: [0.9900, 0.1860],
+      20: [0.9822, 0.2480],
+      25: [0.9730, 0.3100],
+      30: [0.9600, 0.3720],
+      35: [0.9427, 0.4340],
+      40: [0.9216, 0.4958],
+      45: [0.8962, 0.5571],
+      50: [0.8679, 0.6176],
+      55: [0.8350, 0.6769],
+      60: [0.7986, 0.7346],
+      65: [0.7597, 0.7903],
+      70: [0.7186, 0.8435],
+      75: [0.6732, 0.8936],
+      80: [0.6213, 0.9394],
+      85: [0.5722, 0.9761],
+      90: [0.5322, 1.0000]
+    }
+    var post = 5
+    var vangle_deg = Math.abs(vangle * 180 / Math.PI)
+    while (vangle_deg > post){
+        post += 5
+    }
+    if (post > 90){ post = 90 }
+    var pre_v = Robinson_interpolation[post - 5]
+    var post_v = Robinson_interpolation[post]
+    var X = pre_v[0] + (post_v[0] - pre_v[0]) * (vangle_deg - post + 5) / 5
+    var Y = pre_v[1] + (post_v[1] - pre_v[1]) * (vangle_deg - post + 5) / 5
+    return [X, Y]
+}
+
+function Robinson_xy(hangle,vangle){
+    var XY = Robinson_compute(vangle)
+    var R = 140
+    var x = WIDTH/2 + 0.8487 * R * XY[0] * (hangle - Math.PI)
+    var y = HEIGHT/2
+    if (vangle < 0){
+        y -= 1.3523 * R * XY[1]
+    } else {
+        y += 1.3523 * R * XY[1]
+    }
+    return {"x":x,"y":y}
+}
+
+function Robinson_draw_line(ctx,preh,prev,h,v){
+    var xy = Robinson_xy(preh,prev)
+    var prex = xy["x"]
+    var prey = xy["y"]
+    xy = Robinson_xy(h,v)
+    var x = xy["x"]
+    var y = xy["y"]
+    if(Math.abs(h-preh) < Math.PI / 5){
         draw_xy(ctx,prex,prey,x,y)
     }
 }

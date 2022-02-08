@@ -82,6 +82,43 @@ function draw_a_Craig(ctx, xcenter){
     }
 }
 
+function draw_a_Robinson(ctx, xcenter){
+    N = 100
+    for(var circle=0;circle<2;circle++){
+        var hangle = 0
+        var vangle = - Math.PI / 2
+        if(circle==1){hangle=2 * Math.PI}
+        for(var i=0;i<=N;i++){
+
+            var c_xy = Robinson_xy(hangle, vangle)
+            var x = xcenter+(c_xy["x"]-WIDTH/2)/2
+            var y = HEIGHT/4+c_xy["y"]/2
+            if(i==0){
+                ctx.moveTo(x,y)
+            } else {
+                ctx.lineTo(x,y)
+            }
+            vangle += Math.PI/N
+        }
+    }
+    var p_xy = Robinson_xy(0, -Math.PI / 2)
+    var px = xcenter+(p_xy["x"]-WIDTH/2)/2
+    var py = HEIGHT/4+p_xy["y"]/2
+    ctx.moveTo(px, py)
+    p_xy = Robinson_xy(2 * Math.PI, -Math.PI / 2)
+    px = xcenter+(p_xy["x"]-WIDTH/2)/2
+    py = HEIGHT/4+p_xy["y"]/2
+    ctx.lineTo(px, py)
+    p_xy = Robinson_xy(0, Math.PI / 2)
+    px = xcenter+(p_xy["x"]-WIDTH/2)/2
+    py = HEIGHT/4+p_xy["y"]/2
+    ctx.moveTo(px, py)
+    p_xy = Robinson_xy(2 * Math.PI, Math.PI / 2)
+    px = xcenter+(p_xy["x"]-WIDTH/2)/2
+    py = HEIGHT/4+p_xy["y"]/2
+    ctx.lineTo(px, py)
+}
+
 function draw_a_plane(ctx, xcenter){
     ctx.moveTo(xcenter-120, HEIGHT/2-80)
     ctx.lineTo(xcenter+120, HEIGHT/2-80)
@@ -478,6 +515,9 @@ function draw_surface(ctx){
     }
     if(options["projection"]=="Craig"){
         draw_a_Craig(ctx,3*WIDTH/4)
+    }
+    if(options["projection"]=="Robinson"){
+        draw_a_Robinson(ctx,3*WIDTH/4)
     }
     if(options["projection"]=="Mercator" || options["projection"] == "Gall" || options["projection"]=="flat" || options["projection"] == "projected"){
         draw_a_plane(ctx,3*WIDTH/4)

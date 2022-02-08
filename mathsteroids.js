@@ -25,6 +25,7 @@ var game_title = ""
 
 // Global variables
 var games = [
+             ["sphere (mollweide projection)","sphere","Mollweide"],
              ["sphere (mercator projection)","sphere","Mercator"],
              ["sphere (isometric)","sphere","isometric"],
              ["sphere (stereographic projection)","sphere","stereographic"],
@@ -43,6 +44,7 @@ var games = [
              ["loop (elliptical pool table)","pool","loop"]
             ]
 var options = {"surface":"sphere","projection":"Mercator"}
+options = {"surface":"sphere","projection":"sinusoidal"}
 var mouse = "";
 var WIDTH=800
 var HEIGHT=450
@@ -86,7 +88,9 @@ function reset(){
         spaceship["hangle"] = WIDTH/2
         spaceship["vangle"] = HEIGHT/2
     } else if(options["surface"]=="sphere"){
-        if(options["projection"]=="Mercator" || options["projection"]=="Gall" || options["projection"]=="Craig" || options["projection"]=="Robinson" || options["projection"] == "sinusoidal"){
+        if(options["projection"]=="Mercator" || options["projection"]=="Gall"
+        || options["projection"]=="Craig" || options["projection"]=="Robinson"
+        || options["projection"] == "sinusoidal" || options["projection"]=="Mollweide"){
             spaceship["hangle"] = Math.PI
         }
         if(options["projection"]=="stereographic"){
@@ -506,7 +510,7 @@ function draw_shape(){
                 hangle += 2 * Math.PI/N
             }
         }
-        if(options["projection"]=="sinusoidal"){
+        if(options["projection"]=="sinusoidal" || options["projection"] == "Mollweide"){
             var N = 100
 
             var vangle = -Math.PI / 2
@@ -1045,6 +1049,8 @@ function draw_line(ctx,preh,prev,hangle,vangle){
             Robinson_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="sinusoidal"){
             sinusoidal_draw_line(ctx,preh,prev,hangle,vangle)
+        } else if(options["projection"]=="Mollweide"){
+            Mollweide_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="Gall"){
             Gall_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="azim"){
@@ -1519,6 +1525,31 @@ function sinusoidal_draw_line(ctx,preh,prev,h,v){
     var prex = xy["x"]
     var prey = xy["y"]
     xy = sinusoidal_xy(h,v)
+    var x = xy["x"]
+    var y = xy["y"]
+    if(Math.abs(h-preh) < Math.PI / 5){
+        draw_xy(ctx,prex,prey,x,y)
+    }
+}
+
+// Mollweide
+function Mollweide_xy(hangle,vangle){
+    var R = 120
+    var theta = vangle
+    if (theta > -Math.PI/2 + 0.02 && 
+    for (var i = 0; i < 10; i++){
+        theta = theta - (2 * theta + Math.sin(2 * theta) - Math.PI * Math.sin(vangle)) / (2 + 2 * Math.cos(2 * theta))
+    }
+    var x = WIDTH/2 + R * 2 * Math.sqrt(2) / Math.PI * (hangle - Math.PI) * Math.cos(theta)
+    var y = HEIGHT/2 + R * Math.sqrt(2) * Math.sin(theta)
+    return {"x":x,"y":y}
+}
+
+function Mollweide_draw_line(ctx,preh,prev,h,v){
+    var xy = Mollweide_xy(preh,prev)
+    var prex = xy["x"]
+    var prey = xy["y"]
+    xy = Mollweide_xy(h,v)
     var x = xy["x"]
     var y = xy["y"]
     if(Math.abs(h-preh) < Math.PI / 5){

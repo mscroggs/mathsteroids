@@ -32,6 +32,7 @@ var games = [
              ["sphere (craig retroazimuthal projection)","sphere","Craig"],
              ["sphere (azimuthal projection)","sphere","azim"],
              ["sphere (robinson projection)","sphere","Robinson"],
+             ["sphere (sinusoidal projection)","sphere","sinusoidal"],
              ["(flat) cylinder","flatcylinder","flat"],
              ["(flat) möbius strip","flatmobius","flat"],
              ["(flat) torus","flattorus","flat"],
@@ -85,7 +86,7 @@ function reset(){
         spaceship["hangle"] = WIDTH/2
         spaceship["vangle"] = HEIGHT/2
     } else if(options["surface"]=="sphere"){
-        if(options["projection"]=="Mercator" || options["projection"]=="Gall" || options["projection"]=="Craig" || options["projection"]=="Robinson"){
+        if(options["projection"]=="Mercator" || options["projection"]=="Gall" || options["projection"]=="Craig" || options["projection"]=="Robinson" || options["projection"] == "sinusoidal"){
             spaceship["hangle"] = Math.PI
         }
         if(options["projection"]=="stereographic"){
@@ -503,6 +504,20 @@ function draw_shape(){
                 }
                 preh = hangle
                 hangle += 2 * Math.PI/N
+            }
+        }
+        if(options["projection"]=="sinusoidal"){
+            var N = 100
+
+            var vangle = -Math.PI / 2
+            var prev = 0
+            for(var i=0;i<=N;i++){
+                if(i>0){
+                    add_line_to_draw(Array(0,prev,0,vangle))
+                    add_line_to_draw(Array(2*Math.PI,prev,2*Math.PI,vangle))
+                }
+                prev = vangle
+                vangle += Math.PI/N
             }
         }
     }
@@ -1028,6 +1043,8 @@ function draw_line(ctx,preh,prev,hangle,vangle){
             Mercator_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="Robinson"){
             Robinson_draw_line(ctx,preh,prev,hangle,vangle)
+        } else if(options["projection"]=="sinusoidal"){
+            sinusoidal_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="Gall"){
             Gall_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="azim"){
@@ -1482,6 +1499,26 @@ function Robinson_draw_line(ctx,preh,prev,h,v){
     var prex = xy["x"]
     var prey = xy["y"]
     xy = Robinson_xy(h,v)
+    var x = xy["x"]
+    var y = xy["y"]
+    if(Math.abs(h-preh) < Math.PI / 5){
+        draw_xy(ctx,prex,prey,x,y)
+    }
+}
+
+// sinusoidal
+function sinusoidal_xy(hangle,vangle){
+    var R = 120
+    var x = WIDTH/2 + R * (hangle - Math.PI) * Math.cos(vangle)
+    var y = HEIGHT/2 + R * vangle
+    return {"x":x,"y":y}
+}
+
+function sinusoidal_draw_line(ctx,preh,prev,h,v){
+    var xy = sinusoidal_xy(preh,prev)
+    var prex = xy["x"]
+    var prey = xy["y"]
+    xy = sinusoidal_xy(h,v)
     var x = xy["x"]
     var y = xy["y"]
     if(Math.abs(h-preh) < Math.PI / 5){

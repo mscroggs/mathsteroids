@@ -119,6 +119,27 @@ function draw_a_Robinson(ctx, xcenter){
     ctx.lineTo(px, py)
 }
 
+function draw_a_sinusoidal(ctx, xcenter){
+    N = 100
+    for(var circle=0;circle<2;circle++){
+        var hangle = 0
+        var vangle = - Math.PI / 2
+        if(circle==1){hangle=2 * Math.PI}
+        for(var i=0;i<=N;i++){
+
+            var c_xy = sinusoidal_xy(hangle, vangle)
+            var x = xcenter+(c_xy["x"]-WIDTH/2)/2
+            var y = HEIGHT/4+c_xy["y"]/2
+            if(i==0){
+                ctx.moveTo(x,y)
+            } else {
+                ctx.lineTo(x,y)
+            }
+            vangle += Math.PI/N
+        }
+    }
+}
+
 function draw_a_plane(ctx, xcenter){
     ctx.moveTo(xcenter-120, HEIGHT/2-80)
     ctx.lineTo(xcenter+120, HEIGHT/2-80)
@@ -518,6 +539,9 @@ function draw_surface(ctx){
     }
     if(options["projection"]=="Robinson"){
         draw_a_Robinson(ctx,3*WIDTH/4)
+    }
+    if(options["projection"]=="sinusoidal"){
+        draw_a_sinusoidal(ctx,3*WIDTH/4)
     }
     if(options["projection"]=="Mercator" || options["projection"] == "Gall" || options["projection"]=="flat" || options["projection"] == "projected"){
         draw_a_plane(ctx,3*WIDTH/4)

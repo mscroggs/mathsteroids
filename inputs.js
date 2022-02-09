@@ -71,6 +71,7 @@ function do_gamepad(){
         selectPressed = true
     } else {
         selectPressed = false
+        selectDone = false
     }
     if(gp.axes[0] == 1){
         rightPressed = true
@@ -102,6 +103,10 @@ document.addEventListener('mouseup', function(event){
     }
     if(mouse=="left"){
         leftPressed=false;
+    }
+    if(mouse=="select"){
+        selectPressed=false;
+        selectDone=false;
     }
     button_styles()
 });
@@ -139,6 +144,24 @@ document.getElementById("display_quit").addEventListener('mousedown', function(e
 });
 document.getElementById("display_quit").addEventListener('touchend', function(event){
     quitPressed=false;
+    button_styles()
+});
+
+document.getElementById("display_select").addEventListener('touchmove', function(event){
+    event.preventDefault()
+});
+document.getElementById("display_select").addEventListener('touchstart', function(event){
+    event.preventDefault()
+    selectPressed=true;
+    button_styles()
+});
+document.getElementById("display_select").addEventListener('mousedown', function(event){
+    selectPressed=true;
+    mouse = "select"
+    button_styles()
+});
+document.getElementById("display_select").addEventListener('touchend', function(event){
+    selectPressed=false;
     button_styles()
 });
 

@@ -15,6 +15,7 @@ var firePressed  = false;
 var leftPressed  = false;
 var rightPressed = false;
 var selectPressed = false;
+var selectDone = false;
 
 // titlescreen
 var leftTimer=0
@@ -48,7 +49,7 @@ var games = [
 var projections = []
 for(var i=0;i<games.length;i++){
     if(games[i][1]=="sphere"){
-        projections[projections.length] = games[i][2]
+        projections[projections.length] = [games[i][2], i, games[i][0]]
     }
 }
 var options = {"surface":"sphere","projection":"Mercator"}
@@ -228,8 +229,16 @@ function tick(){
     if(rightPressed){
         rotate_right()
     }
-    if(selectPressed && options["surface"] == "sphere"){
-        options["projection"] = projections[Math.floor(Math.random() * projections.length)]
+    if(selectPressed && options["surface"] == "sphere" && !selectDone){
+        selectDone = true
+        console.log(projections)
+        var pre_proj = options["projection"]
+        while(pre_proj == options["projection"]){
+            new_p = projections[Math.floor(Math.random() * projections.length)]
+            options["projection"] = new_p[0]
+            game_n = new_p[1]
+            game_title = new_p[2]
+        }
     }
     move_ship()
     move_fire()

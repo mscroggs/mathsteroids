@@ -1601,28 +1601,23 @@ function Mollweide_draw_line(ctx,preh,prev,h,v){
 function Goode_xy(hangle,vangle){
     var R = 120
     var start = 0
-    var end = 2 * Math.PI
     var mid = Math.PI
     if (vangle < 0){
         if (hangle < 7*Math.PI/9){
             mid = 4*Math.PI/9
-            end = 7*Math.PI/9
         } else {
             start = 7*Math.PI/9
             mid = 21*Math.PI/18
         }
     } else {
         if (hangle < 4*Math.PI/9){
-            end = 7*Math.PI/9
             mid = Math.PI/9
         } else if (hangle < 8*Math.PI/9){
             start = 4*Math.PI/9
             mid = 6*Math.PI/9
-            end = 8*Math.PI/9
         } else if (hangle < 14*Math.PI/9){
             start = 8*Math.PI/9
             mid = 10*Math.PI/9
-            end = 14*Math.PI/9
         } else {
             start = 14*Math.PI/9
             mid = 16*Math.PI/9

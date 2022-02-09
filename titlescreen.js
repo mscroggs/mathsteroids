@@ -140,6 +140,77 @@ function draw_a_sinusoidal(ctx, xcenter){
     }
 }
 
+function draw_a_Mollweide(ctx, xcenter){
+    N = 100
+    for(var circle=0;circle<2;circle++){
+        var hangle = 0
+        var vangle = - Math.PI / 2
+        if(circle==1){hangle=2 * Math.PI}
+        for(var i=0;i<=N;i++){
+
+            var c_xy = Mollweide_xy(hangle, vangle)
+            var x = xcenter+(c_xy["x"]-WIDTH/2)/2
+            var y = HEIGHT/4+c_xy["y"]/2
+            if(i==0){
+                ctx.moveTo(x,y)
+            } else {
+                ctx.lineTo(x,y)
+            }
+            vangle += Math.PI/N
+        }
+    }
+}
+
+function draw_a_Goode(ctx, xcenter){
+    var N = 100
+    var eps = 0.0001
+    var points = [
+        [0,Math.PI/2],
+        [4*Math.PI/9-eps,Math.PI/2],
+        [4*Math.PI/9-eps,0],
+        [4*Math.PI/9+eps,0],
+        [4*Math.PI/9+eps,Math.PI/2],
+        [8*Math.PI/9-eps,Math.PI/2],
+        [8*Math.PI/9-eps,0],
+        [8*Math.PI/9+eps,0],
+        [8*Math.PI/9+eps,Math.PI/2],
+        [14*Math.PI/9-eps,Math.PI/2],
+        [14*Math.PI/9-eps,0],
+        [14*Math.PI/9+eps,0],
+        [14*Math.PI/9+eps,Math.PI/2],
+        [2*Math.PI,Math.PI/2],
+        [2*Math.PI,-Math.PI/2],
+        [7*Math.PI/9+eps,-Math.PI/2],
+        [7*Math.PI/9+eps,0],
+        [7*Math.PI/9-eps,0],
+        [7*Math.PI/9-eps,-Math.PI/2],
+        [0, -Math.PI/2]
+        //[4*Math.PI/4+eps,0], [4*Math.PI/4+eps,Math.PI/2],
+    ]
+    var prev = points[points.length - 1]
+
+    var hangle = prev[0]
+    var vangle = prev[1]
+    for (var p = 0; p < points.length; p++){
+        var pt = points[p]
+        for(var i=0;i<=N;i++){
+            var c_xy = Goode_xy(hangle, vangle)
+            var x = xcenter+(c_xy["x"]-WIDTH/2)/2
+            var y = HEIGHT/4+c_xy["y"]/2
+            if(i==0){
+                ctx.moveTo(x,y)
+            } else {
+                ctx.lineTo(x,y)
+            }
+            hangle += (pt[0] - prev[0])/N
+            vangle += (pt[1] - prev[1])/N
+        }
+        hangle = pt[0]
+        vangle = pt[1]
+        prev = pt
+    }
+}
+
 function draw_a_plane(ctx, xcenter){
     ctx.moveTo(xcenter-120, HEIGHT/2-80)
     ctx.lineTo(xcenter+120, HEIGHT/2-80)
@@ -542,6 +613,12 @@ function draw_surface(ctx){
     }
     if(options["projection"]=="sinusoidal"){
         draw_a_sinusoidal(ctx,3*WIDTH/4)
+    }
+    if(options["projection"]=="Mollweide"){
+        draw_a_Mollweide(ctx,3*WIDTH/4)
+    }
+    if(options["projection"]=="Goode"){
+        draw_a_Goode(ctx,3*WIDTH/4)
     }
     if(options["projection"]=="Mercator" || options["projection"] == "Gall" || options["projection"]=="flat" || options["projection"] == "projected"){
         draw_a_plane(ctx,3*WIDTH/4)

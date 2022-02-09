@@ -25,7 +25,6 @@ var game_title = ""
 
 // Global variables
 var games = [
-             ["sphere (mollweide projection)","sphere","Mollweide"],
              ["sphere (mercator projection)","sphere","Mercator"],
              ["sphere (isometric)","sphere","isometric"],
              ["sphere (stereographic projection)","sphere","stereographic"],
@@ -34,6 +33,8 @@ var games = [
              ["sphere (azimuthal projection)","sphere","azim"],
              ["sphere (robinson projection)","sphere","Robinson"],
              ["sphere (sinusoidal projection)","sphere","sinusoidal"],
+             ["sphere (mollweide projection)","sphere","Mollweide"],
+             ["sphere (goode homolosine projection)","sphere","Goode"],
              ["(flat) cylinder","flatcylinder","flat"],
              ["(flat) möbius strip","flatmobius","flat"],
              ["(flat) torus","flattorus","flat"],
@@ -44,7 +45,6 @@ var games = [
              ["loop (elliptical pool table)","pool","loop"]
             ]
 var options = {"surface":"sphere","projection":"Mercator"}
-options = {"surface":"sphere","projection":"sinusoidal"}
 var mouse = "";
 var WIDTH=800
 var HEIGHT=450
@@ -90,7 +90,8 @@ function reset(){
     } else if(options["surface"]=="sphere"){
         if(options["projection"]=="Mercator" || options["projection"]=="Gall"
         || options["projection"]=="Craig" || options["projection"]=="Robinson"
-        || options["projection"] == "sinusoidal" || options["projection"]=="Mollweide"){
+        || options["projection"] == "sinusoidal" || options["projection"]=="Mollweide"
+        || options["projection"] == "Goode"){
             spaceship["hangle"] = Math.PI
         }
         if(options["projection"]=="stereographic"){
@@ -522,6 +523,37 @@ function draw_shape(){
                 }
                 prev = vangle
                 vangle += Math.PI/N
+            }
+        }
+        if(options["projection"]=="Goode"){
+            var N = 100
+            var eps = 0.0001
+
+            var vangle = -Math.PI / 2
+            var prev = 0
+            for(var i=0;i<=N;i++){
+                if(i>0){
+                    add_line_to_draw(Array(0,prev,0,vangle))
+                    add_line_to_draw(Array(2*Math.PI,prev,2*Math.PI,vangle))
+                }
+                prev = vangle
+                vangle += Math.PI/N
+            }
+            vangle = 0
+            prev = 0
+            for(var i=0;i<=N;i++){
+                if(i>0){
+                    add_line_to_draw(Array(7*Math.PI/9-eps,-prev,7*Math.PI/9-eps,-vangle))
+                    add_line_to_draw(Array(7*Math.PI/9+eps,-prev,7*Math.PI/9+eps,-vangle))
+                    add_line_to_draw(Array(4*Math.PI/9-eps,prev,4*Math.PI/9-eps,vangle))
+                    add_line_to_draw(Array(4*Math.PI/9+eps,prev,4*Math.PI/9+eps,vangle))
+                    add_line_to_draw(Array(8*Math.PI/9-eps,prev,8*Math.PI/9-eps,vangle))
+                    add_line_to_draw(Array(8*Math.PI/9+eps,prev,8*Math.PI/9+eps,vangle))
+                    add_line_to_draw(Array(14*Math.PI/9-eps,prev,14*Math.PI/9-eps,vangle))
+                    add_line_to_draw(Array(14*Math.PI/9+eps,prev,14*Math.PI/9+eps,vangle))
+                }
+                prev = vangle
+                vangle += Math.PI * 0.5/N
             }
         }
     }
@@ -1051,6 +1083,8 @@ function draw_line(ctx,preh,prev,hangle,vangle){
             sinusoidal_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="Mollweide"){
             Mollweide_draw_line(ctx,preh,prev,hangle,vangle)
+        } else if(options["projection"]=="Goode"){
+            Goode_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="Gall"){
             Gall_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="azim"){
@@ -1533,13 +1567,19 @@ function sinusoidal_draw_line(ctx,preh,prev,h,v){
 }
 
 // Mollweide
+function compute_theta(vangle){
+    var theta = vangle
+    if (theta > -Math.PI/2 + 0.02 && theta < Math.PI/2 - 0.02){
+        for (var i = 0; i < 10; i++){
+            theta = theta - (2 * theta + Math.sin(2 * theta) - Math.PI * Math.sin(vangle)) / (2 + 2 * Math.cos(2 * theta))
+        }
+    }
+    return theta
+}
+
 function Mollweide_xy(hangle,vangle){
     var R = 120
-    var theta = vangle
-    if (theta > -Math.PI/2 + 0.02 && 
-    for (var i = 0; i < 10; i++){
-        theta = theta - (2 * theta + Math.sin(2 * theta) - Math.PI * Math.sin(vangle)) / (2 + 2 * Math.cos(2 * theta))
-    }
+    var theta = compute_theta(vangle)
     var x = WIDTH/2 + R * 2 * Math.sqrt(2) / Math.PI * (hangle - Math.PI) * Math.cos(theta)
     var y = HEIGHT/2 + R * Math.sqrt(2) * Math.sin(theta)
     return {"x":x,"y":y}
@@ -1552,6 +1592,91 @@ function Mollweide_draw_line(ctx,preh,prev,h,v){
     xy = Mollweide_xy(h,v)
     var x = xy["x"]
     var y = xy["y"]
+    if(Math.abs(h-preh) < Math.PI / 5){
+        draw_xy(ctx,prex,prey,x,y)
+    }
+}
+
+// Goode
+function Goode_xy(hangle,vangle){
+    var R = 120
+    var start = 0
+    var end = 2 * Math.PI
+    var mid = Math.PI
+    if (vangle < 0){
+        if (hangle < 7*Math.PI/9){
+            mid = 4*Math.PI/9
+            end = 7*Math.PI/9
+        } else {
+            start = 7*Math.PI/9
+            mid = 21*Math.PI/18
+        }
+    } else {
+        if (hangle < 4*Math.PI/9){
+            end = 7*Math.PI/9
+            mid = Math.PI/9
+        } else if (hangle < 8*Math.PI/9){
+            start = 4*Math.PI/9
+            mid = 6*Math.PI/9
+            end = 8*Math.PI/9
+        } else if (hangle < 14*Math.PI/9){
+            start = 8*Math.PI/9
+            mid = 10*Math.PI/9
+            end = 14*Math.PI/9
+        } else {
+            start = 14*Math.PI/9
+            mid = 16*Math.PI/9
+        }
+    }
+
+    var A = 40.7 * Math.PI/180
+
+    var x = 0
+    var y = 0
+    if (vangle < -A || vangle > A){
+        if (vangle < -A){
+            A = -A
+        }
+        var theta = compute_theta(vangle)
+        var theta_A = compute_theta(A)
+        x = WIDTH/2
+        y = HEIGHT/2
+
+        x += R * (mid - Math.PI) + R * (start - mid) * Math.cos(A)
+        y += R * A
+        x -= R * 2 * Math.sqrt(2) / Math.PI * (start - mid) * Math.cos(theta_A)
+        y -= R * Math.sqrt(2) * Math.sin(theta_A)
+
+        x += R * 2 * Math.sqrt(2) / Math.PI * (hangle - mid) * Math.cos(theta)
+        y += R * Math.sqrt(2) * Math.sin(theta)
+
+    } else {
+        var R = 120
+        x = WIDTH/2 + R * (mid - Math.PI) + R * (hangle - mid) * Math.cos(vangle)
+        y = HEIGHT/2 + R * vangle
+    }
+    return {"x":x,"y":y}
+}
+
+function Goode_draw_line(ctx,preh,prev,h,v){
+    var xy = Goode_xy(preh,prev)
+    var prex = xy["x"]
+    var prey = xy["y"]
+    xy = Goode_xy(h,v)
+    var x = xy["x"]
+    var y = xy["y"]
+    if (v < 0){
+        if(h > 7*Math.PI/9 && preh < 7*Math.PI/9){ return }
+        if(preh > 7*Math.PI/9 && h < 7*Math.PI/9){ return }
+    } else {
+        if(h > 4*Math.PI/9 && preh < 4*Math.PI/9){ return }
+        if(preh > 4*Math.PI/9 && h < 4*Math.PI/9){ return }
+        if(h > 8*Math.PI/9 && preh < 8*Math.PI/9){ return }
+        if(preh > 8*Math.PI/9 && h < 8*Math.PI/9){ return }
+        if(h > 14*Math.PI/9 && preh < 14*Math.PI/9){ return }
+        if(preh > 14*Math.PI/9 && h < 14*Math.PI/9){ return }
+    }
+
     if(Math.abs(h-preh) < Math.PI / 5){
         draw_xy(ctx,prex,prey,x,y)
     }

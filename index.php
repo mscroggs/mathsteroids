@@ -5,7 +5,7 @@
     .clickbutton {border:2px solid green;display:inline-block;margin:2px;background-color:white}
     .buttongroup {text-align:center;background-color:#CCCCCC;}
 
-    .clickbutton {width:100px;height:100px;font-size:50px;line-height:100px}
+    .clickbutton {width:50px;height:50px;font-size:20px;line-height:50px}
 
     .clickbutton#display_left {float:left}
     .clickbutton#display_right {float:left}
@@ -13,6 +13,7 @@
     .clickbutton#display_fire {float:right}
 
     .buttongroup {width:800px}
+    .webad {font-family:monospace;margin-top:10px;font-size:22px}
 </style>
 </head>
 <body>
@@ -26,6 +27,7 @@
 <div class='clickbutton' id='display_right'>&rarr;</div>
 <div class='clickbutton' id='display_quit'>&#x274C;</div>
 </div>
+<div class='webad'>You can play this game online at <b>mscroggs.co.uk/mathsteroids</b></div>
 </center>
 <?php
 

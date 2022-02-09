@@ -26,6 +26,7 @@
 <div class='clickbutton' id='display_fire'>&#x1F3F9;</div>
 <div class='clickbutton' id='display_right'>&rarr;</div>
 <div class='clickbutton' id='display_quit'>&#x274C;</div>
+<div class='clickbutton' id='display_select'>?</div>
 </div>
 <div class='webad'>You can play this game online at <b>mscroggs.co.uk/mathsteroids</b></div>
 </center>

@@ -51,6 +51,7 @@ function process_key(keyName, result){
 }
 function do_gamepad(){
     gp = navigator.getGamepads()[0];
+    if(!gp){return}
     if(gp.buttons[3].pressed){ //gp.buttons[5].pressed || gp.buttons[4].pressed){
         firePressed = true
     } else {
@@ -65,6 +66,11 @@ function do_gamepad(){
         quitPressed = true
     } else {
         quitPressed = false
+    }
+    if(gp.buttons[8].pressed){
+        selectPressed = true
+    } else {
+        selectPressed = false
     }
     if(gp.axes[0] == 1){
         rightPressed = true
@@ -205,6 +211,11 @@ function button_styles(){
         document.getElementById("display_fire").style.backgroundColor="red"
     } else {
         document.getElementById("display_fire").style.backgroundColor="white"
+    }
+    if(selectPressed){
+        document.getElementById("display_select").style.backgroundColor="red"
+    } else {
+        document.getElementById("display_select").style.backgroundColor="white"
     }
     if(leftPressed){
         document.getElementById("display_left").style.backgroundColor="red"

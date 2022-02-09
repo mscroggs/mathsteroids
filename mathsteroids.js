@@ -14,6 +14,7 @@ var upPressed    = false;
 var firePressed  = false;
 var leftPressed  = false;
 var rightPressed = false;
+var selectPressed = false;
 
 // titlescreen
 var leftTimer=0
@@ -44,6 +45,12 @@ var games = [
              ["torus (projected)","torus","projected"],
              ["loop (elliptical pool table)","pool","loop"]
             ]
+var projections = []
+for(var i=0;i<games.length;i++){
+    if(games[i][1]=="sphere"){
+        projections[projections.length] = games[i][2]
+    }
+}
 var options = {"surface":"sphere","projection":"Mercator"}
 var mouse = "";
 var WIDTH=800
@@ -220,6 +227,9 @@ function tick(){
     }
     if(rightPressed){
         rotate_right()
+    }
+    if(selectPressed && options["surface"] == "sphere"){
+        options["projection"] = projections[Math.floor(Math.random() * projections.length)]
     }
     move_ship()
     move_fire()

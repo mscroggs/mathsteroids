@@ -125,7 +125,7 @@ function reset(){
         spaceship["vangle"] = HEIGHT/2
     }
     score = 0
-    lives = 1 ////3
+    lives = 3
     fired = 0
     fires = Array()
     explode = Array()
@@ -431,7 +431,7 @@ function gameoveron(){
     ctx.strokeStyle = "#FFFFFF"
     ctx.lineWidth = 2;
     ctx.beginPath()
-    add_scaled_text(ctx, "high scores", (WIDTH-200)/2+10, 80, 0.6)
+    add_scaled_text(ctx, "high scores", (WIDTH-200)/2, 80, 0.6)
 
     scores = load_scores()
     for (var i = 0; i < scores.length; i++)

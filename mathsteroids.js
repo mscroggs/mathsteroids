@@ -2070,4 +2070,3 @@ function flat_cylinder_draw_line(ctx,prex,prey,x,y){
         draw_xy(ctx,prex,prey,x,y)
     }
 }
-

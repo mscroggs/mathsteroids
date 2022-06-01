@@ -288,10 +288,7 @@ function tick(){
 }
 
 function load_scores() {
-    var score_file = "scores-" + options["surface"] + "-" + options["projection"]
-    if (options["surface"] == "sphere"){
-        score_file = "scores-sphere"
-    }
+    var score_file = "scores-" + options["surface"]
     var data = localStorage.getItem(score_file)
     var scores = []
     if (data != null){
@@ -301,10 +298,7 @@ function load_scores() {
 }
 
 function save_scores(scores) {
-    var score_file = "scores-" + options["surface"] + "-" + options["projection"]
-    if (options["surface"] == "sphere"){
-        score_file = "scores-sphere"
-    }
+    var score_file = "scores-" + options["surface"]
     localStorage.setItem(score_file, JSON.stringify(scores))
 }
 

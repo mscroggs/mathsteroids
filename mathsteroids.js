@@ -317,7 +317,7 @@ function highscore() {
 
     clearInterval(interval)
     var scores = load_scores()
-    if (score > 0 && (scores.length < nscores || score > scores[2][0]))
+    if (score > 0 && (scores.length < nscores || score > scores[nscores-1][0]))
     {
         setTimeout(enter_name,1000)
     } else {

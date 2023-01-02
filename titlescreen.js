@@ -294,6 +294,23 @@ function draw_a_circle(ctx, xcenter){
     }
 }
 
+function draw_a_hyperbolic_surface(ctx, xcenter){
+    // TODO: draw a better diagram of a hyperbolic surface
+    var N = 100
+    var angle = 0
+    var R = WIDTH/6
+    for(var i=0;i<=N;i++){
+        angle = 2*i*Math.PI/N
+        var x = xcenter + R*Math.cos(angle)
+        var y = HEIGHT/2 + R*Math.sin(angle)
+        if(i==0){
+            ctx.moveTo(x,y)
+        } else {
+            ctx.lineTo(x,y)
+        }
+    }
+}
+
 function draw_a_real_pp(ctx, xcenter){
     ctx.translate(xcenter-95,HEIGHT/2-110)
 
@@ -575,6 +592,9 @@ function draw_surface(ctx){
     if(options["surface"]=="sphere"){
         draw_a_sphere(ctx,WIDTH/4)
     }
+    if(options["surface"]=="hyperbolic"){
+        draw_a_hyperbolic_surface(ctx,WIDTH/4)
+    }
     if(options["surface"]=="flattorus"){
         draw_a_torus(ctx,WIDTH/4)
     }
@@ -625,6 +645,9 @@ function draw_surface(ctx){
     }
     if(options["projection"]=="stereographic"){
         draw_two_circles(ctx,3*WIDTH/4)
+    }
+    if(options["projection"]=="Beltrami-Klein"){
+        draw_a_circle(ctx,3*WIDTH/4)
     }
 }
 

@@ -25,7 +25,7 @@ var game_title = ""
 
 // Global variables
 var games = [
-             ["hyperbolic plane (beltrami-klein model)","hyperbolic","Beltrami-Klein"],
+             ["hyperbolic plane (beltrami-klein model)","hyperbolic","Beltrami-Klein"], // TODO: move to not first
              ["sphere (mercator projection)","sphere","Mercator"],
              ["sphere (isometric)","sphere","isometric"],
              ["sphere (stereographic projection)","sphere","stereographic"],

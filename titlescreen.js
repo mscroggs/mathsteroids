@@ -392,33 +392,16 @@ function draw_a_poincare(ctx, xcenter){
     }
 }
 
+function _poincare_hp_f(x, y){
+    return [2*x / (x*x + (1 + y)*(1 + y)),(x*x + y * y - 1) / (x*x + (1 + y)*(1 + y))]
+}
+
 function draw_a_poincare_hp(ctx, xcenter){
     var N = 500
     var NN = 15
     var angle = 0
     var R = WIDTH/6
-    var R3 = WIDTH/8
 
-    function f(x, y){
-        x -= xcenter
-        y -= HEIGHT/2
-        x /= R
-        y /= R
-        pt = [2*x / (x*x + (1 + y)*(1 + y)),(x*x + y * y - 1) / (x*x + (1 + y)*(1 + y))]
-        pt[0] *= 30
-        pt[1] *= 30
-        pt[0] += xcenter
-        pt[1] += HEIGHT*0.75
-        return pt
-    }
-    function mv(ctx, x, y){
-        pt = f(x,y)
-        ctx.moveTo(pt[0], pt[1])
-    }
-    function line(ctx, x, y){
-        pt = f(x,y)
-        ctx.lineTo(pt[0], pt[1])
-    }
 
     // dash this
     ctx.stroke()
@@ -426,27 +409,30 @@ function draw_a_poincare_hp(ctx, xcenter){
     ctx.setLineDash([7,7])
 
     var cangle = 0
-    var R2 = R / Math.sqrt(3)
+    var R2 = 1 / Math.sqrt(3)
     var a = Math.PI / 3
-    var d = 2/Math.sqrt(3) * R
-    mv(ctx,xcenter + R,HEIGHT/2);
+    var d = 2/Math.sqrt(3)
+    var pt = _poincare_hp_f(1, 0)
+    ctx.moveTo(xcenter + 30*pt[0], HEIGHT*0.75 + 30*pt[1])
     for(var i=0;i<6;i++){
         cangle = Math.PI/6 + i*Math.PI/3
         for (var j = 1; j <= N; j++){
             angle = Math.PI + cangle + a - 2*a*j/N
-            line(ctx, xcenter + d * Math.cos(cangle) + R2*Math.cos(angle), HEIGHT/2 + d * Math.sin(cangle) + R2*Math.sin(angle))
+            pt = _poincare_hp_f(d * Math.cos(cangle) + R2*Math.cos(angle), d * Math.sin(cangle) + R2*Math.sin(angle))
+            ctx.lineTo(xcenter + 30*pt[0], HEIGHT*0.75 + 30*pt[1])
         }
     }
 
-	var a = Math.PI/2.5
+    var a = Math.PI/2.5
     for(var i=0;i<=N;i++){
         angle = -a + (Math.PI + 2*a)*i/N
-        var x = xcenter + R*Math.cos(angle)
-        var y = HEIGHT/2 + R*Math.sin(angle)
+        var x = Math.cos(angle)
+        var y = Math.sin(angle)
+        pt = _poincare_hp_f(x, y)
         if(i==0){
-            mv(ctx, x,y)
+            ctx.moveTo(xcenter + 30*pt[0], HEIGHT*0.75 + 30*pt[1])
         } else {
-            line(ctx, x,y)
+            ctx.lineTo(xcenter + 30*pt[0], HEIGHT*0.75 + 30*pt[1])
         }
     }
 
@@ -455,14 +441,16 @@ function draw_a_poincare_hp(ctx, xcenter){
     ctx.beginPath()
     ctx.setLineDash([])
 
+    var R3 = 3/4
     for(var i=0;i<=N;i++){
         angle = 2*i*Math.PI/N
-        var x = xcenter + R3*Math.cos(angle)
-        var y = HEIGHT/2 + R3*Math.sin(angle)
+        var x = R3*Math.cos(angle)
+        var y = R3*Math.sin(angle)
+        pt = _poincare_hp_f(x, y)
         if(i==0){
-            mv(ctx, x,y)
+            ctx.moveTo(xcenter + 30*pt[0], HEIGHT*0.75 + 30*pt[1])
         } else {
-            line(ctx, x,y)
+            ctx.lineTo(xcenter + 30*pt[0], HEIGHT*0.75 + 30*pt[1])
         }
     }
 }

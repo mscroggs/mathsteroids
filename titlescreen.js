@@ -508,6 +508,71 @@ function draw_a_gans(ctx, xcenter){
     }
 }
 
+
+function _band_f(x, y){
+    var ss = x*x + y*y
+    var rt = Math.sqrt(1 - ss)
+    p =  [x / (1 + rt), y / (1 + rt)]
+    var d = ((1-p[0])*(1-p[0])+p[1]*p[1])
+    var real = ((1 + p[0])*(1 - p[0]) - p[1]*p[1]) / d
+    var imag = 2*p[1] / d
+    var r = Math.sqrt(real*real + imag*imag)
+    var theta = Math.atan2(imag, real)
+    return [Math.log(r), theta]
+}
+
+function draw_a_band(ctx, xcenter){
+    var N = 500
+    var NN = 15
+    var angle = 0
+    var R = WIDTH/6
+
+    var scale = 70
+
+    // dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([7,7])
+
+    var cangle = 0
+    var R2 = 1 / Math.sqrt(3)
+    var a = Math.PI / 3
+    var d = 2/Math.sqrt(3)
+    var pt = _band_f(1, 0)
+    ctx.moveTo(xcenter + scale*pt[0], HEIGHT/2 + scale*pt[1])
+    for(var i=0;i<6;i++){
+        cangle = i*Math.PI/3
+        for (var j = 1; j <= N; j++){
+            angle = Math.PI + cangle + a - 2*a*j/N
+            pt = _band_f(d * Math.cos(cangle) + R2*Math.cos(angle), d * Math.sin(cangle) + R2*Math.sin(angle))
+            ctx.lineTo(xcenter + scale*pt[0], HEIGHT/2 + scale*pt[1])
+        }
+    }
+
+    ctx.moveTo(xcenter + scale*3, HEIGHT/2 + scale*1.55)
+    ctx.lineTo(xcenter + scale*-3, HEIGHT/2 + scale*1.55)
+    ctx.moveTo(xcenter + scale*3, HEIGHT/2 - scale*1.55)
+    ctx.lineTo(xcenter + scale*-3, HEIGHT/2 - scale*1.55)
+
+    // end dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([])
+
+    var R3 = 0.992
+    for(var i=0;i<=N;i++){
+        angle = 2*i*Math.PI/N
+        var x = R3*Math.cos(angle)
+        var y = R3*Math.sin(angle)
+        pt = _band_f(x, y)
+        if(i==0){
+            ctx.moveTo(xcenter + 30*pt[0], HEIGHT/2 + 30*pt[1])
+        } else {
+            ctx.lineTo(xcenter + 30*pt[0], HEIGHT/2 + 30*pt[1])
+        }
+    }
+}
+
 function _hyperboloid_f(x, y){
     var d = Math.sqrt(1 - x*x - y*y)
     var xx = x/d
@@ -622,18 +687,6 @@ function draw_a_real_pp(ctx, xcenter){
 }
 
 function draw_a_mobius(ctx, xcenter){
-    /*
-    ctx.moveTo(xcenter,HEIGHT/2-100);
-    ctx.bezierCurveTo(xcenter-60,HEIGHT/2-100,xcenter-100,HEIGHT/2-60,xcenter-100,HEIGHT/2);
-    ctx.bezierCurveTo(xcenter-100,HEIGHT/2+60,xcenter-60,HEIGHT/2+100,xcenter,HEIGHT/2+100);
-    ctx.bezierCurveTo(xcenter+60,HEIGHT/2+100,xcenter+100,HEIGHT/2+60,xcenter+100,HEIGHT/2);
-    ctx.bezierCurveTo(xcenter+100,HEIGHT/2-60,xcenter+40,HEIGHT/2-60,xcenter,HEIGHT/2-60);
-    ctx.bezierCurveTo(xcenter-40,HEIGHT/2-60,xcenter-60,HEIGHT/2-40,xcenter-60,HEIGHT/2);
-    ctx.bezierCurveTo(xcenter-60,HEIGHT/2+40,xcenter-40,HEIGHT/2+60,xcenter,HEIGHT/2+60);
-    ctx.bezierCurveTo(xcenter+40,HEIGHT/2+60,xcenter+60,HEIGHT/2+40,xcenter+60,HEIGHT/2);
-    ctx.bezierCurveTo(xcenter+60,HEIGHT/2-40,xcenter+60,HEIGHT/2-100,xcenter,HEIGHT/2-100);
-    ctx.closePath();
-    */
     var dang = 5
     ctx.moveTo(xcenter,HEIGHT/2+100);
     for(var ang=0;ang<180;ang+=dang){
@@ -677,18 +730,6 @@ function draw_a_mobius(ctx, xcenter){
 }
 
 function draw_a_cylinder(ctx, xcenter){
-    /*
-    ctx.moveTo(xcenter,HEIGHT/2-100);
-    ctx.bezierCurveTo(xcenter-60,HEIGHT/2-100,xcenter-100,HEIGHT/2-60,xcenter-100,HEIGHT/2);
-    ctx.bezierCurveTo(xcenter-100,HEIGHT/2+60,xcenter-60,HEIGHT/2+100,xcenter,HEIGHT/2+100);
-    ctx.bezierCurveTo(xcenter+60,HEIGHT/2+100,xcenter+100,HEIGHT/2+60,xcenter+100,HEIGHT/2);
-    ctx.bezierCurveTo(xcenter+100,HEIGHT/2-60,xcenter+40,HEIGHT/2-60,xcenter,HEIGHT/2-60);
-    ctx.bezierCurveTo(xcenter-40,HEIGHT/2-60,xcenter-60,HEIGHT/2-40,xcenter-60,HEIGHT/2);
-    ctx.bezierCurveTo(xcenter-60,HEIGHT/2+40,xcenter-40,HEIGHT/2+60,xcenter,HEIGHT/2+60);
-    ctx.bezierCurveTo(xcenter+40,HEIGHT/2+60,xcenter+60,HEIGHT/2+40,xcenter+60,HEIGHT/2);
-    ctx.bezierCurveTo(xcenter+60,HEIGHT/2-40,xcenter+60,HEIGHT/2-100,xcenter,HEIGHT/2-100);
-    ctx.closePath();
-    */
     var dang = 5
     ctx.moveTo(xcenter,HEIGHT/2-60);
     for(var ang=0;ang<360;ang+=dang){
@@ -918,6 +959,9 @@ function draw_surface(ctx){
     }
     if(options["projection"]=="gans"){
         draw_a_gans(ctx,3*WIDTH/4)
+    }
+    if(options["projection"]=="band"){
+        draw_a_band(ctx,3*WIDTH/4)
     }
 }
 

@@ -25,7 +25,6 @@ var game_title = ""
 
 // Global variables
 var games = [
-             ["hyperbolic plane (beltrami-klein model)","hyperbolic","Beltrami-Klein"], // TODO: move to not first
              ["sphere (mercator projection)","sphere","Mercator"],
              ["sphere (isometric)","sphere","isometric"],
              ["sphere (stereographic projection)","sphere","stereographic"],
@@ -44,6 +43,7 @@ var games = [
              ["torus (top view)","torus","top_v"],
              ["torus (projected)","torus","projected"],
              ["loop (elliptical pool table)","pool","loop"]
+             ["hyperbolic plane (beltrami-klein model)","hyperbolic","Beltrami-Klein"],
             ]
 var options = {"surface":"sphere","projection":"Mercator"}
 var mouse = "";
@@ -56,6 +56,7 @@ var LOOPSIZE = [380,200]
 var LOOPFOCUS = Math.sqrt(Math.pow(LOOPSIZE[0],2)-Math.pow(LOOPSIZE[1],2))
 var MOBIUSY = 50
 var Craig_zeroang = -0.3
+var HYPER_RADIUS = 2
 
 var score = 0
 var lives = 3
@@ -162,12 +163,11 @@ function make_new_asteroids(n){
                 new_a["hangle"] = Math.random()*Math.PI*2
                 new_a["vangle"] = Math.random()*Math.PI-Math.PI/2
             } else if(options["surface"]=="hyperbolic"){
-                new_a["hangle"] = 1
-                new_a["vangle"] = 1
-                while(Math.pow(new_a["hangle"], 2) + Math.pow(new_a["vangle"], 2) > 0.9801){
-                    new_a["hangle"] = Math.random() * 2 - 1
-                    new_a["vangle"] = Math.random() * 2 - 1
-                }
+                var ang = Math.random() * 2 * Math.PI
+                var dist = Math.random() * HYPER_RADIUS
+                var pt = hyper_add(0, 0, Math.random() * 2 * Math.PI, Math.random() * HYPER_RADIUS)
+                new_a["hangle"] = pt[0]
+                new_a["vangle"] = pt[1]
             } else if(options["surface"]=="torus"){
                 new_a["hangle"] = Math.random()*Math.PI*2
                 new_a["vangle"] = Math.random()*Math.PI*2
@@ -213,7 +213,7 @@ function too_close(p,q){
         z2 = Math.sin(q["vangle"])
     } else if(options["surface"]=="hyperbolic"){
         d = 0.15
-        z1 = Math.abs(hyper_compute_distance(p["hangle"], p["vangle"], q["hangle"], q["vangle"]))
+        z1 = hyper_compute_distance(p["hangle"], p["vangle"], q["hangle"], q["vangle"])
         console.log(z1)
     } else if(options["surface"]=="torus"){
         d = 0.2
@@ -615,7 +615,7 @@ function draw_shape(){
         var preh = 0
         for(var i=0;i<=N;i++){
             angle += Math.PI*2/N
-            var p = hyper_add(0, 0, angle, 2)
+            var p = hyper_add(0, 0, angle, HYPER_RADIUS)
             if (i > 0) {
                 add_line_to_draw(Array(preh,prev,p[0], p[1]))
             }
@@ -680,12 +680,9 @@ function move_sprite(sprite){
     sprite["rotation"] += new_pos["flip"]*sprite["direction"]
     sprite["hangle"] = new_pos["hangle"]
     sprite["vangle"] = new_pos["vangle"]
-    if(options["surface"]=="pool"){sprite["rotation"]=rot}
+    if(options["surface"]=="pool" || options["surface"]=="flatcylinder" || options["surface"]=="hyperbolic"){sprite["rotation"]=rot}
     if(options["surface"]=="flatmobius" && new_pos["flip"]==1){sprite["rotation"]=rot}
     if(options["surface"]=="flatcylinder"){sprite["rotation"]=rot}
-    if(options["surface"]=="hyperbolic"){
-        // TODO: probably nothing needs doing here?
-    }
     return sprite
 }
 
@@ -740,7 +737,7 @@ function in_contact(points, a){
     }
     if(options["surface"]=="hyperbolic"){
         for(var j=0;j<points.length;j++){
-            if(Math.abs(hyper_compute_distance(a["hangle"], a["vangle"], points[j][0], points[j][1])) < 0.9*a["radius"]){
+            if(hyper_compute_distance(a["hangle"], a["vangle"], points[j][0], points[j][1]) < 0.9*a["radius"]){
                 return true;
             }
         }
@@ -786,12 +783,11 @@ function move_asteroids(){
                     spaceship["hangle"] = Math.random()*2*Math.PI
                     spaceship["vangle"] = Math.random()*Math.PI-Math.PI/2
                 } else if(options["surface"]=="hyperbolic"){
-                    spaceship["hangle"] = 1
-                    spaceship["vangle"] = 1
-                    while(Math.pow(spaceship["hangle"], 2) + Math.pow(spaceship["vangle"], 2) > 0.9801){
-                        spaceship["hangle"] = Math.random() * 2 - 1
-                        spaceship["vangle"] = Math.random() * 2 - 1
-                    }
+                    var ang = Math.random() * 2 * Math.PI
+                    var dist = Math.random() * HYPER_RADIUS
+                    var pt = hyper_add(0, 0, Math.random() * 2 * Math.PI, Math.random() * HYPER_RADIUS)
+                    spaceship["hangle"] = pt[0]
+                    spaceship["vangle"] = pt[1]
                 }
                 if(options["projection"] == "loop"){
                     var angle = Math.random()*Math.PI*2
@@ -1454,34 +1450,25 @@ function _add_to_surface_internal(hangle, vangle, rot, badd, flip, moving){
 
         return {"hangle":hangle,"vangle":vangle,"rotation":rot,"flip":flip}
     } else if(options["surface"]=="hyperbolic"){
-        var k = (Math.sqrt((2 * hangle * Math.cos(rot) + 2 * vangle * Math.sin(rot))**2 - 4 * (hangle ** 2 + vangle ** 2 - 1))-(2 * hangle * Math.cos(rot) + 2 * vangle * Math.sin(rot))) / 2
-        var x1 = hangle + k * Math.cos(rot)
-        var y1 = vangle + k * Math.sin(rot)
-
-        k = (-Math.sqrt((2 * hangle * Math.cos(rot) + 2 * vangle * Math.sin(rot))**2 - 4 * (hangle ** 2 + vangle ** 2 - 1))-(2 * hangle * Math.cos(rot) + 2 * vangle * Math.sin(rot))) / 2
-        var x0 = hangle + k * Math.cos(rot)
-        var y0 = vangle + k * Math.sin(rot)
-
-        var d = [[x0, y0, 0], [x1, y1, 2 * badd]]
-        for (var i = 0; i < 20; i++) {
-            var pt = [(d[0][0] + d[1][0]) / 2, (d[0][1] + d[1][1]) / 2]
-            var try_l = 10 * badd
-            var d0_to_point1 = Math.sqrt((x0-hangle)**2 + (y0-vangle)**2)
-            var d0_to_point2 = Math.sqrt((x0-pt[0])**2 + (y0-pt[1])**2)
-            var d1_to_point1 = Math.sqrt((x1-hangle)**2 + (y1-vangle)**2)
-            var d1_to_point2 = Math.sqrt((x1-pt[0])**2 + (y1-pt[1])**2)
-
-            if (d1_to_point2 * d0_to_point1 != 0) {
-                try_l = Math.log(d1_to_point1 * d0_to_point2 / d1_to_point2 / d0_to_point1) / 2
-            }
-            if (d[0][2] <= badd && badd < try_l) {
-                d = [d[0], [pt[0], pt[1], try_l]]
-            } else {
-                d = [[pt[0], pt[1], try_l], d[1]]
+        var pt = hyper_add(hangle, vangle, rot, badd)
+        if(moving){
+            if(hyper_compute_distance(0, 0, pt[0], pt[1]) >= HYPER_RADIUS){
+                var pts = Array(Array(hangle, vangle), pt)
+                for (var i = 0; i < 20; i++){
+                    var half = Array((pts[0][0] + pts[1][0]) / 2, (pts[0][1] + pts[1][1]) / 2)
+                    if(hyper_compute_distance(0,0,half[0], half[1]) > HYPER_RADIUS) {
+                        pts = Array(pts[0], half)
+                    } else {
+                        pts = Array(half, pts[1])
+                    }
+                }
+                var pt_on_circle = pts[0]
+                var ang = Math.atan2(pt_on_circle[1], pt_on_circle[0])
+                rot = Math.PI - rot + 2 * ang
+                pt = hyper_add(pt_on_circle[0], pt_on_circle[1], rot, badd - hyper_compute_distance(hangle, vangle, pt_on_circle[0], pt_on_circle[1]))
             }
         }
-
-        return {"hangle":d[0][0],"vangle":d[0][1],"rotation":rot,"flip":flip}
+        return {"hangle":pt[0],"vangle":pt[1],"rotation":rot,"flip":flip}
     }
 }
 
@@ -2095,7 +2082,7 @@ function hyper_compute_distance(px, py, qx, qy){
         return 10000000000
     }
 
-    return Math.log(d1_to_point1 * d0_to_point2 / d1_to_point2 / d0_to_point1) / 2
+    return Math.abs(Math.log(d1_to_point1 * d0_to_point2 / d1_to_point2 / d0_to_point1) / 2)
 }
 
 function hyper_compute_endpoints(px, py, bk_angle){
@@ -2121,7 +2108,7 @@ function hyper_add(px, py, angle, length){
     for(var i = 0; i < 20; i++){
         var ptx = (d[0][0][0] + d[1][0][0]) / 2
         var pty = (d[0][0][1] + d[1][0][1]) / 2
-        var try_l = Math.abs(hyper_compute_distance(px, py, ptx, pty))
+        var try_l = hyper_compute_distance(px, py, ptx, pty)
         if(d[0][1] <= length && length < try_l){
             d = [d[0], [[ptx, pty], try_l]]
         } else {

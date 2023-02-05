@@ -2213,8 +2213,8 @@ function hyper_hyperboloid_draw_line(ctx,prex,prey,x,y){
     var x1 = (pt[0]-pt[1]) * Math.sin(30)
     var y1 = pt[2] + (pt[0]+pt[1]) * Math.cos(30)
 
-    draw_xy(ctx,WIDTH/2 + scale * x0, HEIGHT/8 + scale * y0,
-                WIDTH/2 + scale * x1, HEIGHT/8 + scale * y1)
+    draw_xy(ctx,WIDTH/2 - scale * x0, HEIGHT/8 + scale * y0,
+                WIDTH/2 - scale * x1, HEIGHT/8 + scale * y1)
 }
 
 function hyper_gans_draw_line(ctx,prex,prey,x,y){

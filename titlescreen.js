@@ -455,6 +455,60 @@ function draw_a_poincare_hp(ctx, xcenter){
     }
 }
 
+function draw_a_gans(ctx, xcenter){
+    var N = 100
+    var NN = 15
+    var angle = 0
+    var R = WIDTH/20
+    var R3 = WIDTH/8
+
+    // dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([7,7])
+
+    var prev = 0
+    var preh = 0
+    var x = 0
+    var y = 0
+    var d = 1
+    var buffer = 0.08
+    ctx.moveTo(xcenter + R,HEIGHT/2);
+    for(var i=0;i<6;i++){
+        var start = [Math.cos(i*Math.PI/3),Math.sin(i*Math.PI/3)]
+        var end = [Math.cos((i+1)*Math.PI/3),Math.sin((i+1)*Math.PI/3)]
+        for (var j=0;j<=N; j++){
+            x = start[0] + (end[0] - start[0]) * (buffer + (1 - 2*buffer) * j/N)
+            y = start[1] + (end[1] - start[1]) * (buffer + (1 - 2*buffer) * j/N)
+            d = Math.sqrt(1 - x*x - y*y)
+            if(j==0){
+                ctx.moveTo(xcenter + R*x/d, HEIGHT/2 + R*y/d)
+            } else {
+                ctx.lineTo(xcenter + R*x/d, HEIGHT/2 + R*y/d)
+            }
+            prev=x
+            preh=y
+        }
+    }
+
+    // end dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([])
+
+    for(var i=0;i<=N;i++){
+        angle = 2*i*Math.PI/N
+        var x = xcenter + R3*Math.cos(angle)
+        var y = HEIGHT/2 + R3*Math.sin(angle)
+        if(i==0){
+            ctx.moveTo(x,y)
+        } else {
+            ctx.lineTo(x,y)
+        }
+    }
+}
+
+
 function draw_a_real_pp(ctx, xcenter){
     ctx.translate(xcenter-95,HEIGHT/2-110)
 
@@ -798,6 +852,12 @@ function draw_surface(ctx){
     }
     if(options["projection"]=="Poincare HP"){
         draw_a_poincare_hp(ctx,3*WIDTH/4)
+    }
+    if(options["projection"]=="hyperboloid"){
+        draw_a_hyperboloid(ctx,3*WIDTH/4)
+    }
+    if(options["projection"]=="gans"){
+        draw_a_gans(ctx,3*WIDTH/4)
     }
 }
 

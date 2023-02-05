@@ -25,9 +25,6 @@ var game_title = ""
 
 // Global variables
 var games = [
-    ["hyperbolic plane (hyperboloid)","hyperbolic","hyperboloid"], // TODO
-    ["hyperbolic plane (gans model)","hyperbolic","gans"], // TODO
-
     ["sphere (mercator projection)","sphere","Mercator"],
     ["sphere (isometric)","sphere","isometric"],
     ["sphere (stereographic projection)","sphere","stereographic"],
@@ -49,6 +46,8 @@ var games = [
     ["hyperbolic plane (poincaré disk model)","hyperbolic","Poincare"],
     ["hyperbolic plane (beltrami-klein model)","hyperbolic","Beltrami-Klein"],
     ["hyperbolic plane (poincaré half-plane model)","hyperbolic","Poincare HP"],
+    ["hyperbolic plane (hyperboloid)","hyperbolic","hyperboloid"],
+    ["hyperbolic plane (gans model)","hyperbolic","gans"],
 ]
 var options = {"surface":"sphere","projection":"Mercator"}
 var mouse = "";

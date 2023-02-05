@@ -25,26 +25,27 @@ var game_title = ""
 
 // Global variables
 var games = [
-             ["sphere (mercator projection)","sphere","Mercator"],
-             ["sphere (isometric)","sphere","isometric"],
-             ["sphere (stereographic projection)","sphere","stereographic"],
-             ["sphere (gall-peters projection)","sphere","Gall"],
-             ["sphere (craig retroazimuthal projection)","sphere","Craig"],
-             ["sphere (azimuthal projection)","sphere","azim"],
-             ["sphere (robinson projection)","sphere","Robinson"],
-             ["sphere (sinusoidal projection)","sphere","sinusoidal"],
-             ["sphere (mollweide projection)","sphere","Mollweide"],
-             ["sphere (goode homolosine projection)","sphere","Goode"],
-             ["(flat) cylinder","flatcylinder","flat"],
-             ["(flat) möbius strip","flatmobius","flat"],
-             ["(flat) torus","flattorus","flat"],
-             ["(flat) klein bottle","flatKlein","flat"],
-             ["(flat) real projective plane","flatreal-pp","flat"],
-             ["torus (top view)","torus","top_v"],
-             ["torus (projected)","torus","projected"],
-             ["loop (elliptical pool table)","pool","loop"],
-             ["hyperbolic plane (beltrami-klein model)","hyperbolic","Beltrami-Klein"],
-            ]
+    ["sphere (mercator projection)","sphere","Mercator"],
+    ["sphere (isometric)","sphere","isometric"],
+    ["sphere (stereographic projection)","sphere","stereographic"],
+    ["sphere (gall-peters projection)","sphere","Gall"],
+    ["sphere (craig retroazimuthal projection)","sphere","Craig"],
+    ["sphere (azimuthal projection)","sphere","azim"],
+    ["sphere (robinson projection)","sphere","Robinson"],
+    ["sphere (sinusoidal projection)","sphere","sinusoidal"],
+    ["sphere (mollweide projection)","sphere","Mollweide"],
+    ["sphere (goode homolosine projection)","sphere","Goode"],
+    ["(flat) cylinder","flatcylinder","flat"],
+    ["(flat) möbius strip","flatmobius","flat"],
+    ["(flat) torus","flattorus","flat"],
+    ["(flat) klein bottle","flatKlein","flat"],
+    ["(flat) real projective plane","flatreal-pp","flat"],
+    ["torus (top view)","torus","top_v"],
+    ["torus (projected)","torus","projected"],
+    ["loop (elliptical pool table)","pool","loop"],
+    ["hyperbolic plane (poincaré model)","hyperbolic","Poincare"],
+    ["hyperbolic plane (beltrami-klein model)","hyperbolic","Beltrami-Klein"],
+]
 var options = {"surface":"sphere","projection":"Mercator"}
 var mouse = "";
 var WIDTH=800
@@ -1226,6 +1227,8 @@ function draw_line(ctx,preh,prev,hangle,vangle){
     } else if(options["surface"]=="hyperbolic"){
         if(options["projection"]=="Beltrami-Klein"){
             hyper_bk_draw_line(ctx,preh,prev,hangle,vangle)
+        } else if(options["projection"]=="Poincare"){
+            hyper_poincare_draw_line(ctx,preh,prev,hangle,vangle)
         }
     } else if(options["surface"]=="pool"){
         if(options["projection"]=="loop"){
@@ -2121,4 +2124,20 @@ function hyper_add(px, py, angle, length){
 function hyper_bk_draw_line(ctx,prex,prey,x,y){
     var scale = 0.45 * HEIGHT
     draw_xy(ctx,WIDTH/2 + scale * prex, HEIGHT/2 + scale * prey, WIDTH/2 + scale * x, HEIGHT/2 + scale * y)
+}
+
+function to_poincare(x, y){
+    var ss = x*x + y*y
+    var rt = Math.sqrt(1 - ss)
+    return [x / (1 + rt), y / (1 + rt)]
+}
+
+function hyper_poincare_draw_line(ctx,prex,prey,x,y){
+    var scale = 0.6 * HEIGHT
+    var pre = to_poincare(prex, prey)
+    var pt = to_poincare(x, y)
+
+    //alert(pre[0]+"  "+pre[1]+"  "+pt[0]+"  "+pt[1])
+
+    draw_xy(ctx,WIDTH/2 + scale * pre[0], HEIGHT/2 + scale * pre[1], WIDTH/2 + scale * pt[0], HEIGHT/2 + scale * pt[1])
 }

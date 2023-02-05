@@ -294,11 +294,70 @@ function draw_a_circle(ctx, xcenter){
     }
 }
 
-function draw_a_hyperbolic_surface(ctx, xcenter){
-    // TODO: draw a better diagram of a hyperbolic surface
+function draw_a_bk(ctx, xcenter){
     var N = 100
     var angle = 0
     var R = WIDTH/6
+
+    // dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([7,7])
+
+    ctx.moveTo(xcenter + R,HEIGHT/2);
+    for(var i=0;i<=6;i++){
+        angle = i*Math.PI/3
+        ctx.lineTo(xcenter + R*Math.cos(angle), HEIGHT/2 + R*Math.sin(angle))
+    }
+
+    // end dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([])
+
+    for(var i=0;i<=N;i++){
+        angle = 2*i*Math.PI/N
+        var x = xcenter + R*Math.cos(angle)
+        var y = HEIGHT/2 + R*Math.sin(angle)
+        if(i==0){
+            ctx.moveTo(x,y)
+        } else {
+            ctx.lineTo(x,y)
+        }
+    }
+}
+
+function draw_a_poincare(ctx, xcenter){
+    var N = 100
+    var NN = 15
+    var angle = 0
+    var R = WIDTH/6
+
+    // dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([7,7])
+
+    var cangle = 0
+    var R2 = R / Math.sqrt(3)
+    // var a = Math.asin(R/2 / R2)
+    var a = Math.PI / 3
+    // var d = Math.sqrt(3)/2 * R + R2 * Math.cos(a)
+    var d = 2/Math.sqrt(3) * R
+    ctx.moveTo(xcenter + R,HEIGHT/2);
+    for(var i=0;i<6;i++){
+        cangle = Math.PI/6 + i*Math.PI/3
+        for (var j = 1; j <= N; j++){
+            angle = Math.PI + cangle + a - 2*a*j/N
+            ctx.lineTo(xcenter + d * Math.cos(cangle) + R2*Math.cos(angle), HEIGHT/2 + d * Math.sin(cangle) + R2*Math.sin(angle))
+        }
+    }
+
+    // end dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([])
+
     for(var i=0;i<=N;i++){
         angle = 2*i*Math.PI/N
         var x = xcenter + R*Math.cos(angle)
@@ -593,7 +652,7 @@ function draw_surface(ctx){
         draw_a_sphere(ctx,WIDTH/4)
     }
     if(options["surface"]=="hyperbolic"){
-        draw_a_hyperbolic_surface(ctx,WIDTH/4)
+        draw_a_poincare(ctx,WIDTH/4)
     }
     if(options["surface"]=="flattorus"){
         draw_a_torus(ctx,WIDTH/4)
@@ -647,7 +706,10 @@ function draw_surface(ctx){
         draw_two_circles(ctx,3*WIDTH/4)
     }
     if(options["projection"]=="Beltrami-Klein"){
-        draw_a_circle(ctx,3*WIDTH/4)
+        draw_a_bk(ctx,3*WIDTH/4)
+    }
+    if(options["projection"]=="Poincare"){
+        draw_a_poincare(ctx,3*WIDTH/4)
     }
 }
 

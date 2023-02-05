@@ -46,6 +46,8 @@ var games = [
     ["hyperbolic plane (poincaré disk model)","hyperbolic","Poincare"],
     ["hyperbolic plane (beltrami-klein model)","hyperbolic","Beltrami-Klein"],
     ["hyperbolic plane (poincaré half-plane model)","hyperbolic","Poincare HP"],
+    ["hyperbolic plane (hyperboloid)","hyperbolic","hyperboloid"],
+    ["hyperbolic plane (gans model)","hyperbolic","gans"],
 ]
 var options = {"surface":"sphere","projection":"Mercator"}
 var mouse = "";
@@ -216,7 +218,6 @@ function too_close(p,q){
     } else if(options["surface"]=="hyperbolic"){
         d = 0.15
         z1 = hyper_compute_distance(p["hangle"], p["vangle"], q["hangle"], q["vangle"])
-        console.log(z1)
     } else if(options["surface"]=="torus"){
         d = 0.2
         x1 = Math.cos(p["hangle"])*(TRADIUS[0]+TRADIUS[1]*Math.cos(p["vangle"]))
@@ -611,19 +612,48 @@ function draw_shape(){
         }
     }
     if(options["surface"]=="hyperbolic"){
-        var N = 100
-        if(options["projection"] == "Poincare HP"){N=600}
-        var angle = 0
-        var prev = 0
-        var preh = 0
-        for(var i=0;i<=N;i++){
-            angle += Math.PI*2/N
-            var p = hyper_add(0, 0, angle, HYPER_RADIUS)
-            if (i > 0) {
-                add_line_to_draw(Array(preh,prev,p[0], p[1]))
+        if(options["projection"] == "hyperboloid"){
+            var N = 100
+            var prev = 0
+            var preh = 0
+            var a = Math.PI / 2 + 0.15
+            var p1 = hyper_add(0, 0, Math.PI/4 + a, HYPER_RADIUS)
+            var p2 = hyper_add(0, 0, Math.PI/4 - a, HYPER_RADIUS)
+
+            for(var i=0;i<=N;i++){
+                p = [p1[0] + (p2[0]-p1[0])*i/N,p1[1] + (p2[1]-p1[1])*i/N]
+                if (i > 0) {
+                    add_line_to_draw(Array(preh,prev,p[0], p[1]))
+                }
+                prev = p[1]
+                preh = p[0]
             }
-            prev = p[1]
-            preh = p[0]
+
+            var angle = -Math.PI / 4
+            for(var i=0;i<=N;i++){
+                angle += 2*Math.PI/N
+                p = hyper_add(0, 0, angle, HYPER_RADIUS)
+                if (i > 0) {
+                    add_line_to_draw(Array(preh,prev,p[0], p[1]))
+                }
+                prev = p[1]
+                preh = p[0]
+            }
+        } else {
+            var N = 100
+            if(options["projection"] == "Poincare HP"){N=600}
+            var angle = 0
+            var prev = 0
+            var preh = 0
+            for(var i=0;i<=N;i++){
+                angle += Math.PI*2/N
+                var p = hyper_add(0, 0, angle, HYPER_RADIUS)
+                if (i > 0) {
+                    add_line_to_draw(Array(preh,prev,p[0], p[1]))
+                }
+                prev = p[1]
+                preh = p[0]
+            }
         }
     }
 }
@@ -1171,6 +1201,14 @@ function add_line_to_draw(thing){
             return
         }
     }
+    if(options["surface"]=="hyperbolic" && options["projection"]=="hyperboloid"){
+        var hangle = (thing[0]+thing[2])/2
+        var vangle = (thing[1]+thing[3])/2
+        if (hangle + vangle < -0.3) {
+            back_points[back_points.length] = thing
+            return
+        }
+    }
     front_points[front_points.length] = thing
 }
 
@@ -1233,6 +1271,10 @@ function draw_line(ctx,preh,prev,hangle,vangle){
             hyper_poincare_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="Poincare HP"){
             hyper_poincare_hp_draw_line(ctx,preh,prev,hangle,vangle)
+        } else if(options["projection"]=="hyperboloid"){
+            hyper_hyperboloid_draw_line(ctx,preh,prev,hangle,vangle)
+        } else if(options["projection"]=="gans"){
+            hyper_gans_draw_line(ctx,preh,prev,hangle,vangle)
         }
     } else if(options["surface"]=="pool"){
         if(options["projection"]=="loop"){
@@ -2155,4 +2197,31 @@ function hyper_poincare_hp_draw_line(ctx,prex,prey,x,y){
     var pt = to_poincare_hp(x, y)
 
     draw_xy(ctx,WIDTH/2 + scale * pre[0], 0.96*HEIGHT + scale * pre[1], WIDTH/2 + scale * pt[0], 0.96*HEIGHT + scale * pt[1])
+}
+
+function to_hyperboloid(x, y){
+    var d = Math.sqrt(1 - x*x - y*y)
+    return [x / d, y/d, 1/d]
+}
+
+function hyper_hyperboloid_draw_line(ctx,prex,prey,x,y){
+    var scale = 0.16 * HEIGHT
+    var pre = to_hyperboloid(prex, prey)
+    var pt = to_hyperboloid(x, y)
+    var x0 = (pre[0]-pre[1]) * Math.sin(30)
+    var y0 = pre[2] + (pre[0]+pre[1]) * Math.cos(30)
+    var x1 = (pt[0]-pt[1]) * Math.sin(30)
+    var y1 = pt[2] + (pt[0]+pt[1]) * Math.cos(30)
+
+    draw_xy(ctx,WIDTH/2 + scale * x0, HEIGHT/8 + scale * y0,
+                WIDTH/2 + scale * x1, HEIGHT/8 + scale * y1)
+}
+
+function hyper_gans_draw_line(ctx,prex,prey,x,y){
+    var scale = 0.13 * HEIGHT
+    var pre = to_hyperboloid(prex, prey)
+    var pt = to_hyperboloid(x, y)
+
+    draw_xy(ctx,WIDTH/2 + scale * pre[0], HEIGHT/2 + scale * pre[1],
+                WIDTH/2 + scale * pt[0], HEIGHT/2 + scale * pt[1])
 }

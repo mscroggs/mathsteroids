@@ -48,6 +48,7 @@ var games = [
     ["hyperbolic plane (poincaré half-plane model)","hyperbolic","Poincare HP"],
     ["hyperbolic plane (hyperboloid)","hyperbolic","hyperboloid"],
     ["hyperbolic plane (gans model)","hyperbolic","gans"],
+    ["hyperbolic plane (band model)","hyperbolic","band"],
 ]
 var options = {"surface":"sphere","projection":"Mercator"}
 var mouse = "";
@@ -641,7 +642,7 @@ function draw_shape(){
             }
         } else {
             var N = 100
-            if(options["projection"] == "Poincare HP"){N=600}
+            if(options["projection"] == "Poincare HP" || options["projection"] == "band"){N=600}
             var angle = 0
             var prev = 0
             var preh = 0
@@ -1275,6 +1276,8 @@ function draw_line(ctx,preh,prev,hangle,vangle){
             hyper_hyperboloid_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="gans"){
             hyper_gans_draw_line(ctx,preh,prev,hangle,vangle)
+        } else if(options["projection"]=="band"){
+            hyper_band_draw_line(ctx,preh,prev,hangle,vangle)
         }
     } else if(options["surface"]=="pool"){
         if(options["projection"]=="loop"){
@@ -2221,6 +2224,25 @@ function hyper_gans_draw_line(ctx,prex,prey,x,y){
     var scale = 0.13 * HEIGHT
     var pre = to_hyperboloid(prex, prey)
     var pt = to_hyperboloid(x, y)
+
+    draw_xy(ctx,WIDTH/2 + scale * pre[0], HEIGHT/2 + scale * pre[1],
+                WIDTH/2 + scale * pt[0], HEIGHT/2 + scale * pt[1])
+}
+
+function to_hyperband(x, y){
+    var p = to_poincare(x, y)
+    var d = ((1-p[0])*(1-p[0])+p[1]*p[1])
+    var real = ((1 + p[0])*(1 - p[0]) - p[1]*p[1]) / d
+    var imag = 2*p[1] / d
+    var r = Math.sqrt(real*real + imag*imag)
+    var theta = Math.atan2(imag, real)
+    return [Math.log(r), theta]
+}
+
+function hyper_band_draw_line(ctx,prex,prey,x,y){
+    var scale = 0.36 * HEIGHT
+    var pre = to_hyperband(prex, prey)
+    var pt = to_hyperband(x, y)
 
     draw_xy(ctx,WIDTH/2 + scale * pre[0], HEIGHT/2 + scale * pre[1],
                 WIDTH/2 + scale * pt[0], HEIGHT/2 + scale * pt[1])

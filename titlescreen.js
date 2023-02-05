@@ -508,6 +508,66 @@ function draw_a_gans(ctx, xcenter){
     }
 }
 
+function _hyperboloid_f(x, y){
+    var d = Math.sqrt(1 - x*x - y*y)
+    var xx = x/d
+    var yy = y/d
+    var zz = 1/d
+
+    return [(xx-yy) * Math.sin(30), zz + (xx+yy) * Math.cos(30)]
+}
+
+function draw_a_hyperboloid(ctx, xcenter){
+    var R = 30
+    var N = 100
+    var prev = 0
+    var preh = 0
+    var a = Math.PI / 2 + 0.15
+    var p1 = hyper_add(0, 0, Math.PI/4 + a, HYPER_RADIUS)
+    var p2 = hyper_add(0, 0, Math.PI/4 - a, HYPER_RADIUS)
+
+    // dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([7,7])
+
+    var angle = 0
+    for(var i=0;i<=N;i++){
+        angle = Math.PI/4 + a + 2*(Math.PI-a) * i/N
+        p = _hyperboloid_f(0.964*Math.cos(angle),0.964*Math.sin(angle))
+        if(i==0){
+            ctx.moveTo(xcenter+R*p[0],HEIGHT/3+R*p[1])
+        } else {
+            ctx.lineTo(xcenter+R*p[0],HEIGHT/3+R*p[1])
+        }
+    }
+
+    // end dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([])
+
+    var angle = 0
+    for(var i=0;i<=N;i++){
+        angle = Math.PI/4 - a + 2*a * i/N
+        p = _hyperboloid_f(0.964*Math.cos(angle),0.964*Math.sin(angle))
+        if(i==0){
+            ctx.moveTo(xcenter+R*p[0],HEIGHT/3+R*p[1])
+        } else {
+            ctx.lineTo(xcenter+R*p[0],HEIGHT/3+R*p[1])
+        }
+    }
+
+    for(var i=0;i<=N;i++){
+        p = _hyperboloid_f(p1[0] + (p2[0]-p1[0])*i/N,p1[1] + (p2[1]-p1[1])*i/N)
+        if(i==0){
+            ctx.moveTo(xcenter+R*p[0],HEIGHT/3+R*p[1])
+        } else {
+            ctx.lineTo(xcenter+R*p[0],HEIGHT/3+R*p[1])
+        }
+    }
+}
+
 
 function draw_a_real_pp(ctx, xcenter){
     ctx.translate(xcenter-95,HEIGHT/2-110)

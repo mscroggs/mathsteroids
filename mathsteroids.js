@@ -42,7 +42,7 @@ var games = [
              ["(flat) real projective plane","flatreal-pp","flat"],
              ["torus (top view)","torus","top_v"],
              ["torus (projected)","torus","projected"],
-             ["loop (elliptical pool table)","pool","loop"]
+             ["loop (elliptical pool table)","pool","loop"],
              ["hyperbolic plane (beltrami-klein model)","hyperbolic","Beltrami-Klein"],
             ]
 var options = {"surface":"sphere","projection":"Mercator"}

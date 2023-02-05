@@ -25,6 +25,8 @@ var game_title = ""
 
 // Global variables
 var games = [
+    ["hyperbolic plane (poincaré half-plane model)","hyperbolic","Poincare HP"], // TODO
+
     ["sphere (mercator projection)","sphere","Mercator"],
     ["sphere (isometric)","sphere","isometric"],
     ["sphere (stereographic projection)","sphere","stereographic"],
@@ -43,7 +45,7 @@ var games = [
     ["torus (top view)","torus","top_v"],
     ["torus (projected)","torus","projected"],
     ["loop (elliptical pool table)","pool","loop"],
-    ["hyperbolic plane (poincaré model)","hyperbolic","Poincare"],
+    ["hyperbolic plane (poincaré disk model)","hyperbolic","Poincare"],
     ["hyperbolic plane (beltrami-klein model)","hyperbolic","Beltrami-Klein"],
 ]
 var options = {"surface":"sphere","projection":"Mercator"}
@@ -611,6 +613,7 @@ function draw_shape(){
     }
     if(options["surface"]=="hyperbolic"){
         var N = 100
+        if(options["projection"] == "Poincare HP"){N=600}
         var angle = 0
         var prev = 0
         var preh = 0
@@ -1229,6 +1232,8 @@ function draw_line(ctx,preh,prev,hangle,vangle){
             hyper_bk_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="Poincare"){
             hyper_poincare_draw_line(ctx,preh,prev,hangle,vangle)
+        } else if(options["projection"]=="Poincare HP"){
+            hyper_poincare_hp_draw_line(ctx,preh,prev,hangle,vangle)
         }
     } else if(options["surface"]=="pool"){
         if(options["projection"]=="loop"){
@@ -2137,7 +2142,18 @@ function hyper_poincare_draw_line(ctx,prex,prey,x,y){
     var pre = to_poincare(prex, prey)
     var pt = to_poincare(x, y)
 
-    //alert(pre[0]+"  "+pre[1]+"  "+pt[0]+"  "+pt[1])
-
     draw_xy(ctx,WIDTH/2 + scale * pre[0], HEIGHT/2 + scale * pre[1], WIDTH/2 + scale * pt[0], HEIGHT/2 + scale * pt[1])
+}
+
+function to_poincare_hp(x, y){
+    var p = to_poincare(x, y)
+    return [2*p[0] / (p[0]*p[0] + (1 + p[1])*(1 + p[1])),(p[0]*p[0] + p[1] * p[1] - 1) / (p[0]*p[0] + (1 + p[1])*(1 + p[1]))]
+}
+
+function hyper_poincare_hp_draw_line(ctx,prex,prey,x,y){
+    var scale = 0.12 * HEIGHT
+    var pre = to_poincare_hp(prex, prey)
+    var pt = to_poincare_hp(x, y)
+
+    draw_xy(ctx,WIDTH/2 + scale * pre[0], 0.96*HEIGHT + scale * pre[1], WIDTH/2 + scale * pt[0], 0.96*HEIGHT + scale * pt[1])
 }

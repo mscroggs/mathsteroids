@@ -294,6 +294,346 @@ function draw_a_circle(ctx, xcenter){
     }
 }
 
+function draw_a_bk(ctx, xcenter){
+    var N = 100
+    var angle = 0
+    var R = WIDTH/6
+    var R2 = WIDTH/6.2
+
+    // dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([7,7])
+
+    ctx.moveTo(xcenter + R,HEIGHT/2);
+    for(var i=0;i<=6;i++){
+        angle = i*Math.PI/3
+        ctx.lineTo(xcenter + R*Math.cos(angle), HEIGHT/2 + R*Math.sin(angle))
+    }
+
+    for(var i=0;i<=N;i++){
+        angle = 2*i*Math.PI/N
+        var x = xcenter + R*Math.cos(angle)
+        var y = HEIGHT/2 + R*Math.sin(angle)
+        if(i==0){
+            ctx.moveTo(x,y)
+        } else {
+            ctx.lineTo(x,y)
+        }
+    }
+
+    // end dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([])
+
+    for(var i=0;i<=N;i++){
+        angle = 2*i*Math.PI/N
+        var x = xcenter + R2*Math.cos(angle)
+        var y = HEIGHT/2 + R2*Math.sin(angle)
+        if(i==0){
+            ctx.moveTo(x,y)
+        } else {
+            ctx.lineTo(x,y)
+        }
+    }
+}
+
+function draw_a_poincare(ctx, xcenter){
+    var N = 100
+    var NN = 15
+    var angle = 0
+    var R = WIDTH/6
+    var R3 = WIDTH/8
+
+    // dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([7,7])
+
+    var cangle = 0
+    var R2 = R / Math.sqrt(3)
+    var a = Math.PI / 3
+    var d = 2/Math.sqrt(3) * R
+    ctx.moveTo(xcenter + R,HEIGHT/2);
+    for(var i=0;i<6;i++){
+        cangle = Math.PI/6 + i*Math.PI/3
+        for (var j = 1; j <= N; j++){
+            angle = Math.PI + cangle + a - 2*a*j/N
+            ctx.lineTo(xcenter + d * Math.cos(cangle) + R2*Math.cos(angle), HEIGHT/2 + d * Math.sin(cangle) + R2*Math.sin(angle))
+        }
+    }
+
+    for(var i=0;i<=N;i++){
+        angle = 2*i*Math.PI/N
+        var x = xcenter + R*Math.cos(angle)
+        var y = HEIGHT/2 + R*Math.sin(angle)
+        if(i==0){
+            ctx.moveTo(x,y)
+        } else {
+            ctx.lineTo(x,y)
+        }
+    }
+
+    // end dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([])
+
+    for(var i=0;i<=N;i++){
+        angle = 2*i*Math.PI/N
+        var x = xcenter + R3*Math.cos(angle)
+        var y = HEIGHT/2 + R3*Math.sin(angle)
+        if(i==0){
+            ctx.moveTo(x,y)
+        } else {
+            ctx.lineTo(x,y)
+        }
+    }
+}
+
+function _poincare_hp_f(x, y){
+    return [2*x / (x*x + (1 + y)*(1 + y)),(x*x + y * y - 1) / (x*x + (1 + y)*(1 + y))]
+}
+
+function draw_a_poincare_hp(ctx, xcenter){
+    var N = 500
+    var NN = 15
+    var angle = 0
+    var R = WIDTH/6
+
+
+    // dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([7,7])
+
+    var cangle = 0
+    var R2 = 1 / Math.sqrt(3)
+    var a = Math.PI / 3
+    var d = 2/Math.sqrt(3)
+    var pt = _poincare_hp_f(1, 0)
+    ctx.moveTo(xcenter + 30*pt[0], HEIGHT*0.75 + 30*pt[1])
+    for(var i=0;i<6;i++){
+        cangle = Math.PI/6 + i*Math.PI/3
+        for (var j = 1; j <= N; j++){
+            angle = Math.PI + cangle + a - 2*a*j/N
+            pt = _poincare_hp_f(d * Math.cos(cangle) + R2*Math.cos(angle), d * Math.sin(cangle) + R2*Math.sin(angle))
+            ctx.lineTo(xcenter + 30*pt[0], HEIGHT*0.75 + 30*pt[1])
+        }
+    }
+
+    var a = Math.PI/2.5
+    for(var i=0;i<=N;i++){
+        angle = -a + (Math.PI + 2*a)*i/N
+        var x = Math.cos(angle)
+        var y = Math.sin(angle)
+        pt = _poincare_hp_f(x, y)
+        if(i==0){
+            ctx.moveTo(xcenter + 30*pt[0], HEIGHT*0.75 + 30*pt[1])
+        } else {
+            ctx.lineTo(xcenter + 30*pt[0], HEIGHT*0.75 + 30*pt[1])
+        }
+    }
+
+    // end dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([])
+
+    var R3 = 3/4
+    for(var i=0;i<=N;i++){
+        angle = 2*i*Math.PI/N
+        var x = R3*Math.cos(angle)
+        var y = R3*Math.sin(angle)
+        pt = _poincare_hp_f(x, y)
+        if(i==0){
+            ctx.moveTo(xcenter + 30*pt[0], HEIGHT*0.75 + 30*pt[1])
+        } else {
+            ctx.lineTo(xcenter + 30*pt[0], HEIGHT*0.75 + 30*pt[1])
+        }
+    }
+}
+
+function draw_a_gans(ctx, xcenter){
+    var N = 100
+    var NN = 15
+    var angle = 0
+    var R = WIDTH/20
+    var R3 = WIDTH/8
+
+    // dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([7,7])
+
+    var prev = 0
+    var preh = 0
+    var x = 0
+    var y = 0
+    var d = 1
+    var buffer = 0.08
+    ctx.moveTo(xcenter + R,HEIGHT/2);
+    for(var i=0;i<6;i++){
+        var start = [Math.cos(i*Math.PI/3),Math.sin(i*Math.PI/3)]
+        var end = [Math.cos((i+1)*Math.PI/3),Math.sin((i+1)*Math.PI/3)]
+        for (var j=0;j<=N; j++){
+            x = start[0] + (end[0] - start[0]) * (buffer + (1 - 2*buffer) * j/N)
+            y = start[1] + (end[1] - start[1]) * (buffer + (1 - 2*buffer) * j/N)
+            d = Math.sqrt(1 - x*x - y*y)
+            if(j==0){
+                ctx.moveTo(xcenter + R*x/d, HEIGHT/2 + R*y/d)
+            } else {
+                ctx.lineTo(xcenter + R*x/d, HEIGHT/2 + R*y/d)
+            }
+            prev=x
+            preh=y
+        }
+    }
+
+    // end dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([])
+
+    for(var i=0;i<=N;i++){
+        angle = 2*i*Math.PI/N
+        var x = xcenter + R3*Math.cos(angle)
+        var y = HEIGHT/2 + R3*Math.sin(angle)
+        if(i==0){
+            ctx.moveTo(x,y)
+        } else {
+            ctx.lineTo(x,y)
+        }
+    }
+}
+
+
+function _band_f(x, y){
+    var ss = x*x + y*y
+    var rt = Math.sqrt(1 - ss)
+    p =  [x / (1 + rt), y / (1 + rt)]
+    var d = ((1-p[0])*(1-p[0])+p[1]*p[1])
+    var real = ((1 + p[0])*(1 - p[0]) - p[1]*p[1]) / d
+    var imag = 2*p[1] / d
+    var r = Math.sqrt(real*real + imag*imag)
+    var theta = Math.atan2(imag, real)
+    return [Math.log(r), theta]
+}
+
+function draw_a_band(ctx, xcenter){
+    var N = 500
+    var NN = 15
+    var angle = 0
+    var R = WIDTH/6
+
+    var scale = 70
+
+    // dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([7,7])
+
+    var cangle = 0
+    var R2 = 1 / Math.sqrt(3)
+    var a = Math.PI / 3
+    var d = 2/Math.sqrt(3)
+    var pt = _band_f(1, 0)
+    ctx.moveTo(xcenter + scale*pt[0], HEIGHT/2 + scale*pt[1])
+    for(var i=0;i<6;i++){
+        cangle = i*Math.PI/3
+        for (var j = 1; j <= N; j++){
+            angle = Math.PI + cangle + a - 2*a*j/N
+            pt = _band_f(d * Math.cos(cangle) + R2*Math.cos(angle), d * Math.sin(cangle) + R2*Math.sin(angle))
+            ctx.lineTo(xcenter + scale*pt[0], HEIGHT/2 + scale*pt[1])
+        }
+    }
+
+    ctx.moveTo(xcenter + scale*3, HEIGHT/2 + scale*1.55)
+    ctx.lineTo(xcenter + scale*-3, HEIGHT/2 + scale*1.55)
+    ctx.moveTo(xcenter + scale*3, HEIGHT/2 - scale*1.55)
+    ctx.lineTo(xcenter + scale*-3, HEIGHT/2 - scale*1.55)
+
+    // end dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([])
+
+    var R3 = 0.992
+    for(var i=0;i<=N;i++){
+        angle = 2*i*Math.PI/N
+        var x = R3*Math.cos(angle)
+        var y = R3*Math.sin(angle)
+        pt = _band_f(x, y)
+        if(i==0){
+            ctx.moveTo(xcenter + 30*pt[0], HEIGHT/2 + 30*pt[1])
+        } else {
+            ctx.lineTo(xcenter + 30*pt[0], HEIGHT/2 + 30*pt[1])
+        }
+    }
+}
+
+function _hyperboloid_f(x, y){
+    var d = Math.sqrt(1 - x*x - y*y)
+    var xx = x/d
+    var yy = y/d
+    var zz = 1/d
+
+    return [(xx-yy) * Math.sin(30), zz + (xx+yy) * Math.cos(30)]
+}
+
+function draw_a_hyperboloid(ctx, xcenter){
+    var R = 30
+    var N = 100
+    var prev = 0
+    var preh = 0
+    var a = Math.PI / 2 + 0.15
+    var p1 = hyper_add(0, 0, Math.PI/4 + a, HYPER_RADIUS)
+    var p2 = hyper_add(0, 0, Math.PI/4 - a, HYPER_RADIUS)
+
+    // dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([7,7])
+
+    var angle = 0
+    for(var i=0;i<=N;i++){
+        angle = Math.PI/4 + a + 2*(Math.PI-a) * i/N
+        p = _hyperboloid_f(0.964*Math.cos(angle),0.964*Math.sin(angle))
+        if(i==0){
+            ctx.moveTo(xcenter+R*p[0],HEIGHT/3+R*p[1])
+        } else {
+            ctx.lineTo(xcenter+R*p[0],HEIGHT/3+R*p[1])
+        }
+    }
+
+    // end dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([])
+
+    var angle = 0
+    for(var i=0;i<=N;i++){
+        angle = Math.PI/4 - a + 2*a * i/N
+        p = _hyperboloid_f(0.964*Math.cos(angle),0.964*Math.sin(angle))
+        if(i==0){
+            ctx.moveTo(xcenter+R*p[0],HEIGHT/3+R*p[1])
+        } else {
+            ctx.lineTo(xcenter+R*p[0],HEIGHT/3+R*p[1])
+        }
+    }
+
+    for(var i=0;i<=N;i++){
+        p = _hyperboloid_f(p1[0] + (p2[0]-p1[0])*i/N,p1[1] + (p2[1]-p1[1])*i/N)
+        if(i==0){
+            ctx.moveTo(xcenter+R*p[0],HEIGHT/3+R*p[1])
+        } else {
+            ctx.lineTo(xcenter+R*p[0],HEIGHT/3+R*p[1])
+        }
+    }
+}
+
+
 function draw_a_real_pp(ctx, xcenter){
     ctx.translate(xcenter-95,HEIGHT/2-110)
 
@@ -347,18 +687,6 @@ function draw_a_real_pp(ctx, xcenter){
 }
 
 function draw_a_mobius(ctx, xcenter){
-    /*
-    ctx.moveTo(xcenter,HEIGHT/2-100);
-    ctx.bezierCurveTo(xcenter-60,HEIGHT/2-100,xcenter-100,HEIGHT/2-60,xcenter-100,HEIGHT/2);
-    ctx.bezierCurveTo(xcenter-100,HEIGHT/2+60,xcenter-60,HEIGHT/2+100,xcenter,HEIGHT/2+100);
-    ctx.bezierCurveTo(xcenter+60,HEIGHT/2+100,xcenter+100,HEIGHT/2+60,xcenter+100,HEIGHT/2);
-    ctx.bezierCurveTo(xcenter+100,HEIGHT/2-60,xcenter+40,HEIGHT/2-60,xcenter,HEIGHT/2-60);
-    ctx.bezierCurveTo(xcenter-40,HEIGHT/2-60,xcenter-60,HEIGHT/2-40,xcenter-60,HEIGHT/2);
-    ctx.bezierCurveTo(xcenter-60,HEIGHT/2+40,xcenter-40,HEIGHT/2+60,xcenter,HEIGHT/2+60);
-    ctx.bezierCurveTo(xcenter+40,HEIGHT/2+60,xcenter+60,HEIGHT/2+40,xcenter+60,HEIGHT/2);
-    ctx.bezierCurveTo(xcenter+60,HEIGHT/2-40,xcenter+60,HEIGHT/2-100,xcenter,HEIGHT/2-100);
-    ctx.closePath();
-    */
     var dang = 5
     ctx.moveTo(xcenter,HEIGHT/2+100);
     for(var ang=0;ang<180;ang+=dang){
@@ -402,18 +730,6 @@ function draw_a_mobius(ctx, xcenter){
 }
 
 function draw_a_cylinder(ctx, xcenter){
-    /*
-    ctx.moveTo(xcenter,HEIGHT/2-100);
-    ctx.bezierCurveTo(xcenter-60,HEIGHT/2-100,xcenter-100,HEIGHT/2-60,xcenter-100,HEIGHT/2);
-    ctx.bezierCurveTo(xcenter-100,HEIGHT/2+60,xcenter-60,HEIGHT/2+100,xcenter,HEIGHT/2+100);
-    ctx.bezierCurveTo(xcenter+60,HEIGHT/2+100,xcenter+100,HEIGHT/2+60,xcenter+100,HEIGHT/2);
-    ctx.bezierCurveTo(xcenter+100,HEIGHT/2-60,xcenter+40,HEIGHT/2-60,xcenter,HEIGHT/2-60);
-    ctx.bezierCurveTo(xcenter-40,HEIGHT/2-60,xcenter-60,HEIGHT/2-40,xcenter-60,HEIGHT/2);
-    ctx.bezierCurveTo(xcenter-60,HEIGHT/2+40,xcenter-40,HEIGHT/2+60,xcenter,HEIGHT/2+60);
-    ctx.bezierCurveTo(xcenter+40,HEIGHT/2+60,xcenter+60,HEIGHT/2+40,xcenter+60,HEIGHT/2);
-    ctx.bezierCurveTo(xcenter+60,HEIGHT/2-40,xcenter+60,HEIGHT/2-100,xcenter,HEIGHT/2-100);
-    ctx.closePath();
-    */
     var dang = 5
     ctx.moveTo(xcenter,HEIGHT/2-60);
     for(var ang=0;ang<360;ang+=dang){
@@ -575,6 +891,9 @@ function draw_surface(ctx){
     if(options["surface"]=="sphere"){
         draw_a_sphere(ctx,WIDTH/4)
     }
+    if(options["surface"]=="hyperbolic"){
+        draw_a_poincare(ctx,WIDTH/4)
+    }
     if(options["surface"]=="flattorus"){
         draw_a_torus(ctx,WIDTH/4)
     }
@@ -625,6 +944,24 @@ function draw_surface(ctx){
     }
     if(options["projection"]=="stereographic"){
         draw_two_circles(ctx,3*WIDTH/4)
+    }
+    if(options["projection"]=="Beltrami-Klein"){
+        draw_a_bk(ctx,3*WIDTH/4)
+    }
+    if(options["projection"]=="Poincare"){
+        draw_a_poincare(ctx,3*WIDTH/4)
+    }
+    if(options["projection"]=="Poincare HP"){
+        draw_a_poincare_hp(ctx,3*WIDTH/4)
+    }
+    if(options["projection"]=="hyperboloid"){
+        draw_a_hyperboloid(ctx,3*WIDTH/4)
+    }
+    if(options["projection"]=="gans"){
+        draw_a_gans(ctx,3*WIDTH/4)
+    }
+    if(options["projection"]=="band"){
+        draw_a_band(ctx,3*WIDTH/4)
     }
 }
 

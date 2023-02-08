@@ -31,31 +31,39 @@ var entered_letter = 0
 // Global variables
 var nscores = 5
 var games = [
-             ["sphere (mercator projection)","sphere","Mercator"],
-             ["sphere (isometric)","sphere","isometric"],
-             ["sphere (stereographic projection)","sphere","stereographic"],
-             ["sphere (gall-peters projection)","sphere","Gall"],
-             ["sphere (craig retroazimuthal projection)","sphere","Craig"],
-             ["sphere (azimuthal projection)","sphere","azim"],
-             ["sphere (robinson projection)","sphere","Robinson"],
-             ["sphere (sinusoidal projection)","sphere","sinusoidal"],
-             ["sphere (mollweide projection)","sphere","Mollweide"],
-             ["sphere (goode homolosine projection)","sphere","Goode"],
-             ["(flat) cylinder","flatcylinder","flat"],
-             ["(flat) möbius strip","flatmobius","flat"],
-             ["(flat) torus","flattorus","flat"],
-             ["(flat) klein bottle","flatKlein","flat"],
-             ["(flat) real projective plane","flatreal-pp","flat"],
-             ["torus (top view)","torus","top_v"],
-             ["torus (projected)","torus","projected"],
-             ["loop (elliptical pool table)","pool","loop"]
-            ]
+    ["sphere (mercator projection)","sphere","Mercator"],
+    ["sphere (isometric)","sphere","isometric"],
+    ["sphere (stereographic projection)","sphere","stereographic"],
+    ["sphere (gall-peters projection)","sphere","Gall"],
+    ["sphere (craig retroazimuthal projection)","sphere","Craig"],
+    ["sphere (azimuthal projection)","sphere","azim"],
+    ["sphere (robinson projection)","sphere","Robinson"],
+    ["sphere (sinusoidal projection)","sphere","sinusoidal"],
+    ["sphere (mollweide projection)","sphere","Mollweide"],
+    ["sphere (goode homolosine projection)","sphere","Goode"],
+    ["(flat) cylinder","flatcylinder","flat"],
+    ["(flat) möbius strip","flatmobius","flat"],
+    ["(flat) torus","flattorus","flat"],
+    ["(flat) klein bottle","flatKlein","flat"],
+    ["(flat) real projective plane","flatreal-pp","flat"],
+    ["torus (top view)","torus","top_v"],
+    ["torus (projected)","torus","projected"],
+    ["loop (elliptical pool table)","pool","loop"],
+    ["hyperbolic plane (poincaré disk model)","hyperbolic","Poincare"],
+    ["hyperbolic plane (beltrami-klein model)","hyperbolic","Beltrami-Klein"],
+    ["hyperbolic plane (poincaré half-plane model)","hyperbolic","Poincare HP"],
+    ["hyperbolic plane (hyperboloid)","hyperbolic","hyperboloid"],
+    ["hyperbolic plane (gans model)","hyperbolic","gans"],
+    ["hyperbolic plane (band model)","hyperbolic","band"],
+]
+
 var projections = []
 for(var i=0;i<games.length;i++){
     if(games[i][1]=="sphere"){
         projections[projections.length] = [games[i][2], i, games[i][0]]
     }
 }
+
 var options = {"surface":"sphere","projection":"Mercator"}
 var mouse = "";
 var WIDTH=800
@@ -67,6 +75,7 @@ var LOOPSIZE = [380,200]
 var LOOPFOCUS = Math.sqrt(Math.pow(LOOPSIZE[0],2)-Math.pow(LOOPSIZE[1],2))
 var MOBIUSY = 50
 var Craig_zeroang = -0.3
+var HYPER_RADIUS = 2
 
 var score = 0
 var lives = 3
@@ -112,6 +121,9 @@ function reset(){
         if(options["projection"]=="azim"){
             spaceship["vangle"] = Math.PI/2
         }
+    } else if(options["surface"]=="hyperbolic"){
+        spaceship["hangle"] = 0
+        spaceship["vangle"] = 0
     } else if(options["surface"]=="torus"){
         if(options["projection"] == "projected"){
             spaceship["hangle"] = Math.PI
@@ -147,6 +159,9 @@ function make_new_asteroids(n){
         } else if(options["surface"]=="sphere"){
             new_a["speed"] = 0.005+Math.random()*0.005
             new_a["radius"] = 0.01
+        } else if(options["surface"]=="hyperbolic"){
+            new_a["speed"] = 0.001+Math.random()*0.001
+            new_a["radius"] = 0.004
         } else if(options["surface"]=="torus"){
             new_a["speed"] = 0.005+Math.random()*0.005
             new_a["radius"] = 0.01
@@ -166,6 +181,12 @@ function make_new_asteroids(n){
             } else if(options["surface"]=="sphere"){
                 new_a["hangle"] = Math.random()*Math.PI*2
                 new_a["vangle"] = Math.random()*Math.PI-Math.PI/2
+            } else if(options["surface"]=="hyperbolic"){
+                var ang = Math.random() * 2 * Math.PI
+                var dist = Math.random() * HYPER_RADIUS
+                var pt = hyper_add(0, 0, Math.random() * 2 * Math.PI, Math.random() * HYPER_RADIUS)
+                new_a["hangle"] = pt[0]
+                new_a["vangle"] = pt[1]
             } else if(options["surface"]=="torus"){
                 new_a["hangle"] = Math.random()*Math.PI*2
                 new_a["vangle"] = Math.random()*Math.PI*2
@@ -186,30 +207,40 @@ function make_new_asteroids(n){
 }
 
 function too_close(p,q){
+    var d = 0
+    var x1 = 0
+    var x2 = 0
+    var y1 = 0
+    var y2 = 0
+    var z1 = 0
+    var z2 = 0
     if(options["surface"].substring(0,4)=="flat" || options["surface"]=="pool"){
-        var d = 80
-        var x1 = p["hangle"]
-        var x2 = q["hangle"]
-        var y1 = p["vangle"]
-        var y2 = q["vangle"]
-        var z1 = 0
-        var z2 = 0
+        d = 80
+        x1 = p["hangle"]
+        x2 = q["hangle"]
+        y1 = p["vangle"]
+        y2 = q["vangle"]
+        z1 = 0
+        z2 = 0
     } else if(options["surface"]=="sphere"){
-        var d = 0.15
-        var x1 = Math.cos(p["hangle"])*Math.cos(p["vangle"])
-        var x2 = Math.cos(q["hangle"])*Math.cos(q["vangle"])
-        var y1 = Math.cos(p["hangle"])*Math.sin(p["vangle"])
-        var y2 = Math.cos(q["hangle"])*Math.sin(q["vangle"])
-        var z1 = Math.sin(p["vangle"])
-        var z2 = Math.sin(q["vangle"])
+        d = 0.15
+        x1 = Math.cos(p["hangle"])*Math.cos(p["vangle"])
+        x2 = Math.cos(q["hangle"])*Math.cos(q["vangle"])
+        y1 = Math.cos(p["hangle"])*Math.sin(p["vangle"])
+        y2 = Math.cos(q["hangle"])*Math.sin(q["vangle"])
+        z1 = Math.sin(p["vangle"])
+        z2 = Math.sin(q["vangle"])
+    } else if(options["surface"]=="hyperbolic"){
+        d = 0.15
+        z1 = hyper_compute_distance(p["hangle"], p["vangle"], q["hangle"], q["vangle"])
     } else if(options["surface"]=="torus"){
-        var d = 0.2
-        var x1 = Math.cos(p["hangle"])*(TRADIUS[0]+TRADIUS[1]*Math.cos(p["vangle"]))
-        var x2 = Math.cos(q["hangle"])*(TRADIUS[0]+TRADIUS[1]*Math.cos(q["vangle"]))
-        var y1 = Math.sin(p["hangle"])*(TRADIUS[0]+TRADIUS[1]*Math.cos(p["vangle"]))
-        var y2 = Math.sin(q["hangle"])*(TRADIUS[0]+TRADIUS[1]*Math.cos(q["vangle"]))
-        var z1 = TRADIUS[1]*Math.sin(p["vangle"])
-        var z2 = TRADIUS[1]*Math.sin(q["vangle"])
+        d = 0.2
+        x1 = Math.cos(p["hangle"])*(TRADIUS[0]+TRADIUS[1]*Math.cos(p["vangle"]))
+        x2 = Math.cos(q["hangle"])*(TRADIUS[0]+TRADIUS[1]*Math.cos(q["vangle"]))
+        y1 = Math.sin(p["hangle"])*(TRADIUS[0]+TRADIUS[1]*Math.cos(p["vangle"]))
+        y2 = Math.sin(q["hangle"])*(TRADIUS[0]+TRADIUS[1]*Math.cos(q["vangle"]))
+        z1 = TRADIUS[1]*Math.sin(p["vangle"])
+        z2 = TRADIUS[1]*Math.sin(q["vangle"])
     }
     if(Math.abs(x1-x2)<d && Math.abs(y1-y2)<d && Math.abs(z1-z2)<d){
         return true
@@ -459,15 +490,20 @@ function move_fire(){
     fires = new_fires
     if(firePressed){
         if(fired==0){
+            var leng = 0
+            var speed = 0
             if(options["surface"].substring(0,4) == "flat" || options["surface"]=="pool"){
-                var leng = 10
-                var speed = 5
+                leng = 10
+                speed = 5
             } else if(options["surface"] == "sphere"){
-                var leng = 0.1
-                var speed = 0.05
+                leng = 0.1
+                speed = 0.05
             } else if(options["surface"] == "torus"){
-                var leng = 0.1
-                var speed = 0.05
+                leng = 0.1
+                speed = 0.05
+            } else if(options["surface"] == "hyperbolic"){
+                leng = 0.05
+                speed = 0.03
             }
             new_pos = move_on_surface(spaceship["hangle"],spaceship["vangle"],spaceship["rotation"],leng,1)
             new_pos["speed"] = speed + spaceship["speed"]*(Math.cos(spaceship["rotation"]-spaceship["direction"]))
@@ -495,15 +531,20 @@ function move_explodes(){
 }
 
 function increase_speed(){
+    var speed_add = 0
+    var speed_max = 0
     if(options["surface"].substring(0,4)=="flat" || options["surface"]=="pool"){
-        var speed_add = 0.2
-        var speed_max = 5
+        speed_add = 0.2
+        speed_max = 5
     } else if(options["surface"]=="sphere"){
-        var speed_add = 0.002
-        var speed_max = 0.05
+        speed_add = 0.002
+        speed_max = 0.05
     } else if(options["surface"]=="torus"){
-        var speed_add = 0.002
-        var speed_max = 0.05
+        speed_add = 0.002
+        speed_max = 0.05
+    } else if(options["surface"]=="hyperbolic"){
+        speed_add = 0.0012
+        speed_max = 0.03
     }
 
     var new_speed_x = spaceship["speed"]*Math.cos(spaceship["direction"]) + speed_add*Math.cos(spaceship["rotation"])
@@ -514,12 +555,15 @@ function increase_speed(){
 }
 
 function decrease_speed(){
+    var slow = 0
     if(options["surface"].substring(0,4)=="flat" || options["surface"]=="pool"){
-        var slow=0.01
+        slow = 0.01
     } else if(options["surface"]=="sphere"){
-        var slow=0.0001
+        slow = 0.0001
     } else if(options["surface"]=="torus"){
-        var slow=0.0001
+        slow = 0.0001
+    } else if(options["surface"]=="hyperbolic"){
+        slow = 0.00005
     }
 
     spaceship["speed"] = Math.max(0,spaceship["speed"]-slow)
@@ -714,6 +758,51 @@ function draw_shape(){
             }
         }
     }
+    if(options["surface"]=="hyperbolic"){
+        if(options["projection"] == "hyperboloid"){
+            var N = 100
+            var prev = 0
+            var preh = 0
+            var a = Math.PI / 2 + 0.15
+            var p1 = hyper_add(0, 0, Math.PI/4 + a, HYPER_RADIUS)
+            var p2 = hyper_add(0, 0, Math.PI/4 - a, HYPER_RADIUS)
+
+            for(var i=0;i<=N;i++){
+                p = [p1[0] + (p2[0]-p1[0])*i/N,p1[1] + (p2[1]-p1[1])*i/N]
+                if (i > 0) {
+                    add_line_to_draw(Array(preh,prev,p[0], p[1]))
+                }
+                prev = p[1]
+                preh = p[0]
+            }
+
+            var angle = -Math.PI / 4
+            for(var i=0;i<=N;i++){
+                angle += 2*Math.PI/N
+                p = hyper_add(0, 0, angle, HYPER_RADIUS)
+                if (i > 0) {
+                    add_line_to_draw(Array(preh,prev,p[0], p[1]))
+                }
+                prev = p[1]
+                preh = p[0]
+            }
+        } else {
+            var N = 100
+            if(options["projection"] == "Poincare HP" || options["projection"] == "band"){N=600}
+            var angle = 0
+            var prev = 0
+            var preh = 0
+            for(var i=0;i<=N;i++){
+                angle += Math.PI*2/N
+                var p = hyper_add(0, 0, angle, HYPER_RADIUS)
+                if (i > 0) {
+                    add_line_to_draw(Array(preh,prev,p[0], p[1]))
+                }
+                prev = p[1]
+                preh = p[0]
+            }
+        }
+    }
 }
 
 function draw_ship(){
@@ -771,7 +860,7 @@ function move_sprite(sprite){
     sprite["rotation"] += new_pos["flip"]*sprite["direction"]
     sprite["hangle"] = new_pos["hangle"]
     sprite["vangle"] = new_pos["vangle"]
-    if(options["surface"]=="pool"){sprite["rotation"]=rot}
+    if(options["surface"]=="pool" || options["surface"]=="flatcylinder" || options["surface"]=="hyperbolic"){sprite["rotation"]=rot}
     if(options["surface"]=="flatmobius" && new_pos["flip"]==1){sprite["rotation"]=rot}
     if(options["surface"]=="flatcylinder"){sprite["rotation"]=rot}
     return sprite
@@ -781,6 +870,9 @@ function get_a_s(a){
     var mult = 1
     if(options["surface"].substring(0,4)=="flat" || options["surface"]=="pool"){
         mult = 100
+    }
+    if (options["surface"] == "hyperbolic"){
+        mult = 0.5
     }
     var out = {}
     if(a["size"]==4){
@@ -818,6 +910,14 @@ function in_contact(points, a){
         var R = TRADIUS[0] + TRADIUS[1] * Math.cos(a["vangle"])
         for(var j=0;j<points.length;j++){
             if(Math.abs(a["hangle"]-points[j][0])<1.5*a["radius"]/R && Math.abs(a["vangle"]-points[j][1])<1.5*a["radius"]/r){
+                return true;
+            }
+        }
+        return false;
+    }
+    if(options["surface"]=="hyperbolic"){
+        for(var j=0;j<points.length;j++){
+            if(hyper_compute_distance(a["hangle"], a["vangle"], points[j][0], points[j][1]) < 0.9*a["radius"]){
                 return true;
             }
         }
@@ -862,6 +962,12 @@ function move_asteroids(){
                 } else if(options["surface"]=="torus"){
                     spaceship["hangle"] = Math.random()*2*Math.PI
                     spaceship["vangle"] = Math.random()*Math.PI-Math.PI/2
+                } else if(options["surface"]=="hyperbolic"){
+                    var ang = Math.random() * 2 * Math.PI
+                    var dist = Math.random() * HYPER_RADIUS
+                    var pt = hyper_add(0, 0, Math.random() * 2 * Math.PI, Math.random() * HYPER_RADIUS)
+                    spaceship["hangle"] = pt[0]
+                    spaceship["vangle"] = pt[1]
                 }
                 if(options["projection"] == "loop"){
                     var angle = Math.random()*Math.PI*2
@@ -900,6 +1006,8 @@ function move_asteroids(){
                     var speed_start = 0.005
                 } else if(options["surface"]=="torus"){
                     var speed_start = 0.005
+                } else if(options["surface"]=="hyperbolic"){
+                    var speed_start = 0.003
                 }
 
                 var new_a = {"hangle":a["hangle"],"vangle":a["vangle"],
@@ -945,6 +1053,8 @@ function ship_sprite(N){
         var cngle = Math.atan2(1,Math.cos(0.05))
     } else if(options["surface"]=="torus"){
         return torus_ship_sprite(N)
+    } else if(options["surface"]=="hyperbolic"){
+        return hyper_ship_sprite(N)
     }
     var out = Array()
     var p = {"hangle":spaceship["hangle"],"vangle":spaceship["vangle"],"rotation":spaceship["rotation"],"flip":1}
@@ -1010,6 +1120,38 @@ function torus_ship_sprite(N){
     return Array(sprite_to_torus(ship2d, spaceship["hangle"], spaceship["vangle"], spaceship["rotation"]))
 }
 
+function hyper_sprite(endpoints, N){
+    var points = Array(endpoints[0])
+    var x = endpoints[0][0]
+    var y = endpoints[0][1]
+    for(var i=0;i<endpoints.length-1;i++){
+        var start = endpoints[i]
+        var end = endpoints[i+1]
+        for (var j=1;j<=N;j++){
+            x += (end[0] - start[0]) / N
+            y += (end[1] - start[1]) / N
+            points[points.length] = Array(x, y)
+        }
+    }
+    return points
+}
+
+function hyper_ship_sprite(N){
+    var endpoints = Array()
+    var size1 = 0.05
+    var size2 = 0.06
+    var h = spaceship["hangle"]
+    var v = spaceship["vangle"]
+    var r = spaceship["rotation"]
+
+    endpoints[endpoints.length] = hyper_add(h, v, r, size2)
+    endpoints[endpoints.length] = hyper_add(h, v, r + Math.PI*3/4, size1)
+    endpoints[endpoints.length] = Array(h, v)
+    endpoints[endpoints.length] = hyper_add(h, v, r - Math.PI*3/4, size1)
+    endpoints[endpoints.length] = hyper_add(h, v, r, size2)
+    return Array(hyper_sprite(endpoints, N));
+}
+
 function sprite_to_torus(sprite2d, hangle, vangle, rot){
     var x = (TRADIUS[0] + TRADIUS[1]*Math.cos(vangle)) * Math.cos(hangle)
     var y = (TRADIUS[0] + TRADIUS[1]*Math.cos(vangle)) * Math.sin(hangle)
@@ -1052,12 +1194,9 @@ function sprite_to_torus(sprite2d, hangle, vangle, rot){
 
 function fire_sprite(f){
     var out = Array()
+    var leng = 0.1
     if(options["surface"].substring(0,4)=="flat" || options["surface"]=="pool"){
-        var leng = 10
-    } else if(options["surface"] == "sphere"){
-        var leng = 0.1
-    } else if(options["surface"] == "torus"){
-        var leng = 0.1
+        leng = 10
     }
     var p = {"hangle":f["hangle"],"vangle":f["vangle"],"rotation":f["rotation"]}
     out[out.length] = Array(p["hangle"],p["vangle"])
@@ -1120,6 +1259,8 @@ function asteroid_sprite(a){
         var angle = Math.acos(Math.cos(r)*(1-Math.cos(side_l)) / (Math.sin(r)*Math.sin(side_l)))
     } else if(options["surface"] == "torus"){
         return torus_asteroid_sprite(a)
+    } else if(options["surface"] == "hyperbolic"){
+        return hyper_asteroid_sprite(a)
     }
     var p = {"hangle":a["hangle"],"vangle":a["vangle"],"rotation":a["rotation"],"flip":1}
     p = add_to_surface(p["hangle"],p["vangle"],p["rotation"],r,p["flip"])
@@ -1163,6 +1304,21 @@ function torus_asteroid_sprite(a){
     return Array(sprite_to_torus(asteroid2d, a["hangle"], a["vangle"], a["rotation"]))
 }
 
+function hyper_asteroid_sprite(a){
+    var out = Array()
+    var r = a["radius"]
+    var sides = a["sides"]
+    var angle = 2*Math.PI/sides
+
+    var endpoints = Array()
+
+    for(var i=0;i<=sides;i++){
+        endpoints[endpoints.length]=hyper_add(a["hangle"], a["vangle"], i * angle, r)
+    }
+
+    return Array(hyper_sprite(endpoints, 10));
+}
+
 
 // surface code
 function add_line_to_draw(thing){
@@ -1188,6 +1344,14 @@ function add_line_to_draw(thing){
         var hangle = (thing[0]+thing[2])/2
         var vangle = (thing[1]+thing[3])/2
         if(vangle > Math.atan(-Math.cos(hangle-Math.PI)/Math.tan(Craig_zeroang))){
+            back_points[back_points.length] = thing
+            return
+        }
+    }
+    if(options["surface"]=="hyperbolic" && options["projection"]=="hyperboloid"){
+        var hangle = (thing[0]+thing[2])/2
+        var vangle = (thing[1]+thing[3])/2
+        if (hangle + vangle < -0.3) {
             back_points[back_points.length] = thing
             return
         }
@@ -1246,6 +1410,20 @@ function draw_line(ctx,preh,prev,hangle,vangle){
         }
         if(options["projection"]=="projected"){
             torus_projected_draw_line(ctx,preh,prev,hangle,vangle)
+        }
+    } else if(options["surface"]=="hyperbolic"){
+        if(options["projection"]=="Beltrami-Klein"){
+            hyper_bk_draw_line(ctx,preh,prev,hangle,vangle)
+        } else if(options["projection"]=="Poincare"){
+            hyper_poincare_draw_line(ctx,preh,prev,hangle,vangle)
+        } else if(options["projection"]=="Poincare HP"){
+            hyper_poincare_hp_draw_line(ctx,preh,prev,hangle,vangle)
+        } else if(options["projection"]=="hyperboloid"){
+            hyper_hyperboloid_draw_line(ctx,preh,prev,hangle,vangle)
+        } else if(options["projection"]=="gans"){
+            hyper_gans_draw_line(ctx,preh,prev,hangle,vangle)
+        } else if(options["projection"]=="band"){
+            hyper_band_draw_line(ctx,preh,prev,hangle,vangle)
         }
     } else if(options["surface"]=="pool"){
         if(options["projection"]=="loop"){
@@ -1469,6 +1647,26 @@ function _add_to_surface_internal(hangle, vangle, rot, badd, flip, moving){
         }
 
         return {"hangle":hangle,"vangle":vangle,"rotation":rot,"flip":flip}
+    } else if(options["surface"]=="hyperbolic"){
+        var pt = hyper_add(hangle, vangle, rot, badd)
+        if(moving){
+            if(hyper_compute_distance(0, 0, pt[0], pt[1]) >= HYPER_RADIUS){
+                var pts = Array(Array(hangle, vangle), pt)
+                for (var i = 0; i < 20; i++){
+                    var half = Array((pts[0][0] + pts[1][0]) / 2, (pts[0][1] + pts[1][1]) / 2)
+                    if(hyper_compute_distance(0,0,half[0], half[1]) > HYPER_RADIUS) {
+                        pts = Array(pts[0], half)
+                    } else {
+                        pts = Array(half, pts[1])
+                    }
+                }
+                var pt_on_circle = pts[0]
+                var ang = Math.atan2(pt_on_circle[1], pt_on_circle[0])
+                rot = Math.PI - rot + 2 * ang
+                pt = hyper_add(pt_on_circle[0], pt_on_circle[1], rot, badd - hyper_compute_distance(hangle, vangle, pt_on_circle[0], pt_on_circle[1]))
+            }
+        }
+        return {"hangle":pt[0],"vangle":pt[1],"rotation":rot,"flip":flip}
     }
 }
 
@@ -2063,4 +2261,135 @@ function flat_cylinder_draw_line(ctx,prex,prey,x,y){
     } else {
         draw_xy(ctx,prex,prey,x,y)
     }
+}
+
+// hyperbolic surface
+function hyper_compute_distance(px, py, qx, qy){
+    var bk_angle = Math.atan2(py - qy, px - qx)
+    var e = hyper_compute_endpoints(px, py, bk_angle)
+    var x0 = e[0]
+    var y0 = e[1]
+    var x1 = e[2]
+    var y1 = e[3]
+
+    d0_to_point1 = Math.sqrt(Math.pow(x0-px, 2) + Math.pow(y0-py, 2))
+    d0_to_point2 = Math.sqrt(Math.pow(x0-qx, 2) + Math.pow(y0-qy, 2))
+    d1_to_point1 = Math.sqrt(Math.pow(x1-px, 2) + Math.pow(y1-py, 2))
+    d1_to_point2 = Math.sqrt(Math.pow(x1-qx, 2) + Math.pow(y1-qy, 2))
+    if (d1_to_point2 * d0_to_point1 < 0.00001){
+        return 10000000000
+    }
+
+    return Math.abs(Math.log(d1_to_point1 * d0_to_point2 / d1_to_point2 / d0_to_point1) / 2)
+}
+
+function hyper_compute_endpoints(px, py, bk_angle){
+    k = (Math.sqrt(Math.pow(2 * px * Math.cos(bk_angle) + 2 * py * Math.sin(bk_angle), 2) - 4 * (px * px + py * py - 1))-(2 * px * Math.cos(bk_angle) + 2 * py * Math.sin(bk_angle))) / 2
+    x1 = px + k * Math.cos(bk_angle)
+    y1 = py + k * Math.sin(bk_angle)
+
+    k = (-Math.sqrt(Math.pow(2 * px * Math.cos(bk_angle) + 2 * py * Math.sin(bk_angle), 2) - 4 * (px * px + py * py - 1))-(2 * px * Math.cos(bk_angle) + 2 * py * Math.sin(bk_angle))) / 2
+    x0 = px + k * Math.cos(bk_angle)
+    y0 = py + k * Math.sin(bk_angle)
+
+    return [x0, y0, x1, y1]
+}
+
+function hyper_add(px, py, angle, length){
+    var e = hyper_compute_endpoints(px, py, angle)
+    var x0 = e[0]
+    var y0 = e[1]
+    var x1 = e[2]
+    var y1 = e[3]
+
+    d = [[[px, py], 0], [[x1, y1], 2*length]]
+    for(var i = 0; i < 20; i++){
+        var ptx = (d[0][0][0] + d[1][0][0]) / 2
+        var pty = (d[0][0][1] + d[1][0][1]) / 2
+        var try_l = hyper_compute_distance(px, py, ptx, pty)
+        if(d[0][1] <= length && length < try_l){
+            d = [d[0], [[ptx, pty], try_l]]
+        } else {
+            d = [[[ptx, pty], try_l], d[1]]
+        }
+    }
+    return d[0][0]
+}
+
+function hyper_bk_draw_line(ctx,prex,prey,x,y){
+    var scale = 0.45 * HEIGHT
+    draw_xy(ctx,WIDTH/2 + scale * prex, HEIGHT/2 + scale * prey, WIDTH/2 + scale * x, HEIGHT/2 + scale * y)
+}
+
+function to_poincare(x, y){
+    var ss = x*x + y*y
+    var rt = Math.sqrt(1 - ss)
+    return [x / (1 + rt), y / (1 + rt)]
+}
+
+function hyper_poincare_draw_line(ctx,prex,prey,x,y){
+    var scale = 0.6 * HEIGHT
+    var pre = to_poincare(prex, prey)
+    var pt = to_poincare(x, y)
+
+    draw_xy(ctx,WIDTH/2 + scale * pre[0], HEIGHT/2 + scale * pre[1], WIDTH/2 + scale * pt[0], HEIGHT/2 + scale * pt[1])
+}
+
+function to_poincare_hp(x, y){
+    var p = to_poincare(x, y)
+    return [2*p[0] / (p[0]*p[0] + (1 + p[1])*(1 + p[1])),(p[0]*p[0] + p[1] * p[1] - 1) / (p[0]*p[0] + (1 + p[1])*(1 + p[1]))]
+}
+
+function hyper_poincare_hp_draw_line(ctx,prex,prey,x,y){
+    var scale = 0.12 * HEIGHT
+    var pre = to_poincare_hp(prex, prey)
+    var pt = to_poincare_hp(x, y)
+
+    draw_xy(ctx,WIDTH/2 + scale * pre[0], 0.96*HEIGHT + scale * pre[1], WIDTH/2 + scale * pt[0], 0.96*HEIGHT + scale * pt[1])
+}
+
+function to_hyperboloid(x, y){
+    var d = Math.sqrt(1 - x*x - y*y)
+    return [x / d, y/d, 1/d]
+}
+
+function hyper_hyperboloid_draw_line(ctx,prex,prey,x,y){
+    var scale = 0.16 * HEIGHT
+    var pre = to_hyperboloid(prex, prey)
+    var pt = to_hyperboloid(x, y)
+    var x0 = (pre[0]-pre[1]) * Math.sin(30)
+    var y0 = pre[2] + (pre[0]+pre[1]) * Math.cos(30)
+    var x1 = (pt[0]-pt[1]) * Math.sin(30)
+    var y1 = pt[2] + (pt[0]+pt[1]) * Math.cos(30)
+
+    draw_xy(ctx,WIDTH/2 - scale * x0, HEIGHT/8 + scale * y0,
+                WIDTH/2 - scale * x1, HEIGHT/8 + scale * y1)
+}
+
+function hyper_gans_draw_line(ctx,prex,prey,x,y){
+    var scale = 0.13 * HEIGHT
+    var pre = to_hyperboloid(prex, prey)
+    var pt = to_hyperboloid(x, y)
+
+    draw_xy(ctx,WIDTH/2 + scale * pre[0], HEIGHT/2 + scale * pre[1],
+                WIDTH/2 + scale * pt[0], HEIGHT/2 + scale * pt[1])
+}
+
+function to_hyperband(x, y){
+    var p = to_poincare(x, y)
+    var d = ((1-p[0])*(1-p[0])+p[1]*p[1])
+    var real = ((1 + p[0])*(1 - p[0]) - p[1]*p[1]) / d
+    var imag = 2*p[1] / d
+    var r = Math.sqrt(real*real + imag*imag)
+    var theta = Math.atan2(imag, real)
+    return [Math.log(r), theta]
+}
+
+function hyper_band_draw_line(ctx,prex,prey,x,y){
+    var scale = 0.36 * HEIGHT
+    var pre = to_hyperband(prex, prey)
+    var pt = to_hyperband(x, y)
+
+    draw_xy(ctx,WIDTH/2 + scale * pre[0], HEIGHT/2 + scale * pre[1],
+                WIDTH/2 + scale * pt[0], HEIGHT/2 + scale * pt[1])
 }

@@ -714,7 +714,6 @@ function draw_asteroids(){
                 var d = Math.sqrt(Math.pow(x - asteroids[i]["hangle"], 2) + Math.pow(y - asteroids[i]["vangle"], 2))
                 var alen = 10 + 40/(1+d/50)
 
-                console.log(alen)
                 add_line_to_draw(Array(x-(alen + 3)*Math.cos(ang), y-(alen + 3)*Math.sin(ang), x - 3*Math.cos(ang), y - 3*Math.sin(ang)))
                 add_line_to_draw(Array(x-(3 + alen/2)*Math.cos(ang)+alen/3*Math.cos(ang+Math.PI/2), y-(3+alen/2)*Math.sin(ang)+alen/3*Math.sin(ang+Math.PI/2), x - 3*Math.cos(ang), y - 3*Math.sin(ang)))
                 add_line_to_draw(Array(x-(3 + alen/2)*Math.cos(ang)+alen/3*Math.cos(ang-Math.PI/2), y-(3+alen/2)*Math.sin(ang)+alen/3*Math.sin(ang-Math.PI/2), x - 3*Math.cos(ang), y - 3*Math.sin(ang)))
@@ -801,6 +800,32 @@ function move_ship(){
             }
             for(var i=0;i<fires.length;i++){
                 fires[i]["vangle"] += move
+            }
+        }
+    } else if(options["surface"] == "hyperbolicunbounded"){
+        if(options["projection"] == "Poincare"){
+            var pad = 2
+            if(hyper_compute_distance(0, 0, spaceship["hangle"], spaceship["vangle"]) > pad){
+                var ang = Math.atan2(spaceship["vangle"], spaceship["hangle"])
+                var new_spaceship = hyper_add(0, 0, ang, pad)
+
+                for(var i=0;i<asteroids.length;i++){
+                    var a = Math.atan2(asteroids[i]["vangle"] - spaceship["vangle"], asteroids[i]["hangle"] - spaceship["hangle"])
+                    var d = hyper_compute_distance(asteroids[i]["hangle"], asteroids[i]["vangle"], spaceship["hangle"], spaceship["vangle"])
+                    var p = hyper_add(new_spaceship[0], new_spaceship[1], a, d)
+                    asteroids[i]["hangle"] = p[0]
+                    asteroids[i]["vangle"] = p[1]
+                }
+                for(var i=0;i<fires.length;i++){
+                    var a = Math.atan2(fires[i]["vangle"] - spaceship["vangle"], fires[i]["hangle"] - spaceship["hangle"])
+                    var d = hyper_compute_distance(fires[i]["hangle"], fires[i]["vangle"], spaceship["hangle"], spaceship["vangle"])
+                    var p = hyper_add(new_spaceship[0], new_spaceship[1], a, d)
+                    fires[i]["hangle"] = p[0]
+                    fires[i]["vangle"] = p[1]
+                }
+
+                spaceship["hangle"] = new_spaceship[0]
+                spaceship["vangle"] = new_spaceship[1]
             }
         }
     }

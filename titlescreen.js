@@ -294,7 +294,7 @@ function draw_a_circle(ctx, xcenter){
     }
 }
 
-function draw_a_bk(ctx, xcenter){
+function draw_a_bk(ctx, xcenter, bounded){
     var N = 100
     var angle = 0
     var R = WIDTH/6
@@ -311,6 +311,13 @@ function draw_a_bk(ctx, xcenter){
         ctx.lineTo(xcenter + R*Math.cos(angle), HEIGHT/2 + R*Math.sin(angle))
     }
 
+    if(!bounded){
+        // end dash this
+        ctx.stroke()
+        ctx.beginPath()
+        ctx.setLineDash([])
+    }
+
     for(var i=0;i<=N;i++){
         angle = 2*i*Math.PI/N
         var x = xcenter + R*Math.cos(angle)
@@ -322,24 +329,26 @@ function draw_a_bk(ctx, xcenter){
         }
     }
 
-    // end dash this
-    ctx.stroke()
-    ctx.beginPath()
-    ctx.setLineDash([])
+    if(bounded){
+        // end dash this
+        ctx.stroke()
+        ctx.beginPath()
+        ctx.setLineDash([])
 
-    for(var i=0;i<=N;i++){
-        angle = 2*i*Math.PI/N
-        var x = xcenter + R2*Math.cos(angle)
-        var y = HEIGHT/2 + R2*Math.sin(angle)
-        if(i==0){
-            ctx.moveTo(x,y)
-        } else {
-            ctx.lineTo(x,y)
+        for(var i=0;i<=N;i++){
+            angle = 2*i*Math.PI/N
+            var x = xcenter + R2*Math.cos(angle)
+            var y = HEIGHT/2 + R2*Math.sin(angle)
+            if(i==0){
+                ctx.moveTo(x,y)
+            } else {
+                ctx.lineTo(x,y)
+            }
         }
     }
 }
 
-function draw_a_poincare(ctx, xcenter){
+function draw_a_poincare(ctx, xcenter, bounded){
     var N = 100
     var NN = 15
     var angle = 0
@@ -364,6 +373,12 @@ function draw_a_poincare(ctx, xcenter){
         }
     }
 
+    if(!bounded) {
+        // end dash this
+        ctx.stroke()
+        ctx.beginPath()
+        ctx.setLineDash([])
+    }
     for(var i=0;i<=N;i++){
         angle = 2*i*Math.PI/N
         var x = xcenter + R*Math.cos(angle)
@@ -375,19 +390,21 @@ function draw_a_poincare(ctx, xcenter){
         }
     }
 
-    // end dash this
-    ctx.stroke()
-    ctx.beginPath()
-    ctx.setLineDash([])
+    if(bounded){
+        // end dash this
+        ctx.stroke()
+        ctx.beginPath()
+        ctx.setLineDash([])
 
-    for(var i=0;i<=N;i++){
-        angle = 2*i*Math.PI/N
-        var x = xcenter + R3*Math.cos(angle)
-        var y = HEIGHT/2 + R3*Math.sin(angle)
-        if(i==0){
-            ctx.moveTo(x,y)
-        } else {
-            ctx.lineTo(x,y)
+        for(var i=0;i<=N;i++){
+            angle = 2*i*Math.PI/N
+            var x = xcenter + R3*Math.cos(angle)
+            var y = HEIGHT/2 + R3*Math.sin(angle)
+            if(i==0){
+                ctx.moveTo(x,y)
+            } else {
+                ctx.lineTo(x,y)
+            }
         }
     }
 }
@@ -396,7 +413,7 @@ function _poincare_hp_f(x, y){
     return [2*x / (x*x + (1 + y)*(1 + y)),(x*x + y * y - 1) / (x*x + (1 + y)*(1 + y))]
 }
 
-function draw_a_poincare_hp(ctx, xcenter){
+function draw_a_poincare_hp(ctx, xcenter, bounded){
     var N = 500
     var NN = 15
     var angle = 0
@@ -423,6 +440,13 @@ function draw_a_poincare_hp(ctx, xcenter){
         }
     }
 
+    if(!bounded){
+        // end dash this
+        ctx.stroke()
+        ctx.beginPath()
+        ctx.setLineDash([])
+    }
+
     var a = Math.PI/2.5
     for(var i=0;i<=N;i++){
         angle = -a + (Math.PI + 2*a)*i/N
@@ -436,26 +460,28 @@ function draw_a_poincare_hp(ctx, xcenter){
         }
     }
 
-    // end dash this
-    ctx.stroke()
-    ctx.beginPath()
-    ctx.setLineDash([])
+    if(bounded){
+        // end dash this
+        ctx.stroke()
+        ctx.beginPath()
+        ctx.setLineDash([])
 
-    var R3 = 3/4
-    for(var i=0;i<=N;i++){
-        angle = 2*i*Math.PI/N
-        var x = R3*Math.cos(angle)
-        var y = R3*Math.sin(angle)
-        pt = _poincare_hp_f(x, y)
-        if(i==0){
-            ctx.moveTo(xcenter + 30*pt[0], HEIGHT*0.75 + 30*pt[1])
-        } else {
-            ctx.lineTo(xcenter + 30*pt[0], HEIGHT*0.75 + 30*pt[1])
+        var R3 = 3/4
+        for(var i=0;i<=N;i++){
+            angle = 2*i*Math.PI/N
+            var x = R3*Math.cos(angle)
+            var y = R3*Math.sin(angle)
+            pt = _poincare_hp_f(x, y)
+            if(i==0){
+                ctx.moveTo(xcenter + 30*pt[0], HEIGHT*0.75 + 30*pt[1])
+            } else {
+                ctx.lineTo(xcenter + 30*pt[0], HEIGHT*0.75 + 30*pt[1])
+            }
         }
     }
 }
 
-function draw_a_gans(ctx, xcenter){
+function draw_a_gans(ctx, xcenter, bounded){
     var N = 100
     var NN = 15
     var angle = 0
@@ -496,18 +522,19 @@ function draw_a_gans(ctx, xcenter){
     ctx.beginPath()
     ctx.setLineDash([])
 
-    for(var i=0;i<=N;i++){
-        angle = 2*i*Math.PI/N
-        var x = xcenter + R3*Math.cos(angle)
-        var y = HEIGHT/2 + R3*Math.sin(angle)
-        if(i==0){
-            ctx.moveTo(x,y)
-        } else {
-            ctx.lineTo(x,y)
+    if(bounded){
+        for(var i=0;i<=N;i++){
+            angle = 2*i*Math.PI/N
+            var x = xcenter + R3*Math.cos(angle)
+            var y = HEIGHT/2 + R3*Math.sin(angle)
+            if(i==0){
+                ctx.moveTo(x,y)
+            } else {
+                ctx.lineTo(x,y)
+            }
         }
     }
 }
-
 
 function _band_f(x, y){
     var ss = x*x + y*y
@@ -521,7 +548,7 @@ function _band_f(x, y){
     return [Math.log(r), theta]
 }
 
-function draw_a_band(ctx, xcenter){
+function draw_a_band(ctx, xcenter, bounded){
     var N = 500
     var NN = 15
     var angle = 0
@@ -549,26 +576,34 @@ function draw_a_band(ctx, xcenter){
         }
     }
 
+    if(!bounded){
+        // end dash this
+        ctx.stroke()
+        ctx.beginPath()
+        ctx.setLineDash([])
+    }
     ctx.moveTo(xcenter + scale*3, HEIGHT/2 + scale*1.55)
     ctx.lineTo(xcenter + scale*-3, HEIGHT/2 + scale*1.55)
     ctx.moveTo(xcenter + scale*3, HEIGHT/2 - scale*1.55)
     ctx.lineTo(xcenter + scale*-3, HEIGHT/2 - scale*1.55)
 
-    // end dash this
-    ctx.stroke()
-    ctx.beginPath()
-    ctx.setLineDash([])
+    if(bounded){
+        // end dash this
+        ctx.stroke()
+        ctx.beginPath()
+        ctx.setLineDash([])
 
-    var R3 = 0.992
-    for(var i=0;i<=N;i++){
-        angle = 2*i*Math.PI/N
-        var x = R3*Math.cos(angle)
-        var y = R3*Math.sin(angle)
-        pt = _band_f(x, y)
-        if(i==0){
-            ctx.moveTo(xcenter + 30*pt[0], HEIGHT/2 + 30*pt[1])
-        } else {
-            ctx.lineTo(xcenter + 30*pt[0], HEIGHT/2 + 30*pt[1])
+        var R3 = 0.992
+        for(var i=0;i<=N;i++){
+            angle = 2*i*Math.PI/N
+            var x = R3*Math.cos(angle)
+            var y = R3*Math.sin(angle)
+            pt = _band_f(x, y)
+            if(i==0){
+                ctx.moveTo(xcenter + 30*pt[0], HEIGHT/2 + 30*pt[1])
+            } else {
+                ctx.lineTo(xcenter + 30*pt[0], HEIGHT/2 + 30*pt[1])
+            }
         }
     }
 }
@@ -582,7 +617,7 @@ function _hyperboloid_f(x, y){
     return [(xx-yy) * Math.sin(30), zz + (xx+yy) * Math.cos(30)]
 }
 
-function draw_a_hyperboloid(ctx, xcenter){
+function draw_a_hyperboloid(ctx, xcenter, bounded){
     var R = 30
     var N = 100
     var prev = 0
@@ -622,6 +657,8 @@ function draw_a_hyperboloid(ctx, xcenter){
             ctx.lineTo(xcenter+R*p[0],HEIGHT/3+R*p[1])
         }
     }
+
+    // TODO: bounded
 
     for(var i=0;i<=N;i++){
         p = _hyperboloid_f(p1[0] + (p2[0]-p1[0])*i/N,p1[1] + (p2[1]-p1[1])*i/N)
@@ -892,7 +929,10 @@ function draw_surface(ctx){
         draw_a_sphere(ctx,WIDTH/4)
     }
     if(options["surface"]=="hyperbolic"){
-        draw_a_poincare(ctx,WIDTH/4)
+        draw_a_poincare(ctx,WIDTH/4, true)
+    }
+    if(options["surface"]=="hyperbolicunbounded"){
+        draw_a_poincare(ctx,WIDTH/4, false)
     }
     if(options["surface"]=="flattorus"){
         draw_a_torus(ctx,WIDTH/4)
@@ -946,22 +986,22 @@ function draw_surface(ctx){
         draw_two_circles(ctx,3*WIDTH/4)
     }
     if(options["projection"]=="Beltrami-Klein"){
-        draw_a_bk(ctx,3*WIDTH/4)
+        draw_a_bk(ctx,3*WIDTH/4, options["surface"]=="hyperbolic")
     }
     if(options["projection"]=="Poincare"){
-        draw_a_poincare(ctx,3*WIDTH/4)
+        draw_a_poincare(ctx,3*WIDTH/4, options["surface"]=="hyperbolic")
     }
     if(options["projection"]=="Poincare HP"){
-        draw_a_poincare_hp(ctx,3*WIDTH/4)
+        draw_a_poincare_hp(ctx,3*WIDTH/4, options["surface"]=="hyperbolic")
     }
     if(options["projection"]=="hyperboloid"){
-        draw_a_hyperboloid(ctx,3*WIDTH/4)
+        draw_a_hyperboloid(ctx,3*WIDTH/4, options["surface"]=="hyperbolic")
     }
     if(options["projection"]=="gans"){
-        draw_a_gans(ctx,3*WIDTH/4)
+        draw_a_gans(ctx,3*WIDTH/4, options["surface"]=="hyperbolic")
     }
     if(options["projection"]=="band"){
-        draw_a_band(ctx,3*WIDTH/4)
+        draw_a_band(ctx,3*WIDTH/4, options["surface"]=="hyperbolic")
     }
 }
 

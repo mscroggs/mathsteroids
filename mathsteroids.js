@@ -25,6 +25,7 @@ var game_title = ""
 
 // Global variables
 var games = [
+    // Sphere levels
     ["sphere (mercator projection)","sphere","Mercator"],
     ["sphere (isometric)","sphere","isometric"],
     ["sphere (stereographic projection)","sphere","stereographic"],
@@ -35,21 +36,27 @@ var games = [
     ["sphere (sinusoidal projection)","sphere","sinusoidal"],
     ["sphere (mollweide projection)","sphere","Mollweide"],
     ["sphere (goode homolosine projection)","sphere","Goode"],
+
+    // Flat levels
     ["(flat) cylinder","flatcylinder","flat"],
     ["(flat) möbius strip","flatmobius","flat"],
     ["(flat) torus","flattorus","flat"],
     ["(flat) klein bottle","flatKlein","flat"],
     ["(flat) real projective plane","flatreal-pp","flat"],
+    ["unbounded 2d space","flatunbounded", "unbounded"],
+    ["loop (elliptical pool table)","pool","loop"],
+
+    // Torus levels
     ["torus (top view)","torus","top_v"],
     ["torus (projected)","torus","projected"],
-    ["loop (elliptical pool table)","pool","loop"],
+
+    // Hyperbolic levels
     ["hyperbolic plane (poincaré disk)","hyperbolic","Poincare"],
     ["hyperbolic plane (beltrami-klein)","hyperbolic","Beltrami-Klein"],
     ["hyperbolic plane (poincaré half-plane)","hyperbolic","Poincare HP"],
     ["hyperbolic plane (hyperboloid)","hyperbolic","hyperboloid"],
     ["hyperbolic plane (gans)","hyperbolic","gans"],
     ["hyperbolic plane (band)","hyperbolic","band"],
-    ["unbounded 2d space","flatunbounded", "unbounded"],
 ]
 var options = {"surface":"sphere","projection":"Mercator"}
 var mouse = "";

@@ -702,7 +702,6 @@ function draw_asteroids(){
                 var d = Math.sqrt(Math.pow(x - asteroids[i]["hangle"], 2) + Math.pow(y - asteroids[i]["vangle"], 2))
                 var alen = 10 + 40/(1+d/50)
 
-                console.log(alen)
                 add_line_to_draw(Array(x-(alen + 3)*Math.cos(ang), y-(alen + 3)*Math.sin(ang), x - 3*Math.cos(ang), y - 3*Math.sin(ang)))
                 add_line_to_draw(Array(x-(3 + alen/2)*Math.cos(ang)+alen/3*Math.cos(ang+Math.PI/2), y-(3+alen/2)*Math.sin(ang)+alen/3*Math.sin(ang+Math.PI/2), x - 3*Math.cos(ang), y - 3*Math.sin(ang)))
                 add_line_to_draw(Array(x-(3 + alen/2)*Math.cos(ang)+alen/3*Math.cos(ang-Math.PI/2), y-(3+alen/2)*Math.sin(ang)+alen/3*Math.sin(ang-Math.PI/2), x - 3*Math.cos(ang), y - 3*Math.sin(ang)))

@@ -43,12 +43,13 @@ var games = [
     ["torus (top view)","torus","top_v"],
     ["torus (projected)","torus","projected"],
     ["loop (elliptical pool table)","pool","loop"],
-    ["hyperbolic plane (poincaré disk model)","hyperbolic","Poincare"],
-    ["hyperbolic plane (beltrami-klein model)","hyperbolic","Beltrami-Klein"],
-    ["hyperbolic plane (poincaré half-plane model)","hyperbolic","Poincare HP"],
+    ["hyperbolic plane (poincaré disk)","hyperbolic","Poincare"],
+    ["hyperbolic plane (beltrami-klein)","hyperbolic","Beltrami-Klein"],
+    ["hyperbolic plane (poincaré half-plane)","hyperbolic","Poincare HP"],
     ["hyperbolic plane (hyperboloid)","hyperbolic","hyperboloid"],
-    ["hyperbolic plane (gans model)","hyperbolic","gans"],
-    ["hyperbolic plane (band model)","hyperbolic","band"],
+    ["hyperbolic plane (gans)","hyperbolic","gans"],
+    ["hyperbolic plane (band)","hyperbolic","band"],
+    ["unbounded 2d space","flatunbounded", "unbounded"],
 ]
 var options = {"surface":"sphere","projection":"Mercator"}
 var mouse = "";
@@ -669,6 +670,44 @@ function draw_asteroids(){
     for(var i=0;i<asteroids.length;i++){
         draw_sprite(asteroid_sprite(asteroids[i]))
     }
+    if(options["surface"] == "flatunbounded"){
+        for(var i=0;i<asteroids.length;i++){
+            if(asteroids[i]["hangle"] < -5 || asteroids[i]["hangle"] > WIDTH + 5 || asteroids[i]["vangle"] < -5 || asteroids[i]["vangle"] > HEIGHT + 5){
+                var ang = Math.atan2(asteroids[i]["vangle"] - spaceship["vangle"], asteroids[i]["hangle"] - spaceship["hangle"])
+                var x = 0
+                var y = 0
+                if (ang > -Math.PI / 2 && ang < Math.PI / 2){
+                    x = WIDTH
+                } else {
+                    x = 0
+                }
+                // Math.tan(ang) = (y - spaceship["vangle"]) / (x - spaceship["hangle"])
+                y = spaceship["vangle"] + (x - spaceship["hangle"]) * Math.tan(ang)
+                if (y > HEIGHT || y < 0) {
+                    if (y > HEIGHT) {
+                        y = HEIGHT
+                    } else {
+                        y = 0
+                    }
+                    // Math.tan(ang) = (HEIGHT - spaceship["vangle"]) / (x - spaceship["hangle"])
+                    x = spaceship["hangle"] + (y - spaceship["vangle"]) / Math.tan(ang)
+                }
+                var d = Math.sqrt(Math.pow(x - asteroids[i]["hangle"], 2) + Math.pow(y - asteroids[i]["vangle"], 2))
+                var alen = 10 + 40/(1+d/50)
+
+                console.log(alen)
+                add_line_to_draw(Array(x-(alen + 3)*Math.cos(ang), y-(alen + 3)*Math.sin(ang), x - 3*Math.cos(ang), y - 3*Math.sin(ang)))
+                add_line_to_draw(Array(x-(3 + alen/2)*Math.cos(ang)+alen/3*Math.cos(ang+Math.PI/2), y-(3+alen/2)*Math.sin(ang)+alen/3*Math.sin(ang+Math.PI/2), x - 3*Math.cos(ang), y - 3*Math.sin(ang)))
+                add_line_to_draw(Array(x-(3 + alen/2)*Math.cos(ang)+alen/3*Math.cos(ang-Math.PI/2), y-(3+alen/2)*Math.sin(ang)+alen/3*Math.sin(ang-Math.PI/2), x - 3*Math.cos(ang), y - 3*Math.sin(ang)))
+
+                var ang2 = Math.atan2(y - spaceship["vangle"], x - spaceship["hangle"])
+                if (Math.abs(ang - ang2) > 0.0001){
+                    alert(spaceship["hangle"] + "  " + spaceship["vangle"] + "  " + asteroids[i]["hangle"] + "  " + asteroids[i]["vangle"])
+                }
+
+            }
+        }
+    }
 }
 
 function draw_fire(){
@@ -703,6 +742,49 @@ function draw_sprite(points_list){
 
 function move_ship(){
     spaceship = move_sprite(spaceship)
+    if(options["surface"] == "flatunbounded"){
+        var pad = 150
+        if(spaceship["hangle"] < pad) {
+            move = pad - spaceship["hangle"]
+            spaceship["hangle"] += move
+            for(var i=0;i<asteroids.length;i++){
+                asteroids[i]["hangle"] += move
+            }
+            for(var i=0;i<fires.length;i++){
+                fires[i]["hangle"] += move
+            }
+        }
+        if(spaceship["hangle"] > WIDTH - pad) {
+            move = WIDTH - pad - spaceship["hangle"]
+            spaceship["hangle"] += move
+            for(var i=0;i<asteroids.length;i++){
+                asteroids[i]["hangle"] += move
+            }
+            for(var i=0;i<fires.length;i++){
+                fires[i]["hangle"] += move
+            }
+        }
+        if(spaceship["vangle"] < pad) {
+            move = pad - spaceship["vangle"]
+            spaceship["vangle"] += move
+            for(var i=0;i<asteroids.length;i++){
+                asteroids[i]["vangle"] += move
+            }
+            for(var i=0;i<fires.length;i++){
+                fires[i]["vangle"] += move
+            }
+        }
+        if(spaceship["vangle"] > HEIGHT - pad) {
+            move = HEIGHT - pad - spaceship["vangle"]
+            spaceship["vangle"] += move
+            for(var i=0;i<asteroids.length;i++){
+                asteroids[i]["vangle"] += move
+            }
+            for(var i=0;i<fires.length;i++){
+                fires[i]["vangle"] += move
+            }
+        }
+    }
 }
 
 function move_sprite(sprite){
@@ -1234,6 +1316,10 @@ function draw_line(ctx,preh,prev,hangle,vangle){
         } else if(options["surface"]=="flatcylinder"){
             if(options["projection"]=="flat"){
                 flat_cylinder_draw_line(ctx,preh,prev,hangle,vangle)
+            }
+        } else if(options["surface"]=="flatunbounded"){
+            if(options["projection"]=="unbounded"){
+                flat_unbounded_draw_line(ctx,preh,prev,hangle,vangle)
             }
         }
     } else if(options["surface"]=="sphere"){
@@ -2115,6 +2201,11 @@ function flat_cylinder_draw_line(ctx,prex,prey,x,y){
     } else {
         draw_xy(ctx,prex,prey,x,y)
     }
+}
+
+// unbounded
+function flat_unbounded_draw_line(ctx,prex,prey,x,y){
+    draw_xy(ctx,prex,prey,x,y)
 }
 
 // hyperbolic surface

@@ -51,12 +51,12 @@ var games = [
     ["torus (projected)","torus","projected"],
 
     // Hyperbolic levels
-    ["hyperbolic plane (poincaré disk)","hyperbolic","Poincare"],
-    ["hyperbolic plane (beltrami-klein)","hyperbolic","Beltrami-Klein"],
-    ["hyperbolic plane (poincaré half-plane)","hyperbolic","Poincare HP"],
-    ["hyperbolic plane (hyperboloid)","hyperbolic","hyperboloid"],
-    ["hyperbolic plane (gans)","hyperbolic","gans"],
-    ["hyperbolic plane (band)","hyperbolic","band"],
+    ["hyperbolic circle (poincaré disk)","hyperbolic","Poincare"],
+    ["hyperbolic circle (beltrami-klein)","hyperbolic","Beltrami-Klein"],
+    ["hyperbolic circle (poincaré half-plane)","hyperbolic","Poincare HP"],
+    ["hyperbolic circle (hyperboloid)","hyperbolic","hyperboloid"],
+    ["hyperbolic circle (gans)","hyperbolic","gans"],
+    ["hyperbolic circle (band)","hyperbolic","band"],
     ["unbounded hyperbolic (poincaré disk)","hyperbolicunbounded","Poincare"],
 //    ["unbounded hyperbolic (beltrami-klein)","hyperbolicunbounded","Beltrami-Klein"],
 //    ["unbounded hyperbolic (poincaré half-plane)","hyperbolicunbounded","Poincare HP"],

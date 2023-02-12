@@ -58,11 +58,11 @@ var games = [
     ["hyperbolic plane (gans)","hyperbolic","gans"],
     ["hyperbolic plane (band)","hyperbolic","band"],
     ["unbounded hyperbolic (poincaré disk)","hyperbolicunbounded","Poincare"],
-    ["unbounded hyperbolic (beltrami-klein)","hyperbolicunbounded","Beltrami-Klein"],
-    ["unbounded hyperbolic (poincaré half-plane)","hyperbolicunbounded","Poincare HP"],
-    ["unbounded hyperbolic (hyperboloid)","hyperbolicunbounded","hyperboloid"],
-    ["unbounded hyperbolic (gans)","hyperbolicunbounded","gans"],
-    ["unbounded hyperbolic (band)","hyperbolicunbounded","band"],
+//    ["unbounded hyperbolic (beltrami-klein)","hyperbolicunbounded","Beltrami-Klein"],
+//    ["unbounded hyperbolic (poincaré half-plane)","hyperbolicunbounded","Poincare HP"],
+//    ["unbounded hyperbolic (hyperboloid)","hyperbolicunbounded","hyperboloid"],
+//    ["unbounded hyperbolic (gans)","hyperbolicunbounded","gans"],
+//    ["unbounded hyperbolic (band)","hyperbolicunbounded","band"],
 ]
 var options = {"surface":"sphere","projection":"Mercator"}
 var mouse = "";
@@ -438,11 +438,23 @@ function decrease_speed(){
 }
 
 function rotate_left(){
-    spaceship["rotation"] -= 0.07
+    if(options["surface"].substr(0, 10)=="hyperbolic") {
+        spaceship["rotation"] = hyper_compute_bk_angle(
+            spaceship["hangle"], spaceship["vangle"],
+            hyper_compute_angle_with_diameter(spaceship["hangle"], spaceship["vangle"], spaceship["rotation"])-0.07)
+    } else {
+        spaceship["rotation"] -= 0.07
+    }
 }
 
 function rotate_right(){
-    spaceship["rotation"] += 0.07
+    if(options["surface"].substr(0, 10)=="hyperbolic") {
+        spaceship["rotation"] = hyper_compute_bk_angle(
+            spaceship["hangle"], spaceship["vangle"],
+            hyper_compute_angle_with_diameter(spaceship["hangle"], spaceship["vangle"], spaceship["rotation"])+ 0.07)
+    } else {
+        spaceship["rotation"] += 0.07
+    }
 }
 
 function draw_lives(ctx){
@@ -718,11 +730,24 @@ function draw_asteroids(){
                 add_line_to_draw(Array(x-(3 + alen/2)*Math.cos(ang)+alen/3*Math.cos(ang+Math.PI/2), y-(3+alen/2)*Math.sin(ang)+alen/3*Math.sin(ang+Math.PI/2), x - 3*Math.cos(ang), y - 3*Math.sin(ang)))
                 add_line_to_draw(Array(x-(3 + alen/2)*Math.cos(ang)+alen/3*Math.cos(ang-Math.PI/2), y-(3+alen/2)*Math.sin(ang)+alen/3*Math.sin(ang-Math.PI/2), x - 3*Math.cos(ang), y - 3*Math.sin(ang)))
 
-                var ang2 = Math.atan2(y - spaceship["vangle"], x - spaceship["hangle"])
-                if (Math.abs(ang - ang2) > 0.0001){
-                    alert(spaceship["hangle"] + "  " + spaceship["vangle"] + "  " + asteroids[i]["hangle"] + "  " + asteroids[i]["vangle"])
-                }
+            }
+        }
+    }
+    if(options["surface"] == "hyperbolicunbounded"){
+        for(var i=0;i<asteroids.length;i++){
+            if(hyper_compute_distance(0, 0, asteroids[i]["hangle"], asteroids[i]["vangle"]) > 4){
+                var ang = Math.atan2(asteroids[i]["vangle"], asteroids[i]["hangle"])
+                var d = hyper_compute_distance(0, 0, asteroids[i]["hangle"], asteroids[i]["vangle"])
+                var alen = 0.1 + 2/(1+d/5)
 
+                var arrow_st = hyper_add(0,0, ang, 4)
+                var arrow_end = hyper_add(0,0, ang, 4-alen)
+                var p0 = hyper_add(arrow_st[0],arrow_st[1], hyper_compute_bk_angle(arrow_st[0],arrow_st[1], 5*Math.PI/6), alen/2)
+                var p1 = hyper_add(arrow_st[0],arrow_st[1], hyper_compute_bk_angle(arrow_st[0],arrow_st[1], -5*Math.PI/6), alen/2)
+
+                add_line_to_draw(Array(arrow_st[0], arrow_st[1], arrow_end[0], arrow_end[1]))
+                add_line_to_draw(Array(arrow_st[0], arrow_st[1], p0[0], p0[1]))
+                add_line_to_draw(Array(arrow_st[0], arrow_st[1], p1[0], p1[1]))
             }
         }
     }
@@ -810,16 +835,16 @@ function move_ship(){
                 var new_spaceship = hyper_add(0, 0, ang, pad)
 
                 for(var i=0;i<asteroids.length;i++){
-                    var a = Math.atan2(asteroids[i]["vangle"] - spaceship["vangle"], asteroids[i]["hangle"] - spaceship["hangle"])
+                    var a = hyper_compute_angle_with_diameter(spaceship["hangle"], spaceship["vangle"], Math.atan2(asteroids[i]["vangle"] - spaceship["vangle"], asteroids[i]["hangle"] - spaceship["hangle"]))
                     var d = hyper_compute_distance(asteroids[i]["hangle"], asteroids[i]["vangle"], spaceship["hangle"], spaceship["vangle"])
-                    var p = hyper_add(new_spaceship[0], new_spaceship[1], a, d)
+                    var p = hyper_add(new_spaceship[0], new_spaceship[1], hyper_compute_bk_angle(new_spaceship[0], new_spaceship[1], a), d)
                     asteroids[i]["hangle"] = p[0]
                     asteroids[i]["vangle"] = p[1]
                 }
                 for(var i=0;i<fires.length;i++){
-                    var a = Math.atan2(fires[i]["vangle"] - spaceship["vangle"], fires[i]["hangle"] - spaceship["hangle"])
+                    var a = hyper_compute_angle_with_diameter(spaceship["hangle"], spaceship["vangle"], Math.atan2(fires[i]["vangle"] - spaceship["vangle"], fires[i]["hangle"] - spaceship["hangle"]))
                     var d = hyper_compute_distance(fires[i]["hangle"], fires[i]["vangle"], spaceship["hangle"], spaceship["vangle"])
-                    var p = hyper_add(new_spaceship[0], new_spaceship[1], a, d)
+                    var p = hyper_add(new_spaceship[0], new_spaceship[1], hyper_compute_bk_angle(new_spaceship[0], new_spaceship[1], a), d)
                     fires[i]["hangle"] = p[0]
                     fires[i]["vangle"] = p[1]
                 }
@@ -832,6 +857,10 @@ function move_ship(){
 }
 
 function move_sprite(sprite){
+    var a = 0
+    if(options["surface"].substr(0,10)=="hyperbolic"){
+        a = hyper_compute_angle_with_diameter(sprite["hangle"], sprite["vangle"], sprite["direction"]) - hyper_compute_angle_with_diameter(sprite["hangle"], sprite["vangle"], sprite["rot"])
+    }
     var new_pos = move_on_surface(sprite["hangle"],sprite["vangle"],sprite["direction"],sprite["speed"],1)
     var rot = sprite["rotation"]
     sprite["rotation"] *= new_pos["flip"]
@@ -843,6 +872,9 @@ function move_sprite(sprite){
     if(options["surface"]=="pool" || options["surface"]=="flatcylinder" || options["surface"]=="hyperbolic"){sprite["rotation"]=rot}
     if(options["surface"]=="flatmobius" && new_pos["flip"]==1){sprite["rotation"]=rot}
     if(options["surface"]=="flatcylinder"){sprite["rotation"]=rot}
+    if(options["surface"].substr(0,10)=="hyperbolic"){
+        sprite["rot"] = hyper_compute_bk_angle(sprite["hangle"], sprite["vangle"], hyper_compute_angle_with_diameter(sprite["hangle"], sprite["vangle"], sprite["direction"]) - a)
+    }
     return sprite
 }
 
@@ -2270,6 +2302,67 @@ function hyper_compute_distance(px, py, qx, qy){
     }
 
     return Math.abs(Math.log(d1_to_point1 * d0_to_point2 / d1_to_point2 / d0_to_point1) / 2)
+}
+
+function hyper_compute_angle_with_diameter(px, py, bk_angle){
+    while(bk_angle < 0){bk_angle += 2*Math.PI}
+    while(bk_angle >= 2*Math.PI){bk_angle -= 2*Math.PI}
+    if(px==0 && py==0){
+        return bk_angle
+    }
+    // y * px = x * py
+    // y - py = tan(bk_angle) * (x - px)
+    //
+    // (py)x + (-px)y = 0
+    // (tan(bk_angle))x + (-1)y = tan(bk_angle) * px - py
+    //
+    var cos = Math.abs((py*Math.sin(bk_angle)+px*Math.cos(bk_angle)) / (Math.sqrt((py*py+px*px)*(1-Math.pow(Math.sin(bk_angle)*px-Math.cos(bk_angle)*py, 2)))))
+    if(cos > 1){cos = 1}
+    var gamma = Math.acos(cos)
+    var bk2 = bk_angle - Math.atan2(py, px)
+    while(bk2>=Math.PI){bk2-=2*Math.PI}
+    while(bk2<-Math.PI){bk2+=2*Math.PI}
+    if(bk2 > Math.PI / 2){
+        return Math.PI - gamma
+    } else if(bk2 > 0){
+        return gamma
+    } else if(bk2 > -Math.PI/2){
+        return -gamma
+    } else {
+        return gamma - Math.PI
+    }
+}
+
+function hyper_compute_bk_angle(px, py, angle_with_d){
+    if(angle_with_d >= Math.PI){angle_with_d -= 2*Math.PI}
+    if(angle_with_d < -Math.PI){angle_with_d += 2*Math.PI}
+    if(px==0 && py==0){
+        return angle_with_d
+    }
+    var pang = Math.atan2(py, px)
+    var e = [[0, 0], [0, 0]]
+    if(angle_with_d > Math.PI/2){
+        e = [[pang+Math.PI/2, Math.PI/2], [pang+Math.PI, Math.PI]]
+    } else if(angle_with_d > 0){
+        e = [[pang, 0], [pang+Math.PI/2, Math.PI/2]]
+    } else if(angle_with_d > -Math.PI/2){
+        e = [[pang-Math.PI/2, -Math.PI/2], [pang, 0]]
+    } else {
+        e = [[pang-Math.PI, -Math.PI], [pang-Math.PI/2, -Math.PI/2]]
+    }
+
+    for(var i=0;i<10;i++){
+        var a = (e[0][0] + e[1][0]) / 2
+        var a2 = hyper_compute_angle_with_diameter(px, py, a)
+        if(a2 < angle_with_d) {
+            e[0] = [a, a2]
+        } else {
+            e[1] = [a, a2]
+        }
+    }
+    while(e[0][0] < 0){e[0][0] += 2*Math.PI}
+    while(e[0][0] >= 2*Math.PI){e[0][0] -= 2*Math.PI}
+    return e[0][0]
 }
 
 function hyper_compute_endpoints(px, py, bk_angle){

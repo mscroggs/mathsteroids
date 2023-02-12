@@ -733,34 +733,30 @@ function draw_asteroids(){
             }
         }
     } else if(options["surface"] == "hyperbolicunbounded"){
-        if(options["projection"] == "Poincare"){
-            for(var i=0;i<asteroids.length;i++){
-                if(hyper_compute_distance(0, 0, asteroids[i]["hangle"], asteroids[i]["vangle"]) > 4){
-                    var ang = Math.atan2(asteroids[i]["vangle"], asteroids[i]["hangle"])
-                    var d = hyper_compute_distance(0, 0, asteroids[i]["hangle"], asteroids[i]["vangle"])
-                    var alen = 0.1 + 2/(1+d/5)
-
-                    var arrow_st = hyper_add(0,0, ang, 4)
-                    var arrow_end = hyper_add(0,0, ang, 4-alen)
-                    var p0 = hyper_add(arrow_st[0],arrow_st[1], hyper_compute_bk_angle(arrow_st[0],arrow_st[1], 5*Math.PI/6), alen/2)
-                    var p1 = hyper_add(arrow_st[0],arrow_st[1], hyper_compute_bk_angle(arrow_st[0],arrow_st[1], -5*Math.PI/6), alen/2)
-
-                    add_line_to_draw(Array(arrow_st[0], arrow_st[1], arrow_end[0], arrow_end[1]))
-                    add_line_to_draw(Array(arrow_st[0], arrow_st[1], p0[0], p0[1]))
-                    add_line_to_draw(Array(arrow_st[0], arrow_st[1], p1[0], p1[1]))
-                }
+        if(options["projection"] == "Poincare" || options["projection"] == "Beltrami-Klein"){
+            var max_d = 4
+            var a0 = 0.1
+            var a1 = 2
+            if(options["projection"] == "Beltrami-Klein"){
+                max_d = 2
+                a1 = 1.2
             }
-        } else if(options["projection"] == "Beltrami-Klein"){
             for(var i=0;i<asteroids.length;i++){
-                if(hyper_compute_distance(0, 0, asteroids[i]["hangle"], asteroids[i]["vangle"]) > 2){
+                if(hyper_compute_distance(0, 0, asteroids[i]["hangle"], asteroids[i]["vangle"]) > max_d){
                     var ang = Math.atan2(asteroids[i]["vangle"], asteroids[i]["hangle"])
                     var d = hyper_compute_distance(0, 0, asteroids[i]["hangle"], asteroids[i]["vangle"])
-                    var alen = 0.1 + 1.2/(1+d/5)
-
-                    var arrow_st = hyper_add(0,0, ang, 2)
-                    var arrow_end = hyper_add(0,0, ang, 2-alen)
-                    var p0 = hyper_add(arrow_st[0],arrow_st[1], ang + 5*Math.PI/6, alen/2)
-                    var p1 = hyper_add(arrow_st[0],arrow_st[1], ang - 5*Math.PI/6, alen/2)
+                    var alen = a0 + a1/(1+d/5)
+                    var arrow_st = hyper_add(0,0, ang, max_d)
+                    var arrow_end = hyper_add(0,0, ang, max_d-alen)
+                    var p0 = [0,0]
+                    var p1 = [0,0]
+                    if(options["projection"] == "Poincare") {
+                        p0 = hyper_add(arrow_st[0],arrow_st[1], hyper_compute_bk_angle(arrow_st[0],arrow_st[1], 5*Math.PI/6), alen/2)
+                        p1 = hyper_add(arrow_st[0],arrow_st[1], hyper_compute_bk_angle(arrow_st[0],arrow_st[1], -5*Math.PI/6), alen/2)
+                    } else if(options["projection"] == "Beltrami-Klein"){
+                        p0 = hyper_add(arrow_st[0],arrow_st[1], ang + 5*Math.PI/6, alen/2)
+                        p1 = hyper_add(arrow_st[0],arrow_st[1], ang - 5*Math.PI/6, alen/2)
+                    }
 
                     add_line_to_draw(Array(arrow_st[0], arrow_st[1], arrow_end[0], arrow_end[1]))
                     add_line_to_draw(Array(arrow_st[0], arrow_st[1], p0[0], p0[1]))

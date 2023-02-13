@@ -59,10 +59,6 @@ var games = [
     ["hyperbolic circle (band)","hyperbolic","band"],
     ["unbounded hyperbolic (poincaré disk)","hyperbolicunbounded","Poincare"],
     ["unbounded hyperbolic (beltrami-klein)","hyperbolicunbounded","Beltrami-Klein"],
-//    ["unbounded hyperbolic (poincaré half-plane)","hyperbolicunbounded","Poincare HP"],
-//    ["unbounded hyperbolic (hyperboloid)","hyperbolicunbounded","hyperboloid"],
-//    ["unbounded hyperbolic (gans)","hyperbolicunbounded","gans"],
-//    ["unbounded hyperbolic (band)","hyperbolicunbounded","band"],
 ]
 var options = {"surface":"sphere","projection":"Mercator"}
 var mouse = "";
@@ -842,32 +838,11 @@ function move_ship(){
             }
         }
     } else if(options["surface"] == "hyperbolicunbounded"){
-        if(options["projection"] == "Poincare"){
+        if(options["projection"] == "Poincare" || options["projection"] == "Beltrami-Klein"){
             var pad = 2
-            if(hyper_compute_distance(0, 0, spaceship["hangle"], spaceship["vangle"]) > pad){
-                var ang = Math.atan2(spaceship["vangle"], spaceship["hangle"])
-                var new_spaceship = hyper_add(0, 0, ang, pad)
-
-                for(var i=0;i<asteroids.length;i++){
-                    var a = hyper_compute_angle_with_diameter(spaceship["hangle"], spaceship["vangle"], Math.atan2(asteroids[i]["vangle"] - spaceship["vangle"], asteroids[i]["hangle"] - spaceship["hangle"]))
-                    var d = hyper_compute_distance(asteroids[i]["hangle"], asteroids[i]["vangle"], spaceship["hangle"], spaceship["vangle"])
-                    var p = hyper_add(new_spaceship[0], new_spaceship[1], hyper_compute_bk_angle(new_spaceship[0], new_spaceship[1], a), d)
-                    asteroids[i]["hangle"] = p[0]
-                    asteroids[i]["vangle"] = p[1]
-                }
-                for(var i=0;i<fires.length;i++){
-                    var a = hyper_compute_angle_with_diameter(spaceship["hangle"], spaceship["vangle"], Math.atan2(fires[i]["vangle"] - spaceship["vangle"], fires[i]["hangle"] - spaceship["hangle"]))
-                    var d = hyper_compute_distance(fires[i]["hangle"], fires[i]["vangle"], spaceship["hangle"], spaceship["vangle"])
-                    var p = hyper_add(new_spaceship[0], new_spaceship[1], hyper_compute_bk_angle(new_spaceship[0], new_spaceship[1], a), d)
-                    fires[i]["hangle"] = p[0]
-                    fires[i]["vangle"] = p[1]
-                }
-
-                spaceship["hangle"] = new_spaceship[0]
-                spaceship["vangle"] = new_spaceship[1]
+            if(options["projection"] == "Beltrami-Klein"){
+                pad = 0.6
             }
-        } else if(options["projection"] == "Beltrami-Klein"){
-            var pad = 0.6
             if(hyper_compute_distance(0, 0, spaceship["hangle"], spaceship["vangle"]) > pad){
                 var ang = Math.atan2(spaceship["vangle"], spaceship["hangle"])
                 var new_spaceship = hyper_add(0, 0, ang, pad)
@@ -2463,12 +2438,17 @@ function to_poincare_hp(x, y){
     return [2*p[0] / (p[0]*p[0] + (1 + p[1])*(1 + p[1])),(p[0]*p[0] + p[1] * p[1] - 1) / (p[0]*p[0] + (1 + p[1])*(1 + p[1]))]
 }
 
-function hyper_poincare_hp_draw_line(ctx,prex,prey,x,y){
+function to_poincare_hp_scaled(x, y){
     var scale = 0.12 * HEIGHT
-    var pre = to_poincare_hp(prex, prey)
-    var pt = to_poincare_hp(x, y)
+    var p = to_poincare_hp(x, y)
+    return [WIDTH / 2 + scale * p[0], 0.96*HEIGHT + scale * p[1]]
+}
 
-    draw_xy(ctx,WIDTH/2 + scale * pre[0], 0.96*HEIGHT + scale * pre[1], WIDTH/2 + scale * pt[0], 0.96*HEIGHT + scale * pt[1])
+function hyper_poincare_hp_draw_line(ctx,prex,prey,x,y){
+    var pre = to_poincare_hp_scaled(prex, prey)
+    var pt = to_poincare_hp_scaled(x, y)
+
+    draw_xy(ctx,pre[0], pre[1], pt[0], pt[1])
 }
 
 function to_hyperboloid(x, y){

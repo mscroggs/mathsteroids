@@ -14,12 +14,29 @@ The following surfaces are currently available:
   * Gall–Peters projection
   * Craig retroazimuthal projection
   * Distance preserving azimuthal projection
+  * Robinson projection
+  * sinusoidal projection
+  * Mollweide projection
+  * Goode homolosine projection
 * Flat
   * cylinder
   * Mobius strip
   * torus
   * Klein bottle
   * real projective plane
+  * unbounded
+  * loop (elliptical pool)
 * Torus
   * Top view
   * Projected flat
+* Hyperbolic
+  * bounded
+    * Poincare disk model
+    * Beltrami-Klein model
+    * Poincare half-plane model
+    * hyperboloid
+    * Gand model
+    * band model
+  * unbounded
+    * Poincare disk model
+    * Beltrami-Klein model

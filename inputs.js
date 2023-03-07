@@ -50,6 +50,27 @@ function process_key(keyName, result){
     }
 }
 function do_gamepad(){
+    pads = navigator.getGamepads()
+/* DEBUG
+    var html = ""
+    if(!!pads){
+        for (var j = 0; j < pads.length; j++){
+            for(var i = 0; i < pads[j].buttons.length; i++){
+                html += i
+                html += " => "
+                if(pads[j].buttons[i].pressed){html += "YES"}else{html+="NO"}
+                html += "  "
+            }
+            for(var i = 0; i < pads[j].axes.length; i++){
+                html += i
+                html += " => " + pads[j].axes[i] + "  "
+            }
+            html += "<br />"
+        }
+    }
+    document.getElementById("debug").innerHTML = html
+*/
+/* PLAYSTATION
     gp = navigator.getGamepads()[0];
     if(!gp){return}
     if(gp.buttons[3].pressed){ //gp.buttons[5].pressed || gp.buttons[4].pressed){
@@ -83,6 +104,37 @@ function do_gamepad(){
     } else {
         leftPressed = false
     }
+*/
+/* MEGA DRIVE */
+    gp = navigator.getGamepads()[0];
+    if(!gp){return}
+    if(gp.buttons[1].pressed){ //gp.buttons[5].pressed || gp.buttons[4].pressed){
+        firePressed = true
+    } else {
+        firePressed = false
+    }
+    if(gp.axes[5] == -1){
+        upPressed = true
+    } else {
+        upPressed = false
+    }
+    if(gp.buttons[9].pressed){
+        selectPressed = true
+    } else {
+        selectPressed = false
+        selectDone = false
+    }
+    if(gp.axes[4] == 1){
+        rightPressed = true
+    } else {
+        rightPressed = false
+    }
+    if(gp.axes[4] == -1){
+        leftPressed = true
+    } else {
+        leftPressed = false
+    }
+/**/
     button_styles()
 }
 

@@ -29,6 +29,7 @@
 <div class='clickbutton' id='display_select'>?</div>
 </div>
 <div class='webad'>You can play this game online at <b>mscroggs.co.uk/mathsteroids</b></div>
+<div id='debug'></div>
 </center>
 <?php
 

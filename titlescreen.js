@@ -1068,15 +1068,23 @@ function redraw_menu(){
     draw_titles(ctx)
     draw_surface(ctx)
     add_scaled_text(ctx,"controls",WIDTH-300,25,0.5)
-    add_scaled_text(ctx,"#",WIDTH-300,50,0.5)
     add_scaled_text(ctx,"turn left / right",WIDTH-275,50,0.35)
-    add_scaled_text(ctx,"@",WIDTH-300,75,0.5)
     add_scaled_text(ctx,"fire",WIDTH-275,75,0.35)
-    add_scaled_text(ctx,"*",WIDTH-210,75,0.5)
     add_scaled_text(ctx,"forward",WIDTH-185,75,0.35)
-    add_scaled_text(ctx,"%",WIDTH-90,75,0.5)
-    add_scaled_text(ctx,"quit",WIDTH-65,75,0.35)
 
+/* PLAYSTATION
+    add_scaled_text(ctx,"quit",WIDTH-65,75,0.35)
+    add_scaled_text(ctx,"#",WIDTH-300,50,0.5)
+    add_scaled_text(ctx,"@",WIDTH-300,75,0.5)
+    add_scaled_text(ctx,"*",WIDTH-210,75,0.5)
+    add_scaled_text(ctx,"%",WIDTH-90,75,0.5)
+*/
+/* MEGA DRIVE */
+    add_scaled_text(ctx,"&",WIDTH-300,50,0.5)
+    add_scaled_text(ctx,"b",WIDTH-300,75,0.5)
+    add_scaled_text(ctx,"F",WIDTH-210,75,0.5)
+//    add_scaled_text(ctx,"%",WIDTH-90,75,0.5)
+/**/
     add_scaled_text(ctx,"surface:",20,HEIGHT-45,0.5)
     add_scaled_text(ctx,"<< "+game_title+" >>",150,HEIGHT-45,0.5)
     add_scaled_text(ctx,"press <fire> to begin",WIDTH-295,HEIGHT-20,0.5)

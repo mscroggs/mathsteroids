@@ -69,7 +69,7 @@ function do_gamepad(){
         }
     }
     document.getElementById("debug").innerHTML = html
-*/
+/**/
 /* PLAYSTATION
     gp = navigator.getGamepads()[0];
     if(!gp){return}
@@ -108,7 +108,7 @@ function do_gamepad(){
 /* MEGA DRIVE */
     gp = navigator.getGamepads()[0];
     if(!gp){return}
-    if(gp.buttons[1].pressed){ //gp.buttons[5].pressed || gp.buttons[4].pressed){
+    if(gp.buttons[1].pressed || gp.buttons[2].pressed || gp.buttons[4].pressed){
         firePressed = true
     } else {
         firePressed = false

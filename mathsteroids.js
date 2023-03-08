@@ -36,7 +36,7 @@ var games = [
     ["sphere (sinusoidal projection)","sphere","sinusoidal"],
     ["sphere (mollweide projection)","sphere","Mollweide"],
     ["sphere (goode homolosine projection)","sphere","Goode"],
-    ["sphere (cube)","sphere","cube"],
+    ["sphere (cube net)","sphere","cube"],
 
     // Flat levels
     ["(flat) cylinder","flatcylinder","flat"],

@@ -42,6 +42,7 @@ var games = [
     ["sphere (sinusoidal projection)","sphere","sinusoidal"],
     ["sphere (mollweide projection)","sphere","Mollweide"],
     ["sphere (goode homolosine projection)","sphere","Goode"],
+    ["sphere (cube)","sphere","cube"],
 
     // Flat levels
     ["(flat) cylinder","flatcylinder","flat"],
@@ -757,6 +758,29 @@ function draw_shape(){
                 prev = vangle
                 vangle += Math.PI * 0.5/N
             }
+        } else if(options["projection"]=="cube"){
+            var eps = 0.0001
+            // -1, -1+/-eps, -1+eps  to  -1, -1+/-eps, 1-eps
+            add_line_to_draw(Array(Math.atan2(-1-eps, -1),Math.atan2(-1+eps, Math.sqrt(2)),Math.atan2(-1-eps, -1),Math.atan2(1-eps, Math.sqrt(2))))
+            add_line_to_draw(Array(Math.atan2(-1+eps, -1),Math.atan2(-1+eps, Math.sqrt(2)),Math.atan2(-1+eps, -1),Math.atan2(1-eps, Math.sqrt(2))))
+            // -1, -1+eps, -1+/-eps  to  -1, 1-eps, -1+/-eps
+            add_line_to_draw(Array(Math.atan2(-1+eps, -1),Math.atan2(-1-eps, Math.sqrt(1+(eps-1)*(eps-1))),Math.atan2(1-eps, -1),Math.atan2(-1-eps, Math.sqrt(1+(1-eps)*(1-eps)))))
+            add_line_to_draw(Array(Math.atan2(-1+eps, -1),Math.atan2(-1+eps, Math.sqrt(1+(eps-1)*(eps-1))),Math.atan2(1-eps, -1),Math.atan2(-1+eps, Math.sqrt(1+(1-eps)*(1-eps)))))
+            // -1, -1+eps, 1+/-eps  to  -1, 1-eps, 1+/-eps
+            add_line_to_draw(Array(Math.atan2(-1+eps, -1),Math.atan2(1-eps, Math.sqrt(1+(eps-1)*(eps-1))),Math.atan2(1-eps, -1),Math.atan2(1-eps, Math.sqrt(1+(1-eps)*(1-eps)))))
+            add_line_to_draw(Array(Math.atan2(-1+eps, -1),Math.atan2(1+eps, Math.sqrt(1+(eps-1)*(eps-1))),Math.atan2(1-eps, -1),Math.atan2(1+eps, Math.sqrt(1+(1-eps)*(1-eps)))))
+            // -1+eps, -1, -1+/-eps  to  1-eps, -1, -1+/-eps
+            add_line_to_draw(Array(Math.atan2(-1, -1+eps),Math.atan2(-1-eps, Math.sqrt((eps-1)*(eps-1)+1)),Math.atan2(-1,1-eps),Math.atan2(-1-eps, Math.sqrt((1-eps)*(1-eps)+1))))
+            add_line_to_draw(Array(Math.atan2(-1, -1+eps),Math.atan2(-1+eps, Math.sqrt((eps-1)*(eps-1)+1)),Math.atan2(-1,1-eps),Math.atan2(-1+eps, Math.sqrt((1-eps)*(1-eps)+1))))
+            // -1+eps, -1, 1+/-eps  to  1-eps, -1, 1+/-eps
+            add_line_to_draw(Array(Math.atan2(-1, -1+eps),Math.atan2(1-eps, Math.sqrt((eps-1)*(eps-1)+1)),Math.atan2(-1,1-eps),Math.atan2(1-eps, Math.sqrt((1-eps)*(1-eps)+1))))
+            add_line_to_draw(Array(Math.atan2(-1, -1+eps),Math.atan2(1+eps, Math.sqrt((eps-1)*(eps-1)+1)),Math.atan2(-1,1-eps),Math.atan2(1+eps, Math.sqrt((1-eps)*(1-eps)+1))))
+            // 1-eps, 1, 1+/-eps  to  -1+eps, 1, 1+/-eps
+            add_line_to_draw(Array(Math.atan2(1, 1-eps),Math.atan2(1+eps, Math.sqrt((eps-1)*(eps-1)+1)),Math.atan2(1,eps-1),Math.atan2(1+eps, Math.sqrt((1-eps)*(1-eps)+1))))
+            add_line_to_draw(Array(Math.atan2(1, 1-eps),Math.atan2(1-eps, Math.sqrt((eps-1)*(eps-1)+1)),Math.atan2(1,eps-1),Math.atan2(1-eps, Math.sqrt((1-eps)*(1-eps)+1))))
+            // 1-eps, 1, -1+/-eps  to  -1+eps, 1, -1+/-eps
+            add_line_to_draw(Array(Math.atan2(1, 1-eps),Math.atan2(-1+eps, Math.sqrt((eps-1)*(eps-1)+1)),Math.atan2(1,eps-1),Math.atan2(-1+eps, Math.sqrt((1-eps)*(1-eps)+1))))
+            add_line_to_draw(Array(Math.atan2(1, 1-eps),Math.atan2(-1-eps, Math.sqrt((eps-1)*(eps-1)+1)),Math.atan2(1,eps-1),Math.atan2(-1-eps, Math.sqrt((1-eps)*(1-eps)+1))))
         }
     } else if(options["surface"]=="torus"){
         if(options["projection"]=="top_v"){
@@ -1568,6 +1592,8 @@ function draw_line(ctx,preh,prev,hangle,vangle){
             Mollweide_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="Goode"){
             Goode_draw_line(ctx,preh,prev,hangle,vangle)
+        } else if(options["projection"]=="cube"){
+            cube_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="Gall"){
             Gall_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="azim"){
@@ -2192,6 +2218,89 @@ function Goode_draw_line(ctx,preh,prev,h,v){
     if(Math.abs(h-preh) < Math.PI / 5){
         draw_xy(ctx,prex,prey,x,y)
     }
+}
+
+// cube
+function cube_xy(hangle,vangle){
+    var x = Math.cos(hangle) * Math.cos(vangle)
+    var y = Math.sin(hangle) * Math.cos(vangle)
+    var z = Math.sin(vangle)
+
+    var ax = Math.abs(x)
+    var ay = Math.abs(y)
+    var az = Math.abs(z)
+
+    var px = 0
+    var py = 0
+    var ox = 0
+    var oy = 0
+    var rt3 = Math.sqrt(3)
+
+    if(z>=ax && z>=ay){
+        px = y/z
+        py = -x/z
+        ox = 1
+        oy = 2
+    } else if(x>=ay && x>=az){
+        px = y/x
+        py = z/x
+        ox = 1
+        oy = 1
+    } else if (-z>=ax && -z>=ay){
+        px = -y/z
+        py = -x/z
+        ox = 1
+        oy = 0
+    } else if(-x>=ay && -x>=az){
+        px = y/x
+        py = -z/x
+        ox = 3
+        oy = 1
+    } else if(y>=ax && y>=az){
+        px = -x/y
+        py = z/y
+        ox = 2
+        oy = 1
+    } else {
+        px = -x/y
+        py = -z/y
+        ox = 0
+        oy = 1
+    }
+    var size = HEIGHT / 3.5
+    px = (px + 1)/2 * size
+    py = (py + 1)/2 * size
+    ox = WIDTH/2 + (ox - 2) * size
+    oy = HEIGHT/2 + (oy - 1.5)*size
+
+    return {"x":ox+px,"y":oy+py}
+}
+
+function cube_draw_line(ctx,preh,prev,h,v){
+    var x0 = Math.abs(Math.cos(preh) * Math.cos(prev))
+    var y0 = Math.abs(Math.sin(preh) * Math.cos(prev))
+    var z0 = Math.abs(Math.sin(prev))
+    var x1 = Math.abs(Math.cos(h) * Math.cos(v))
+    var y1 = Math.abs(Math.sin(h) * Math.cos(v))
+    var z1 = Math.abs(Math.sin(v))
+
+    if (x0 >= y0 && x0 >= z0 && (x1 <= y1 || x1 <= z1)) {
+        return
+    }
+    if (y0 >= x0 && y0 >= z0 && (y1 <= x1 || y1 <= z1)) {
+        return
+    }
+    if (z0 >= x0 && z0 >= y0 && (z1 <= x1 || z1 <= y1)) {
+        return
+    }
+
+    var xy = cube_xy(preh,prev)
+    var prex = xy["x"]
+    var prey = xy["y"]
+    xy = cube_xy(h,v)
+    var x = xy["x"]
+    var y = xy["y"]
+    draw_xy(ctx,prex,prey,x,y)
 }
 
 // Gall

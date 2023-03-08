@@ -211,6 +211,23 @@ function draw_a_Goode(ctx, xcenter){
     }
 }
 
+function draw_a_cube(ctx, xcenter){
+    var size = WIDTH/9
+    ctx.moveTo(xcenter-2*size,HEIGHT/2+20-0.5*size)
+    ctx.lineTo(xcenter-size,HEIGHT/2+20-0.5*size)
+    ctx.lineTo(xcenter-size,HEIGHT/2+20-1.5*size)
+    ctx.lineTo(xcenter,HEIGHT/2+20-1.5*size)
+    ctx.lineTo(xcenter,HEIGHT/2+20-0.5*size)
+    ctx.lineTo(xcenter+2*size,HEIGHT/2+20-0.5*size)
+    ctx.lineTo(xcenter+2*size,HEIGHT/2+20+0.5*size)
+    ctx.lineTo(xcenter,HEIGHT/2+20+0.5*size)
+    ctx.lineTo(xcenter,HEIGHT/2+20+1.5*size)
+    ctx.lineTo(xcenter-size,HEIGHT/2+20+1.5*size)
+    ctx.lineTo(xcenter-size,HEIGHT/2+20+0.5*size)
+    ctx.lineTo(xcenter-2*size,HEIGHT/2+20+0.5*size)
+    ctx.lineTo(xcenter-2*size,HEIGHT/2+20-0.5*size)
+}
+
 function draw_a_plane(ctx, xcenter){
     ctx.moveTo(xcenter-120, HEIGHT/2-80)
     ctx.lineTo(xcenter+120, HEIGHT/2-80)
@@ -658,8 +675,6 @@ function draw_a_hyperboloid(ctx, xcenter, bounded){
         }
     }
 
-    // TODO: bounded
-
     for(var i=0;i<=N;i++){
         p = _hyperboloid_f(p1[0] + (p2[0]-p1[0])*i/N,p1[1] + (p2[1]-p1[1])*i/N)
         if(i==0){
@@ -978,6 +993,9 @@ function draw_surface(ctx){
     }
     if(options["projection"]=="Goode"){
         draw_a_Goode(ctx,3*WIDTH/4)
+    }
+    if(options["projection"]=="cube"){
+        draw_a_cube(ctx,3*WIDTH/4)
     }
     if(options["projection"]=="Mercator" || options["projection"] == "Gall" || options["projection"]=="flat" || options["projection"] == "projected"){
         draw_a_plane(ctx,3*WIDTH/4)

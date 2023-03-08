@@ -18,6 +18,7 @@ The following surfaces are currently available:
   * sinusoidal projection
   * Mollweide projection
   * Goode homolosine projection
+  * Cube
 * Flat
   * cylinder
   * Mobius strip

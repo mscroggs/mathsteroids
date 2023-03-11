@@ -18,7 +18,11 @@ The following surfaces are currently available:
   * sinusoidal projection
   * Mollweide projection
   * Goode homolosine projection
-  * Cube
+  * cube net
+  * tetrahedron net
+  * octahedron net
+  * dodecahedron net [in progress]
+  * dymaxion map / icosahedron net [in progess]
 * Flat
   * cylinder
   * Mobius strip

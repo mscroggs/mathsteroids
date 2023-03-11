@@ -270,6 +270,40 @@ function draw_a_tetrahedron(ctx, xcenter){
     ctx.setLineDash([])
 }
 
+function draw_a_octahedron(ctx, xcenter){
+    var size = WIDTH/9
+    ctx.moveTo(xcenter-size/2,HEIGHT/2)
+    ctx.lineTo(xcenter,HEIGHT/2-size*Math.sqrt(3)/2)
+    ctx.lineTo(xcenter+2*size,HEIGHT/2-size*Math.sqrt(3)/2)
+    ctx.lineTo(xcenter+1.5*size,HEIGHT/2)
+    ctx.lineTo(xcenter+0.5*size,HEIGHT/2)
+    ctx.lineTo(xcenter,HEIGHT/2+size*Math.sqrt(3)/2)
+    ctx.lineTo(xcenter-2*size,HEIGHT/2+size*Math.sqrt(3)/2)
+    ctx.lineTo(xcenter-1.5*size,HEIGHT/2)
+    ctx.lineTo(xcenter-0.5*size,HEIGHT/2)
+
+    // dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([7,7])
+
+    ctx.moveTo(xcenter-1.5*size,HEIGHT/2)
+    ctx.lineTo(xcenter-1*size,HEIGHT/2+size*Math.sqrt(3)/2)
+    ctx.lineTo(xcenter-0.5*size,HEIGHT/2)
+    ctx.lineTo(xcenter,HEIGHT/2+size*Math.sqrt(3)/2)
+    ctx.moveTo(xcenter-0.5*size,HEIGHT/2)
+    ctx.lineTo(xcenter+0.5*size,HEIGHT/2)
+    ctx.moveTo(xcenter,HEIGHT/2-size*Math.sqrt(3)/2)
+    ctx.lineTo(xcenter+0.5*size,HEIGHT/2)
+    ctx.lineTo(xcenter+size,HEIGHT/2-size*Math.sqrt(3)/2)
+    ctx.lineTo(xcenter+1.5*size,HEIGHT/2)
+
+    // end dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([])
+}
+
 function draw_a_plane(ctx, xcenter){
     ctx.moveTo(xcenter-120, HEIGHT/2-80)
     ctx.lineTo(xcenter+120, HEIGHT/2-80)
@@ -1041,6 +1075,9 @@ function draw_surface(ctx){
     }
     if(options["projection"]=="tetrahedron"){
         draw_a_tetrahedron(ctx,3*WIDTH/4)
+    }
+    if(options["projection"]=="octahedron"){
+        draw_a_octahedron(ctx,3*WIDTH/4)
     }
     if(options["projection"]=="Mercator" || options["projection"] == "Gall" || options["projection"]=="flat" || options["projection"] == "projected"){
         draw_a_plane(ctx,3*WIDTH/4)

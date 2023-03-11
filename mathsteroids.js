@@ -122,6 +122,9 @@ function reset(){
         if(options["projection"]=="azim"){
             spaceship["vangle"] = Math.PI/2
         }
+        if(options["projection"]=="octahedron"){
+            spaceship["hangle"] = Math.PI/4
+        }
     } else if(options["surface"].substr(0,10)=="hyperbolic"){
         spaceship["hangle"] = 0
         spaceship["vangle"] = 0
@@ -654,6 +657,34 @@ function draw_shape(){
                         var z1 = pts[i][2] + eps * (top[2] + pts[j][2] - 2 * pts[i][2]) / 2
                         add_line_to_draw(Array(Math.atan2(y0, x0),Math.atan2(z0, Math.sqrt(x0*x0+(y0)*(y0))),Math.atan2(y1, x1),Math.atan2(z1, Math.sqrt(x1*x1+(y1)*(y1)))))
                     }
+                }
+            }
+        } else if(options["projection"]=="octahedron"){
+            var eps = 0.0001
+            var lines = [
+                [[0,0,1], [0,1,0]],
+                [[0,0,1], [0,-1,0]],
+                [[0,0,-1], [1,0,0]],
+                [[0,0,-1], [-1,0,0]],
+                [[0,-1,0], [-1,0,0]],
+            ]
+            for(var i=0;i<lines.length;i++){
+                var dir = [0,0,0]
+                if(lines[i][0][0] == lines[i][1][0]){
+                    dir[0] = 1
+                } else if(lines[i][0][1] == lines[i][1][1]){
+                    dir[1] = 1
+                } else {
+                    dir[2] = 1
+                }
+                for (var s=-1;s<=1;s+=2){
+                    var x0 = lines[i][0][0] + eps * (lines[i][1][0] + s*dir[0] - 2 * lines[i][0][0]) / 2
+                    var y0 = lines[i][0][1] + eps * (lines[i][1][1] + s*dir[1] - 2 * lines[i][0][1]) / 2
+                    var z0 = lines[i][0][2] + eps * (lines[i][1][2] + s*dir[2] - 2 * lines[i][0][2]) / 2
+                    var x1 = lines[i][1][0] + eps * (lines[i][0][0] + s*dir[0] - 2 * lines[i][1][0]) / 2
+                    var y1 = lines[i][1][1] + eps * (lines[i][0][1] + s*dir[1] - 2 * lines[i][1][1]) / 2
+                    var z1 = lines[i][1][2] + eps * (lines[i][0][2] + s*dir[2] - 2 * lines[i][1][2]) / 2
+                    add_line_to_draw(Array(Math.atan2(y0, x0),Math.atan2(z0, Math.sqrt(x0*x0+(y0)*(y0))),Math.atan2(y1, x1),Math.atan2(z1, Math.sqrt(x1*x1+(y1)*(y1)))))
                 }
             }
         }
@@ -1471,6 +1502,8 @@ function draw_line(ctx,preh,prev,hangle,vangle){
             cube_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="tetrahedron"){
             tetrahedron_draw_line(ctx,preh,prev,hangle,vangle)
+        } else if(options["projection"]=="octahedron"){
+            octahedron_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="Gall"){
             Gall_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="azim"){
@@ -2116,11 +2149,13 @@ function net_xy(hangle, vangle, centres, map_centres, axes, size){
             break
         }
     }
+    if(index == -1){
+        alert(index)
+    }
     var scale = x * centres[index][0] + y * centres[index][1] + z * centres[index][2]
     x /= scale
     y /= scale
     z /= scale
-    if(index == -1){ alert(index) }
     return {
         "x": WIDTH/2 + size * (map_centres[index][0] + x * axes[index][0][0] + y * axes[index][0][1] + z * axes[index][0][2]),
         "y": HEIGHT/2 + size * (map_centres[index][1] + x * axes[index][1][0] + y * axes[index][1][1] + z * axes[index][1][2]),
@@ -2160,7 +2195,7 @@ function tetrahedron_xy(hangle,vangle){
     return net_xy(hangle, vangle,
         [[0, 0, 1], [Math.sqrt(8)/3, 0, -1/3], [-Math.sqrt(2)/3, Math.sqrt(2/3), -1/3], [-Math.sqrt(2)/3, -Math.sqrt(2/3), -1/3]],
         [[0,2*v-1.5], [0,-1.5], [h, 3*v-1.5], [-h,3*v-1.5]],
-        [[[0, 1, 0], [-1, 0, 0]], [[0, 1, 0], [1/3, 0, Math.sqrt(8)/3]], [[Math.sqrt(3)/3, 0, -Math.sqrt(6)/3],[-2/3, -Math.sqrt(3)/3, -Math.sqrt(2)/3]], [[-Math.sqrt(3)/3, 0, Math.sqrt(6)/3],[-2/3, Math.sqrt(3)/3, -Math.sqrt(2)/3],]],
+        [[[0, 1, 0], [-1, 0, 0]], [[0, 1, 0], [1/3, 0, Math.sqrt(8)/3]], [[Math.sqrt(3)/3, 0, -Math.sqrt(6)/3],[-2/3, -Math.sqrt(3)/3, -Math.sqrt(2)/3]], [[-Math.sqrt(3)/3, 0, Math.sqrt(6)/3],[-2/3, Math.sqrt(3)/3, -Math.sqrt(2)/3]]],
         HEIGHT / 10)
 }
 
@@ -2168,6 +2203,29 @@ function tetrahedron_draw_line(ctx,preh,prev,h,v){
     var prexy = tetrahedron_xy(preh,prev)
     var xy = tetrahedron_xy(h,v)
     if(prexy["part"] == xy["part"] || prexy["part"] == 0 || xy["part"] == 0 || 0 == 0){
+        draw_xy(ctx,prexy["x"],prexy["y"],xy["x"],xy["y"])
+    }
+}
+
+// octahedron
+function octahedron_xy(hangle,vangle){
+    var rt2 = Math.sqrt(2)
+    var irt2 = 1/rt2
+    var rt6 = Math.sqrt(6)
+    return net_xy(hangle, vangle,
+        [[1/3,1/3,1/3],[1/3,1/3,-1/3],[1/3,-1/3,1/3],[1/3,-1/3,-1/3],[-1/3,1/3,1/3],[-1/3,1/3,-1/3],[-1/3,-1/3,1/3],[-1/3,-1/3,-1/3]],
+        [[0,1],[0,1-rt6],[-1.5*rt2,1+rt6/2],[-3*rt2,1],[3*rt2,1-rt6],[1.5*rt2,1-rt6*1.5],[4.5*rt2,1-rt6*1.5],[-4.5*rt2,1+rt6*0.5]],
+        [[[-irt2, irt2, 0], [-1/rt6, -1/rt6, 2/rt6]],[[-irt2, irt2, 0], [1/rt6, 1/rt6, 2/rt6]],[[0, irt2, irt2],[-2/rt6, -1/rt6, 1/rt6]],[[irt2, 0, irt2],[-1/rt6, -2/rt6, 1/rt6]],[[0, -irt2, irt2],[2/rt6, 1/rt6, 1/rt6]],[[-irt2, 0, irt2],[1/rt6, 2/rt6, 1/rt6]],[[irt2, -irt2, 0],[1/rt6, 1/rt6, 2/rt6]],[[irt2, -irt2, 0],[-1/rt6, -1/rt6, 2/rt6]]],
+
+        HEIGHT / 10)
+}
+
+function octahedron_draw_line(ctx,preh,prev,h,v){
+    var prexy = octahedron_xy(preh,prev)
+    var xy = octahedron_xy(h,v)
+    var p = prexy["part"]
+    var q = xy["part"]
+    if(p == q || are_eq(p, q, 0, 1) || are_eq(p, q, 0, 3) || are_eq(p, q, 3, 4) || are_eq(p, q, 1, 5) || are_eq(p, q, 5, 6) || are_eq(p, q, 4, 7) || are_eq(p, q, 6, 8)){
         draw_xy(ctx,prexy["x"],prexy["y"],xy["x"],xy["y"])
     }
 }

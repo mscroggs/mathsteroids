@@ -36,7 +36,11 @@ var games = [
     ["sphere (sinusoidal projection)","sphere","sinusoidal"],
     ["sphere (mollweide projection)","sphere","Mollweide"],
     ["sphere (goode homolosine projection)","sphere","Goode"],
+    ["sphere (tetrahedron net)","sphere","tetrahedron"],
     ["sphere (cube net)","sphere","cube"],
+    ["sphere (octahedron net)","sphere","octahedron"],
+    ["sphere (dodecahedron net)","sphere","dodecahedron"],
+    ["sphere (dymaxion map / icosahedron net)","sphere","icosahedron"],
 
     // Flat levels
     ["(flat) cylinder","flatcylinder","flat"],
@@ -635,6 +639,23 @@ function draw_shape(){
             // 1-eps, 1, -1+/-eps  to  -1+eps, 1, -1+/-eps
             add_line_to_draw(Array(Math.atan2(1, 1-eps),Math.atan2(-1+eps, Math.sqrt((eps-1)*(eps-1)+1)),Math.atan2(1,eps-1),Math.atan2(-1+eps, Math.sqrt((1-eps)*(1-eps)+1))))
             add_line_to_draw(Array(Math.atan2(1, 1-eps),Math.atan2(-1-eps, Math.sqrt((eps-1)*(eps-1)+1)),Math.atan2(1,eps-1),Math.atan2(-1-eps, Math.sqrt((1-eps)*(1-eps)+1))))
+        } else if(options["projection"]=="tetrahedron"){
+            var eps = 0.0001
+            var top = [0, 0, -1]
+            var pts = [[-Math.sqrt(8)/3, 0, 1/3], [Math.sqrt(2)/3, -Math.sqrt(2/3), 1/3], [Math.sqrt(2)/3, Math.sqrt(2/3), 1/3]]
+            for (var i = 0; i < pts.length; i++){
+                for (var j = 0; j < pts.length; j++){
+                    if (i != j){
+                        var x0 = top[0] + eps * (pts[i][0] + pts[j][0] - 2 * top[0]) / 2
+                        var y0 = top[1] + eps * (pts[i][1] + pts[j][1] - 2 * top[1]) / 2
+                        var z0 = top[2] + eps * (pts[i][2] + pts[j][2] - 2 * top[2]) / 2
+                        var x1 = pts[i][0] + eps * (top[0] + pts[j][0] - 2 * pts[i][0]) / 2
+                        var y1 = pts[i][1] + eps * (top[1] + pts[j][1] - 2 * pts[i][1]) / 2
+                        var z1 = pts[i][2] + eps * (top[2] + pts[j][2] - 2 * pts[i][2]) / 2
+                        add_line_to_draw(Array(Math.atan2(y0, x0),Math.atan2(z0, Math.sqrt(x0*x0+(y0)*(y0))),Math.atan2(y1, x1),Math.atan2(z1, Math.sqrt(x1*x1+(y1)*(y1)))))
+                    }
+                }
+            }
         }
     } else if(options["surface"]=="torus"){
         if(options["projection"]=="top_v"){
@@ -1448,6 +1469,8 @@ function draw_line(ctx,preh,prev,hangle,vangle){
             Goode_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="cube"){
             cube_draw_line(ctx,preh,prev,hangle,vangle)
+        } else if(options["projection"]=="tetrahedron"){
+            tetrahedron_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="Gall"){
             Gall_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="azim"){
@@ -2074,87 +2097,79 @@ function Goode_draw_line(ctx,preh,prev,h,v){
     }
 }
 
-// cube
-function cube_xy(hangle,vangle){
+// nets
+function net_xy(hangle, vangle, centres, map_centres, axes, size){
     var x = Math.cos(hangle) * Math.cos(vangle)
     var y = Math.sin(hangle) * Math.cos(vangle)
     var z = Math.sin(vangle)
 
-    var ax = Math.abs(x)
-    var ay = Math.abs(y)
-    var az = Math.abs(z)
-
-    var px = 0
-    var py = 0
-    var ox = 0
-    var oy = 0
-    var rt3 = Math.sqrt(3)
-
-    if(z>=ax && z>=ay){
-        px = y/z
-        py = -x/z
-        ox = 1
-        oy = 2
-    } else if(x>=ay && x>=az){
-        px = y/x
-        py = z/x
-        ox = 1
-        oy = 1
-    } else if (-z>=ax && -z>=ay){
-        px = -y/z
-        py = -x/z
-        ox = 1
-        oy = 0
-    } else if(-x>=ay && -x>=az){
-        px = y/x
-        py = -z/x
-        ox = 3
-        oy = 1
-    } else if(y>=ax && y>=az){
-        px = -x/y
-        py = z/y
-        ox = 2
-        oy = 1
-    } else {
-        px = -x/y
-        py = -z/y
-        ox = 0
-        oy = 1
+    var abs = []
+    var m = -2
+    for (var i = 0; i < centres.length; i++){
+        abs.push(centres[i][0]*x + centres[i][1] * y + centres[i][2] * z)
+        m = Math.max(m, abs[i])
     }
-    var size = HEIGHT / 3.5
-    px = (px + 1)/2 * size
-    py = (py + 1)/2 * size
-    ox = WIDTH/2 + (ox - 2) * size
-    oy = HEIGHT/2 + (oy - 1.5)*size
+    index = -1
+    for (var i = 0; i < centres.length; i++){
+        if(abs[i] == m){
+            index = i
+            break
+        }
+    }
+    var scale = x * centres[index][0] + y * centres[index][1] + z * centres[index][2]
+    x /= scale
+    y /= scale
+    z /= scale
+    if(index == -1){ alert(index) }
+    return {
+        "x": WIDTH/2 + size * (map_centres[index][0] + x * axes[index][0][0] + y * axes[index][0][1] + z * axes[index][0][2]),
+        "y": HEIGHT/2 + size * (map_centres[index][1] + x * axes[index][1][0] + y * axes[index][1][1] + z * axes[index][1][2]),
+        "part": index
+    }
+}
 
+function are_eq(a, b, c, d){
+    return (a == c && b == d) || (a == d && b == c)
+}
+
+// cube
+function cube_xy(hangle,vangle){
+    return net_xy(hangle, vangle,
+        [[0, 0, 1], [1, 0, 0], [0, 0, -1], [-1, 0, 0], [0, 1, 0], [0, -1, 0]],
+        [[-1, 2], [-1, 0], [-1, -2], [3, 0], [1, 0], [-3, 0]],
+        [[[0, 1, 0], [-1, 0, 0]], [[0, 1, 0], [0, 0, 1]], [[0, 1, 0], [1, 0, 0]], [[0, -1, 0], [0, 0, 1]], [[-1, 0, 0], [0, 0, 1]], [[1, 0, 0], [0, 0, 1]]],
+        HEIGHT / 7)
     return {"x":ox+px,"y":oy+py}
 }
 
 function cube_draw_line(ctx,preh,prev,h,v){
-    var x0 = Math.abs(Math.cos(preh) * Math.cos(prev))
-    var y0 = Math.abs(Math.sin(preh) * Math.cos(prev))
-    var z0 = Math.abs(Math.sin(prev))
-    var x1 = Math.abs(Math.cos(h) * Math.cos(v))
-    var y1 = Math.abs(Math.sin(h) * Math.cos(v))
-    var z1 = Math.abs(Math.sin(v))
+    var prexy = cube_xy(preh,prev)
+    var xy = cube_xy(h,v)
+    var p = prexy["part"]
+    var q = xy["part"]
 
-    if (x0 >= y0 && x0 >= z0 && (x1 <= y1 || x1 <= z1)) {
-        return
+    if(p == q || are_eq(p, q, 0, 1) || are_eq(p, q, 1, 2) || are_eq(p, q, 3, 4) || are_eq(p, q, 1, 5) || are_eq(p, q, 1, 4)){
+        draw_xy(ctx,prexy["x"],prexy["y"],xy["x"],xy["y"])
     }
-    if (y0 >= x0 && y0 >= z0 && (y1 <= x1 || y1 <= z1)) {
-        return
-    }
-    if (z0 >= x0 && z0 >= y0 && (z1 <= x1 || z1 <= y1)) {
-        return
-    }
+}
 
-    var xy = cube_xy(preh,prev)
-    var prex = xy["x"]
-    var prey = xy["y"]
-    xy = cube_xy(h,v)
-    var x = xy["x"]
-    var y = xy["y"]
-    draw_xy(ctx,prex,prey,x,y)
+// tetrahedron
+function tetrahedron_xy(hangle,vangle){
+    var h = Math.tan(Math.acos(-1/3)/2) * Math.sqrt(3)
+    var v = Math.tan(Math.acos(-1/3)/2)
+    return net_xy(hangle, vangle,
+        [[0, 0, 1], [Math.sqrt(8)/3, 0, -1/3], [-Math.sqrt(2)/3, Math.sqrt(2/3), -1/3], [-Math.sqrt(2)/3, -Math.sqrt(2/3), -1/3]],
+        [[0,2*v-1.5], [0,-1.5], [h, 3*v-1.5], [-h,3*v-1.5]],
+        [[[0, 1, 0], [-1, 0, 0]], [[0, 1, 0], [1/3, 0, Math.sqrt(8)/3]], [[Math.sqrt(3)/3, 0, -Math.sqrt(6)/3],[-2/3, -Math.sqrt(3)/3, -Math.sqrt(2)/3]], [[-Math.sqrt(3)/3, 0, Math.sqrt(6)/3],[-2/3, Math.sqrt(3)/3, -Math.sqrt(2)/3],]],
+        HEIGHT / 10)
+}
+
+function tetrahedron_draw_line(ctx,preh,prev,h,v){
+    var prexy = tetrahedron_xy(preh,prev)
+    var xy = tetrahedron_xy(h,v)
+    if(prexy["part"] == xy["part"] || prexy["part"] == 0 || xy["part"] == 0 || 0 == 0){
+        draw_xy(ctx,prexy["x"],prexy["y"],xy["x"],xy["y"])
+    }
 }
 
 // Gall

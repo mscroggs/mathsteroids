@@ -212,20 +212,62 @@ function draw_a_Goode(ctx, xcenter){
 }
 
 function draw_a_cube(ctx, xcenter){
-    var size = WIDTH/9
-    ctx.moveTo(xcenter-2*size,HEIGHT/2+20-0.5*size)
-    ctx.lineTo(xcenter-size,HEIGHT/2+20-0.5*size)
-    ctx.lineTo(xcenter-size,HEIGHT/2+20-1.5*size)
-    ctx.lineTo(xcenter,HEIGHT/2+20-1.5*size)
-    ctx.lineTo(xcenter,HEIGHT/2+20-0.5*size)
-    ctx.lineTo(xcenter+2*size,HEIGHT/2+20-0.5*size)
-    ctx.lineTo(xcenter+2*size,HEIGHT/2+20+0.5*size)
-    ctx.lineTo(xcenter,HEIGHT/2+20+0.5*size)
-    ctx.lineTo(xcenter,HEIGHT/2+20+1.5*size)
-    ctx.lineTo(xcenter-size,HEIGHT/2+20+1.5*size)
-    ctx.lineTo(xcenter-size,HEIGHT/2+20+0.5*size)
-    ctx.lineTo(xcenter-2*size,HEIGHT/2+20+0.5*size)
-    ctx.lineTo(xcenter-2*size,HEIGHT/2+20-0.5*size)
+    var size = WIDTH/10
+    ctx.moveTo(xcenter-2*size,HEIGHT/2-0.5*size)
+    ctx.lineTo(xcenter-size,HEIGHT/2-0.5*size)
+    ctx.lineTo(xcenter-size,HEIGHT/2-1.5*size)
+    ctx.lineTo(xcenter,HEIGHT/2-1.5*size)
+    ctx.lineTo(xcenter,HEIGHT/2-0.5*size)
+    ctx.lineTo(xcenter+2*size,HEIGHT/2-0.5*size)
+    ctx.lineTo(xcenter+2*size,HEIGHT/2+0.5*size)
+    ctx.lineTo(xcenter,HEIGHT/2+0.5*size)
+    ctx.lineTo(xcenter,HEIGHT/2+1.5*size)
+    ctx.lineTo(xcenter-size,HEIGHT/2+1.5*size)
+    ctx.lineTo(xcenter-size,HEIGHT/2+0.5*size)
+    ctx.lineTo(xcenter-2*size,HEIGHT/2+0.5*size)
+    ctx.lineTo(xcenter-2*size,HEIGHT/2-0.5*size)
+
+    // dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([7,7])
+
+    ctx.moveTo(xcenter-size,HEIGHT/2-0.5*size)
+    ctx.lineTo(xcenter-size,HEIGHT/2+0.5*size)
+    ctx.lineTo(xcenter,HEIGHT/2+0.5*size)
+    ctx.lineTo(xcenter,HEIGHT/2-0.5*size)
+    ctx.lineTo(xcenter-size,HEIGHT/2-0.5*size)
+
+    ctx.moveTo(xcenter+size,HEIGHT/2-0.5*size)
+    ctx.lineTo(xcenter+size,HEIGHT/2+0.5*size)
+
+    // end dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([])
+}
+
+function draw_a_tetrahedron(ctx, xcenter){
+    var size = WIDTH/6
+    ctx.moveTo(xcenter-size,HEIGHT/2+size*Math.sqrt(3)/2)
+    ctx.lineTo(xcenter+size,HEIGHT/2+size*Math.sqrt(3)/2)
+    ctx.lineTo(xcenter,HEIGHT/2-size*Math.sqrt(3)/2)
+    ctx.lineTo(xcenter-size,HEIGHT/2+size*Math.sqrt(3)/2)
+
+    // dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([7,7])
+
+    ctx.moveTo(xcenter,HEIGHT/2+size*Math.sqrt(3)/2)
+    ctx.lineTo(xcenter+size/2,HEIGHT/2)
+    ctx.lineTo(xcenter-size/2,HEIGHT/2)
+    ctx.lineTo(xcenter,HEIGHT/2+size*Math.sqrt(3)/2)
+
+    // end dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([])
 }
 
 function draw_a_plane(ctx, xcenter){
@@ -996,6 +1038,9 @@ function draw_surface(ctx){
     }
     if(options["projection"]=="cube"){
         draw_a_cube(ctx,3*WIDTH/4)
+    }
+    if(options["projection"]=="tetrahedron"){
+        draw_a_tetrahedron(ctx,3*WIDTH/4)
     }
     if(options["projection"]=="Mercator" || options["projection"] == "Gall" || options["projection"]=="flat" || options["projection"] == "projected"){
         draw_a_plane(ctx,3*WIDTH/4)

@@ -129,6 +129,11 @@ function reset(){
         if(options["projection"]=="dodecahedron"){
             spaceship["hangle"] = 1.35*Math.PI
         }
+        if(options["projection"]=="dymaxion"){
+            spaceship["hangle"] = 1.8*Math.PI
+            spaceship["vangle"] = 0.3*Math.PI
+            spaceship["rotation"] = 7*Math.PI/6
+        }
     } else if(options["surface"].substr(0,10)=="hyperbolic"){
         spaceship["hangle"] = 0
         spaceship["vangle"] = 0

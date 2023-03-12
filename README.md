@@ -21,7 +21,7 @@ The following surfaces are currently available:
   * cube net
   * tetrahedron net
   * octahedron net
-  * dodecahedron net [in progress]
+  * dodecahedron net
   * dymaxion map / icosahedron net [in progess]
 * Flat
   * cylinder

@@ -212,20 +212,291 @@ function draw_a_Goode(ctx, xcenter){
 }
 
 function draw_a_cube(ctx, xcenter){
+    var size = WIDTH/10
+    ctx.moveTo(xcenter-2*size,HEIGHT/2-0.5*size)
+    ctx.lineTo(xcenter-size,HEIGHT/2-0.5*size)
+    ctx.lineTo(xcenter-size,HEIGHT/2-1.5*size)
+    ctx.lineTo(xcenter,HEIGHT/2-1.5*size)
+    ctx.lineTo(xcenter,HEIGHT/2-0.5*size)
+    ctx.lineTo(xcenter+2*size,HEIGHT/2-0.5*size)
+    ctx.lineTo(xcenter+2*size,HEIGHT/2+0.5*size)
+    ctx.lineTo(xcenter,HEIGHT/2+0.5*size)
+    ctx.lineTo(xcenter,HEIGHT/2+1.5*size)
+    ctx.lineTo(xcenter-size,HEIGHT/2+1.5*size)
+    ctx.lineTo(xcenter-size,HEIGHT/2+0.5*size)
+    ctx.lineTo(xcenter-2*size,HEIGHT/2+0.5*size)
+    ctx.lineTo(xcenter-2*size,HEIGHT/2-0.5*size)
+
+    // dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([7,7])
+
+    ctx.moveTo(xcenter-size,HEIGHT/2-0.5*size)
+    ctx.lineTo(xcenter-size,HEIGHT/2+0.5*size)
+    ctx.lineTo(xcenter,HEIGHT/2+0.5*size)
+    ctx.lineTo(xcenter,HEIGHT/2-0.5*size)
+    ctx.lineTo(xcenter-size,HEIGHT/2-0.5*size)
+
+    ctx.moveTo(xcenter+size,HEIGHT/2-0.5*size)
+    ctx.lineTo(xcenter+size,HEIGHT/2+0.5*size)
+
+    // end dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([])
+}
+
+function draw_a_tetrahedron(ctx, xcenter){
+    var size = WIDTH/6
+    ctx.moveTo(xcenter-size,HEIGHT/2+size*Math.sqrt(3)/2)
+    ctx.lineTo(xcenter+size,HEIGHT/2+size*Math.sqrt(3)/2)
+    ctx.lineTo(xcenter,HEIGHT/2-size*Math.sqrt(3)/2)
+    ctx.lineTo(xcenter-size,HEIGHT/2+size*Math.sqrt(3)/2)
+
+    // dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([7,7])
+
+    ctx.moveTo(xcenter,HEIGHT/2+size*Math.sqrt(3)/2)
+    ctx.lineTo(xcenter+size/2,HEIGHT/2)
+    ctx.lineTo(xcenter-size/2,HEIGHT/2)
+    ctx.lineTo(xcenter,HEIGHT/2+size*Math.sqrt(3)/2)
+
+    // end dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([])
+}
+
+function draw_a_octahedron(ctx, xcenter){
     var size = WIDTH/9
-    ctx.moveTo(xcenter-2*size,HEIGHT/2+20-0.5*size)
-    ctx.lineTo(xcenter-size,HEIGHT/2+20-0.5*size)
-    ctx.lineTo(xcenter-size,HEIGHT/2+20-1.5*size)
-    ctx.lineTo(xcenter,HEIGHT/2+20-1.5*size)
-    ctx.lineTo(xcenter,HEIGHT/2+20-0.5*size)
-    ctx.lineTo(xcenter+2*size,HEIGHT/2+20-0.5*size)
-    ctx.lineTo(xcenter+2*size,HEIGHT/2+20+0.5*size)
-    ctx.lineTo(xcenter,HEIGHT/2+20+0.5*size)
-    ctx.lineTo(xcenter,HEIGHT/2+20+1.5*size)
-    ctx.lineTo(xcenter-size,HEIGHT/2+20+1.5*size)
-    ctx.lineTo(xcenter-size,HEIGHT/2+20+0.5*size)
-    ctx.lineTo(xcenter-2*size,HEIGHT/2+20+0.5*size)
-    ctx.lineTo(xcenter-2*size,HEIGHT/2+20-0.5*size)
+    ctx.moveTo(xcenter-size/2,HEIGHT/2)
+    ctx.lineTo(xcenter,HEIGHT/2-size*Math.sqrt(3)/2)
+    ctx.lineTo(xcenter+2*size,HEIGHT/2-size*Math.sqrt(3)/2)
+    ctx.lineTo(xcenter+1.5*size,HEIGHT/2)
+    ctx.lineTo(xcenter+0.5*size,HEIGHT/2)
+    ctx.lineTo(xcenter,HEIGHT/2+size*Math.sqrt(3)/2)
+    ctx.lineTo(xcenter-2*size,HEIGHT/2+size*Math.sqrt(3)/2)
+    ctx.lineTo(xcenter-1.5*size,HEIGHT/2)
+    ctx.lineTo(xcenter-0.5*size,HEIGHT/2)
+
+    // dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([7,7])
+
+    ctx.moveTo(xcenter-1.5*size,HEIGHT/2)
+    ctx.lineTo(xcenter-1*size,HEIGHT/2+size*Math.sqrt(3)/2)
+    ctx.lineTo(xcenter-0.5*size,HEIGHT/2)
+    ctx.lineTo(xcenter,HEIGHT/2+size*Math.sqrt(3)/2)
+    ctx.moveTo(xcenter-0.5*size,HEIGHT/2)
+    ctx.lineTo(xcenter+0.5*size,HEIGHT/2)
+    ctx.moveTo(xcenter,HEIGHT/2-size*Math.sqrt(3)/2)
+    ctx.lineTo(xcenter+0.5*size,HEIGHT/2)
+    ctx.lineTo(xcenter+size,HEIGHT/2-size*Math.sqrt(3)/2)
+    ctx.lineTo(xcenter+1.5*size,HEIGHT/2)
+
+    // end dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([])
+}
+
+function draw_a_dodecahedron(ctx, xcenter){
+    var size = WIDTH/13
+    ctx.moveTo(xcenter+size*-1.6478165385088959,HEIGHT/2+size*0.30353099910334314)
+    ctx.lineTo(xcenter+size*-2.225166807698521,HEIGHT/2+size*0.7230005232249495)
+    ctx.lineTo(xcenter+size*-2.802517076888147,HEIGHT/2+size*0.30353099910334314)
+    ctx.lineTo(xcenter+size*-2.581988897471611,HEIGHT/2+size*-0.37518494817015985)
+    ctx.lineTo(xcenter+size*-1.8683447179254318,HEIGHT/2+size*-0.37518494817015996)
+    ctx.lineTo(xcenter+size*-2.4456949871150577,HEIGHT/2+size*-0.7946544722917663)
+    ctx.lineTo(xcenter+size*-2.225166807698522,HEIGHT/2+size*-1.4733704195652693)
+    ctx.lineTo(xcenter+size*-1.511522628152342,HEIGHT/2+size*-1.4733704195652693)
+    ctx.lineTo(xcenter+size*-1.2909944487358058,HEIGHT/2+size*-0.7946544722917662)
+    ctx.lineTo(xcenter+size*-1.0704662693192697,HEIGHT/2+size*-1.4733704195652693)
+    ctx.lineTo(xcenter+size*-0.3568220897730898,HEIGHT/2+size*-1.4733704195652693)
+    ctx.lineTo(xcenter+size*-0.13629391035655392,HEIGHT/2+size*-0.7946544722917663)
+    ctx.lineTo(xcenter+size*-0.7136441795461801,HEIGHT/2+size*-0.3751849481701598)
+    ctx.lineTo(xcenter+size*2.220446049250313e-16,HEIGHT/2+size*-0.37518494817015985)
+    ctx.lineTo(xcenter+size*0.577350269189626,HEIGHT/2+size*-0.7946544722917662)
+    ctx.lineTo(xcenter+size*1.1547005383792515,HEIGHT/2+size*-0.37518494817016)
+    ctx.lineTo(xcenter+size*0.9341723589627158,HEIGHT/2+size*-1.053900895443663)
+    ctx.lineTo(xcenter+size*1.5115226281523417,HEIGHT/2+size*-1.4733704195652693)
+    ctx.lineTo(xcenter+size*2.0888728973419672,HEIGHT/2+size*-1.053900895443663)
+    ctx.lineTo(xcenter+size*1.8683447179254318,HEIGHT/2+size*-0.3751849481701597)
+    ctx.lineTo(xcenter+size*2.4456949871150577,HEIGHT/2+size*-0.7946544722917662)
+    ctx.lineTo(xcenter+size*3.0230452563046835,HEIGHT/2+size*-0.37518494817015985)
+    ctx.lineTo(xcenter+size*2.8025170768881478,HEIGHT/2+size*0.3035309991033432)
+    ctx.lineTo(xcenter+size*2.088872897341968,HEIGHT/2+size*0.30353099910334314)
+    ctx.lineTo(xcenter+size*2.666223166531594,HEIGHT/2+size*0.7230005232249495)
+    ctx.lineTo(xcenter+size*2.445694987115058,HEIGHT/2+size*1.4017164704984524)
+    ctx.lineTo(xcenter+size*1.732050807568878,HEIGHT/2+size*1.4017164704984524)
+    ctx.lineTo(xcenter+size*1.5115226281523424,HEIGHT/2+size*0.7230005232249495)
+    ctx.lineTo(xcenter+size*1.290994448735806,HEIGHT/2+size*1.4017164704984524)
+    ctx.lineTo(xcenter+size*0.577350269189626,HEIGHT/2+size*1.4017164704984526)
+    ctx.lineTo(xcenter+size*0.35682208977309027,HEIGHT/2+size*0.7230005232249495)
+    ctx.lineTo(xcenter+size*0.934172358962716,HEIGHT/2+size*0.30353099910334314)
+    ctx.lineTo(xcenter+size*0.22052817941653602,HEIGHT/2+size*0.3035309991033432)
+    ctx.lineTo(xcenter+size*-0.35682208977308993,HEIGHT/2+size*0.7230005232249495)
+    ctx.lineTo(xcenter+size*-0.934172358962716,HEIGHT/2+size*0.3035309991033432)
+    ctx.lineTo(xcenter+size*-0.7136441795461801,HEIGHT/2+size*0.9822469463768462)
+    ctx.lineTo(xcenter+size*-1.2909944487358058,HEIGHT/2+size*1.4017164704984526)
+    ctx.lineTo(xcenter+size*-1.8683447179254318,HEIGHT/2+size*0.9822469463768462)
+    ctx.lineTo(xcenter+size*-1.6478165385088959,HEIGHT/2+size*0.30353099910334314)
+
+    // dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([7,7])
+
+    ctx.moveTo(xcenter+size*-1.2909944487358058,HEIGHT/2+size*-0.7946544722917662)
+    ctx.lineTo(xcenter+size*-1.8683447179254318,HEIGHT/2+size*-0.37518494817015996)
+    ctx.lineTo(xcenter+size*-1.6478165385088959,HEIGHT/2+size*0.30353099910334314)
+    ctx.lineTo(xcenter+size*-0.934172358962716,HEIGHT/2+size*0.3035309991033432)
+    ctx.lineTo(xcenter+size*-0.7136441795461801,HEIGHT/2+size*-0.3751849481701598)
+    ctx.lineTo(xcenter+size*-1.2909944487358058,HEIGHT/2+size*-0.7946544722917662)
+    ctx.moveTo(xcenter+size*2.220446049250313e-16,HEIGHT/2+size*-0.37518494817015985)
+    ctx.lineTo(xcenter+size*0.22052817941653602,HEIGHT/2+size*0.3035309991033432)
+    ctx.moveTo(xcenter+size*1.1547005383792515,HEIGHT/2+size*-0.37518494817016)
+    ctx.lineTo(xcenter+size*0.934172358962716,HEIGHT/2+size*0.30353099910334314)
+    ctx.lineTo(xcenter+size*1.5115226281523424,HEIGHT/2+size*0.7230005232249495)
+    ctx.lineTo(xcenter+size*2.088872897341968,HEIGHT/2+size*0.30353099910334314)
+    ctx.lineTo(xcenter+size*1.8683447179254318,HEIGHT/2+size*-0.3751849481701597)
+    ctx.lineTo(xcenter+size*1.1547005383792515,HEIGHT/2+size*-0.37518494817016)
+
+    // end dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([])
+}
+
+function draw_a_icosahedron(ctx, xcenter){
+    var size = WIDTH/13
+    ctx.moveTo(xcenter+size*-2.8915211166552344,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*-2.365790004536101,HEIGHT/2+size*1.5176549955167156)
+    ctx.lineTo(xcenter+size*-1.8400588924169674,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*-1.3143277802978341,HEIGHT/2+size*1.5176549955167158)
+    ctx.lineTo(xcenter+size*-0.7885966681787006,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*-0.2628655560595667,HEIGHT/2+size*1.5176549955167156)
+    ctx.lineTo(xcenter+size*0.2628655560595668,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*0.7885966681787003,HEIGHT/2+size*1.5176549955167156)
+    ctx.lineTo(xcenter+size*1.314327780297834,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*1.8400588924169676,HEIGHT/2+size*1.5176549955167158)
+    ctx.lineTo(xcenter+size*2.3657900045361013,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*2.891521116655235,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*2.3657900045361013,HEIGHT/2+size*-1.2141239964133725)
+    ctx.lineTo(xcenter+size*1.8400588924169676,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*1.314327780297834,HEIGHT/2+size*-1.2141239964133725)
+    ctx.lineTo(xcenter+size*0.7885966681787004,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*0.2628655560595668,HEIGHT/2+size*-1.2141239964133725)
+    ctx.lineTo(xcenter+size*-0.2628655560595668,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*-0.7885966681787004,HEIGHT/2+size*-1.2141239964133725)
+    ctx.lineTo(xcenter+size*-1.3143277802978341,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*-1.8400588924169679,HEIGHT/2+size*-1.2141239964133725)
+    ctx.lineTo(xcenter+size*-2.365790004536101,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*-2.8915211166552344,HEIGHT/2+size*0.6070619982066863)
+
+    // dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([7,7])
+
+    ctx.moveTo(xcenter+size*-2.8915211166552344,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*-1.8400588924169674,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*-2.365790004536101,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*-1.3143277802978341,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*-1.8400588924169674,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*-0.7885966681787006,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*-1.3143277802978341,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*-0.2628655560595668,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*-0.7885966681787006,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*0.2628655560595668,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*-0.2628655560595668,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*0.7885966681787004,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*0.2628655560595668,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*1.314327780297834,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*0.7885966681787004,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*1.8400588924169676,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*1.314327780297834,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*2.3657900045361013,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*1.8400588924169676,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*2.891521116655235,HEIGHT/2+size*-0.30353099910334314)
+
+    // end dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([])
+}
+
+function draw_a_dymaxion(ctx, xcenter){
+    var size = WIDTH/13
+    ctx.moveTo(xcenter+size*-2.8915211166552344,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*-2.102924448476534,HEIGHT/2+size*1.062358496861701)
+    ctx.lineTo(xcenter+size*-2.3657900045361013,HEIGHT/2+size*1.5176549955167156)
+    ctx.lineTo(xcenter+size*-1.314327780297834,HEIGHT/2+size*1.5176549955167156)
+    ctx.lineTo(xcenter+size*-1.3143277802978341,HEIGHT/2+size*0.9105929973100294)
+    ctx.lineTo(xcenter+size*-0.7885966681787006,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*-0.7885966681787004,HEIGHT/2+size*1.2141239964133725)
+    ctx.lineTo(xcenter+size*-0.2628655560595667,HEIGHT/2+size*1.5176549955167156)
+    ctx.lineTo(xcenter+size*0.2628655560595668,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*0.7885966681787003,HEIGHT/2+size*1.5176549955167158)
+    ctx.lineTo(xcenter+size*1.8400588924169676,HEIGHT/2+size*1.5176549955167156)
+    ctx.lineTo(xcenter+size*1.314327780297834,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*2.3657900045361013,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*2.891521116655235,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*2.891521116655235,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*2.3657900045361013,HEIGHT/2+size*-1.2141239964133725)
+    ctx.lineTo(xcenter+size*1.8400588924169676,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*1.314327780297834,HEIGHT/2+size*-1.2141239964133725)
+    ctx.lineTo(xcenter+size*0.7885966681787004,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*-0.2628655560595668,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*0.2628655560595669,HEIGHT/2+size*-1.2141239964133725)
+    ctx.lineTo(xcenter+size*-0.7885966681787004,HEIGHT/2+size*-1.2141239964133725)
+    ctx.lineTo(xcenter+size*-1.8400588924169679,HEIGHT/2+size*-1.2141239964133725)
+    ctx.lineTo(xcenter+size*-1.3143277802978341,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*-2.3657900045361013,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*-1.8400588924169679,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*-2.8915211166552344,HEIGHT/2+size*0.6070619982066863)
+
+    // dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([7,7])
+
+    ctx.moveTo(xcenter+size*-1.314327780297834,HEIGHT/2+size*1.5176549955167156)
+    ctx.lineTo(xcenter+size*-1.8400588924169679,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*-2.102924448476534,HEIGHT/2+size*1.062358496861701)
+    ctx.moveTo(xcenter+size*-1.8400588924169679,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*-1.3143277802978341,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*-0.7885966681787006,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*-1.8400588924169679,HEIGHT/2+size*0.6070619982066863)
+    ctx.moveTo(xcenter+size*-1.3143277802978341,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*-0.7885966681787004,HEIGHT/2+size*-1.2141239964133725)
+    ctx.lineTo(xcenter+size*-0.2628655560595668,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*-1.3143277802978341,HEIGHT/2+size*-0.30353099910334314)
+    ctx.moveTo(xcenter+size*-0.7885966681787006,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*-0.2628655560595668,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*0.2628655560595668,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*-0.7885966681787006,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*-0.2628655560595667,HEIGHT/2+size*1.5176549955167156)
+    ctx.moveTo(xcenter+size*0.2628655560595668,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*0.7885966681787004,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*1.8400588924169676,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*2.891521116655235,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*2.3657900045361013,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*1.8400588924169676,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*1.314327780297834,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*0.7885966681787004,HEIGHT/2+size*-0.30353099910334314)
+    ctx.moveTo(xcenter+size*0.2628655560595668,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*1.314327780297834,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*0.7885966681787003,HEIGHT/2+size*1.5176549955167158)
+
+    // end dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([])
 }
 
 function draw_a_plane(ctx, xcenter){
@@ -996,6 +1267,21 @@ function draw_surface(ctx){
     }
     if(options["projection"]=="cube"){
         draw_a_cube(ctx,3*WIDTH/4)
+    }
+    if(options["projection"]=="tetrahedron"){
+        draw_a_tetrahedron(ctx,3*WIDTH/4)
+    }
+    if(options["projection"]=="octahedron"){
+        draw_a_octahedron(ctx,3*WIDTH/4)
+    }
+    if(options["projection"]=="dodecahedron"){
+        draw_a_dodecahedron(ctx,3*WIDTH/4)
+    }
+    if(options["projection"]=="icosahedron"){
+        draw_a_icosahedron(ctx,3*WIDTH/4)
+    }
+    if(options["projection"]=="dymaxion"){
+        draw_a_dymaxion(ctx,3*WIDTH/4)
     }
     if(options["projection"]=="Mercator" || options["projection"] == "Gall" || options["projection"]=="flat" || options["projection"] == "projected"){
         draw_a_plane(ctx,3*WIDTH/4)

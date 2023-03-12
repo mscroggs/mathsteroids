@@ -22,7 +22,7 @@ The following surfaces are currently available:
   * tetrahedron net
   * octahedron net
   * dodecahedron net
-  * dymaxion map / icosahedron net [in progess]
+  * icosahedron net
 * Flat
   * cylinder
   * Mobius strip

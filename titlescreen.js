@@ -372,6 +372,64 @@ function draw_a_dodecahedron(ctx, xcenter){
     ctx.setLineDash([])
 }
 
+function draw_a_icosahedron(ctx, xcenter){
+    var size = WIDTH/13
+    ctx.moveTo(xcenter+size*-2.8915211166552344,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*-2.365790004536101,HEIGHT/2+size*1.5176549955167156)
+    ctx.lineTo(xcenter+size*-1.8400588924169674,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*-1.3143277802978341,HEIGHT/2+size*1.5176549955167158)
+    ctx.lineTo(xcenter+size*-0.7885966681787006,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*-0.2628655560595667,HEIGHT/2+size*1.5176549955167156)
+    ctx.lineTo(xcenter+size*0.2628655560595668,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*0.7885966681787003,HEIGHT/2+size*1.5176549955167156)
+    ctx.lineTo(xcenter+size*1.314327780297834,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*1.8400588924169676,HEIGHT/2+size*1.5176549955167158)
+    ctx.lineTo(xcenter+size*2.3657900045361013,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*2.891521116655235,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*2.3657900045361013,HEIGHT/2+size*-1.2141239964133725)
+    ctx.lineTo(xcenter+size*1.8400588924169676,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*1.314327780297834,HEIGHT/2+size*-1.2141239964133725)
+    ctx.lineTo(xcenter+size*0.7885966681787004,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*0.2628655560595668,HEIGHT/2+size*-1.2141239964133725)
+    ctx.lineTo(xcenter+size*-0.2628655560595668,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*-0.7885966681787004,HEIGHT/2+size*-1.2141239964133725)
+    ctx.lineTo(xcenter+size*-1.3143277802978341,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*-1.8400588924169679,HEIGHT/2+size*-1.2141239964133725)
+    ctx.lineTo(xcenter+size*-2.365790004536101,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*-2.8915211166552344,HEIGHT/2+size*0.6070619982066863)
+
+    // dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([7,7])
+
+    ctx.moveTo(xcenter+size*-2.8915211166552344,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*-1.8400588924169674,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*-2.365790004536101,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*-1.3143277802978341,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*-1.8400588924169674,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*-0.7885966681787006,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*-1.3143277802978341,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*-0.2628655560595668,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*-0.7885966681787006,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*0.2628655560595668,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*-0.2628655560595668,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*0.7885966681787004,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*0.2628655560595668,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*1.314327780297834,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*0.7885966681787004,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*1.8400588924169676,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*1.314327780297834,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*2.3657900045361013,HEIGHT/2+size*0.6070619982066863)
+    ctx.lineTo(xcenter+size*1.8400588924169676,HEIGHT/2+size*-0.30353099910334314)
+    ctx.lineTo(xcenter+size*2.891521116655235,HEIGHT/2+size*-0.30353099910334314)
+
+    // end dash this
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.setLineDash([])
+}
+
 function draw_a_plane(ctx, xcenter){
     ctx.moveTo(xcenter-120, HEIGHT/2-80)
     ctx.lineTo(xcenter+120, HEIGHT/2-80)
@@ -1149,6 +1207,9 @@ function draw_surface(ctx){
     }
     if(options["projection"]=="dodecahedron"){
         draw_a_dodecahedron(ctx,3*WIDTH/4)
+    }
+    if(options["projection"]=="icosahedron"){
+        draw_a_icosahedron(ctx,3*WIDTH/4)
     }
     if(options["projection"]=="Mercator" || options["projection"] == "Gall" || options["projection"]=="flat" || options["projection"] == "projected"){
         draw_a_plane(ctx,3*WIDTH/4)

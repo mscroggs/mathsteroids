@@ -64,6 +64,7 @@ function draw_a_Craig(ctx, xcenter){
         var hangle = 0
         if(circle==0){vangle=Math.PI/2}
         if(circle==1){vangle=-Math.PI/2}
+        var move = true
         for(var i=0;i<=N;i++){
             if(circle==2){
                 vangle = Math.atan(-Math.cos(hangle-Math.PI)/Math.tan(Craig_zeroang))-0.01
@@ -72,9 +73,14 @@ function draw_a_Craig(ctx, xcenter){
             var c_xy = Craig_xy(hangle, vangle)
             var x = xcenter+(c_xy["x"]-WIDTH/2)/2
             var y = HEIGHT/4+c_xy["y"]/2
-            if(i==0 || (i%2==0 && circle==0) || y<150 || y>HEIGHT-100){
+            console.log(x, y)
+            if (y < 150 || y > HEIGHT - 100){
+                move = true;
+            } else if(move || (i%2==0 && circle==0)){
+                move = false
                 ctx.moveTo(x,y)
             } else {
+                console.log(x, y)
                 ctx.lineTo(x,y)
             }
             hangle += Math.PI*2/N

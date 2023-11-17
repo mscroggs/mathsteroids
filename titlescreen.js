@@ -1420,13 +1420,8 @@ function add_letter(ctx,letter,x,y,scale){
     }
     var lines = font_data[letter]
     xout = x
+    ctx.lineCap = "round";
     for(var j=0;j<lines.length;j++){
-        for(var i=0;i<lines[j].length;i+=lines[j].length-1){
-            ctx.moveTo(x+lines[j][i][0]*scale-1,y+lines[j][i][1]*scale)
-            ctx.lineTo(x+lines[j][i][0]*scale+1,y+lines[j][i][1]*scale)
-            ctx.moveTo(x+lines[j][i][0]*scale,y+lines[j][i][1]*scale-1)
-            ctx.lineTo(x+lines[j][i][0]*scale,y+lines[j][i][1]*scale+1)
-        }
         for(var i=0;i<lines[j].length;i++){
             if(i==0){
                 ctx.moveTo(x+lines[j][i][0]*scale,y+lines[j][i][1]*scale)

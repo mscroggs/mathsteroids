@@ -108,7 +108,7 @@ function do_gamepad(){
         } else {
             leftPressed = false
         }
-    } else if(game_config("controller") == "playstation") {
+    } else if(game_config("controller") == "mega-drive") {
         gp = navigator.getGamepads()[0];
         if(!gp){return}
         if(gp.buttons[1].pressed || gp.buttons[2].pressed || gp.buttons[4].pressed){
@@ -141,7 +141,7 @@ function do_gamepad(){
     button_styles()
 }
 
-if(game_config("controller") == "none") {
+if(game_config("controller") != "none") {
     setInterval(do_gamepad, 100)
 }
 

@@ -297,7 +297,6 @@ function tick(){
     }
     if(selectPressed && options["surface"] == "sphere" && !selectDone){
         selectDone = true
-        console.log(projections)
         var pre_proj = options["projection"]
         while(pre_proj == options["projection"]){
             new_p = projections[Math.floor(Math.random() * projections.length)]
@@ -350,6 +349,7 @@ function tick(){
 }
 
 function load_scores() {
+    if(!game_config("high-scores")){ return }
     var score_file = "scores-" + options["surface"]
     var data = localStorage.getItem(score_file)
     var scores = []
@@ -360,6 +360,7 @@ function load_scores() {
 }
 
 function save_scores(scores) {
+    if(!game_config("high-scores")){ return }
     var score_file = "scores-" + options["surface"]
     localStorage.setItem(score_file, JSON.stringify(scores))
 }
@@ -377,11 +378,13 @@ function highscore() {
     add_text(ctx, "game over", (WIDTH-270)/2+10, (HEIGHT-50)/2+40)
     ctx.stroke();
 
-    clearInterval(interval)
-    var scores = load_scores()
-    if (score > 0 && (scores.length < nscores || score > scores[nscores-1][0]))
-    {
-        setTimeout(enter_name,1000)
+    if(game_config("high-scores")){
+        var scores = load_scores()
+        if (score > 0 && (scores.length < nscores || score > scores[nscores-1][0])){
+            setTimeout(enter_name,1000)
+        } else {
+            setTimeout(gameoveron,1000)
+        }
     } else {
         setTimeout(gameoveron,1000)
     }
@@ -389,6 +392,7 @@ function highscore() {
 
 function enter_name()
 {
+    if(!game_config("high-scores")){ return }
     entered_name = ""
     entered_letter = 0
 
@@ -399,6 +403,7 @@ function enter_name()
 
 function show_enter_name()
 {
+    if(!game_config("high-scores")){ return }
     var canvas = document.getElementById("mathsteroids");
     var ctx = canvas.getContext("2d");
     ctx.fillStyle = "#000000";
@@ -414,6 +419,7 @@ function show_enter_name()
 }
 
 function name_tick(){
+    if(!game_config("high-scores")){ return }
     if(leftPressed){
         if(leftTimer==0){
             entered_letter--
@@ -481,21 +487,28 @@ function gameoveron(){
     var canvas = document.getElementById("mathsteroids");
     var ctx = canvas.getContext("2d");
     ctx.fillStyle = "#000000";
-    ctx.fillRect(40,40,WIDTH-80,WIDTH-40);
-    //ctx.fillRect((WIDTH-430)/2,(HEIGHT-50)/2+60,430,40);
+    if(game_config("high-scores")){
+        ctx.fillRect(40,40,WIDTH-80,WIDTH-40);
+    } else {
+        ctx.fillRect((WIDTH-430)/2,(HEIGHT-50)/2+60,430,40);
+    }
 
     ctx.strokeStyle = "#FFFFFF"
     ctx.lineWidth = 2;
     ctx.beginPath()
-    add_scaled_text(ctx, "high scores", (WIDTH-200)/2, 80, 0.6)
+    if(game_config("high-scores")){
+        add_scaled_text(ctx, "high scores", (WIDTH-200)/2, 80, 0.6)
 
-    scores = load_scores()
-    for (var i = 0; i < scores.length; i++)
-    {
-      add_scaled_text(ctx, scores[i][1], WIDTH/2 - 70, 140 + 40*i, 0.6)
-      add_scaled_text(ctx, scores[i][0]+"", WIDTH/2 + 10, 140 + 40*i, 0.6)
+        scores = load_scores()
+        for (var i = 0; i < scores.length; i++)
+        {
+          add_scaled_text(ctx, scores[i][1], WIDTH/2 - 70, 140 + 40*i, 0.6)
+          add_scaled_text(ctx, scores[i][0]+"", WIDTH/2 + 10, 140 + 40*i, 0.6)
+        }
+        add_scaled_text(ctx, "press button to continue", (WIDTH-430)/2+10, HEIGHT-40, 0.6)
+    } else {
+        add_scaled_text(ctx, "press button to continue", (WIDTH-430)/2+10, (HEIGHT-50)/2+90, 0.6)
     }
-    add_scaled_text(ctx, "press button to continue", (WIDTH-430)/2+10, HEIGHT-40, 0.6)
     ctx.stroke();
 
     interval = setInterval(overtick,1000/60);

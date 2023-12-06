@@ -73,14 +73,12 @@ function draw_a_Craig(ctx, xcenter){
             var c_xy = Craig_xy(hangle, vangle)
             var x = xcenter+(c_xy["x"]-WIDTH/2)/2
             var y = HEIGHT/4+c_xy["y"]/2
-            console.log(x, y)
             if (y < 150 || y > HEIGHT - 100){
                 move = true;
             } else if(move || (i%2==0 && circle==0)){
                 move = false
                 ctx.moveTo(x,y)
             } else {
-                console.log(x, y)
                 ctx.lineTo(x,y)
             }
             hangle += Math.PI*2/N
@@ -1377,24 +1375,36 @@ function redraw_menu(){
     ctx.beginPath()
     draw_titles(ctx)
     draw_surface(ctx)
-    add_scaled_text(ctx,"controls",WIDTH-300,25,0.5)
-    add_scaled_text(ctx,"turn left / right",WIDTH-275,50,0.35)
-    add_scaled_text(ctx,"fire",WIDTH-275,75,0.35)
-    add_scaled_text(ctx,"forward",WIDTH-185,75,0.35)
 
-/* PLAYSTATION
-    add_scaled_text(ctx,"quit",WIDTH-65,75,0.35)
-    add_scaled_text(ctx,"#",WIDTH-300,50,0.5)
-    add_scaled_text(ctx,"@",WIDTH-300,75,0.5)
-    add_scaled_text(ctx,"*",WIDTH-210,75,0.5)
-    add_scaled_text(ctx,"%",WIDTH-90,75,0.5)
-*/
-/* MEGA DRIVE */
-    add_scaled_text(ctx,"&",WIDTH-300,50,0.5)
-    add_scaled_text(ctx,"b",WIDTH-300,75,0.5)
-    add_scaled_text(ctx,"F",WIDTH-210,75,0.5)
-//    add_scaled_text(ctx,"%",WIDTH-90,75,0.5)
-/**/
+    if(game_config("controller") == "none") {
+        add_scaled_text(ctx,"controls",WIDTH-330,25,0.5)
+        add_scaled_text(ctx,"a",WIDTH-330,50,0.5)
+        add_scaled_text(ctx,"left",WIDTH-305,50,0.35)
+        add_scaled_text(ctx,"d",WIDTH-210,50,0.5)
+        add_scaled_text(ctx,"right",WIDTH-185,50,0.35)
+        add_scaled_text(ctx,"k",WIDTH-90,50,0.5)
+        add_scaled_text(ctx,"fire",WIDTH-65,50,0.35)
+        add_scaled_text(ctx,"w",WIDTH-330,75,0.5)
+        add_scaled_text(ctx,"forward",WIDTH-305,75,0.35)
+        add_scaled_text(ctx,"q",WIDTH-210,75,0.5)
+        add_scaled_text(ctx,"return to menu",WIDTH-185,75,0.35)
+    } else {
+        add_scaled_text(ctx,"controls",WIDTH-300,25,0.5)
+        add_scaled_text(ctx,"turn left / right",WIDTH-275,50,0.35)
+        add_scaled_text(ctx,"fire",WIDTH-275,75,0.35)
+        add_scaled_text(ctx,"forward",WIDTH-185,75,0.35)
+        if(game_config("controller") == "playstation") {
+            add_scaled_text(ctx,"quit",WIDTH-65,75,0.35)
+            add_scaled_text(ctx,"#",WIDTH-300,50,0.5)
+            add_scaled_text(ctx,"@",WIDTH-300,75,0.5)
+            add_scaled_text(ctx,"*",WIDTH-210,75,0.5)
+            add_scaled_text(ctx,"%",WIDTH-90,75,0.5)
+        } else if(game_config("controller") == "mega-drive") {
+            add_scaled_text(ctx,"&",WIDTH-300,50,0.5)
+            add_scaled_text(ctx,"b",WIDTH-300,75,0.5)
+            add_scaled_text(ctx,"F",WIDTH-210,75,0.5)
+        }
+    }
     add_scaled_text(ctx,"surface:",20,HEIGHT-45,0.5)
     add_scaled_text(ctx,"<< "+game_title+" >>",150,HEIGHT-45,0.5)
     add_scaled_text(ctx,"press <fire> to begin",WIDTH-295,HEIGHT-20,0.5)

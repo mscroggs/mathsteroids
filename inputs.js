@@ -50,95 +50,100 @@ function process_key(keyName, result){
     }
 }
 function do_gamepad(){
+    if(game_config("controller") == "none") {
+        return
+    }
+
     pads = navigator.getGamepads()
-/* DEBUG
-    var html = ""
-    if(!!pads){
-        for (var j = 0; j < pads.length; j++){
-            for(var i = 0; i < pads[j].buttons.length; i++){
-                html += i
-                html += " => "
-                if(pads[j].buttons[i].pressed){html += "YES"}else{html+="NO"}
-                html += "  "
+    if(game_config("debug")) {
+        var html = ""
+        if(!!pads){
+            for (var j = 0; j < pads.length; j++){
+                for(var i = 0; i < pads[j].buttons.length; i++){
+                    html += i
+                    html += " => "
+                    if(pads[j].buttons[i].pressed){html += "YES"}else{html+="NO"}
+                    html += "  "
+                }
+                for(var i = 0; i < pads[j].axes.length; i++){
+                    html += i
+                    html += " => " + pads[j].axes[i] + "  "
+                }
+                html += "<br />"
             }
-            for(var i = 0; i < pads[j].axes.length; i++){
-                html += i
-                html += " => " + pads[j].axes[i] + "  "
-            }
-            html += "<br />"
+        }
+        document.getElementById("debug").innerHTML = html
+    }
+    if(game_config("controller") == "playstation") {
+        gp = navigator.getGamepads()[0];
+        if(!gp){return}
+        if(gp.buttons[3].pressed){ //gp.buttons[5].pressed || gp.buttons[4].pressed){
+            firePressed = true
+        } else {
+            firePressed = false
+        }
+        if(gp.buttons[2].pressed){
+            upPressed = true
+        } else {
+            upPressed = false
+        }
+        if(gp.buttons[0].pressed){
+            quitPressed = true
+        } else {
+            quitPressed = false
+        }
+        if(gp.buttons[8].pressed){
+            selectPressed = true
+        } else {
+            selectPressed = false
+            selectDone = false
+        }
+        if(gp.axes[0] == 1){
+            rightPressed = true
+        } else {
+            rightPressed = false
+        }
+        if(gp.axes[0] == -1){
+            leftPressed = true
+        } else {
+            leftPressed = false
+        }
+    } else if(game_config("controller") == "playstation") {
+        gp = navigator.getGamepads()[0];
+        if(!gp){return}
+        if(gp.buttons[1].pressed || gp.buttons[2].pressed || gp.buttons[4].pressed){
+            firePressed = true
+        } else {
+            firePressed = false
+        }
+        if(gp.axes[5] == -1){
+            upPressed = true
+        } else {
+            upPressed = false
+        }
+        if(gp.buttons[9].pressed){
+            selectPressed = true
+        } else {
+            selectPressed = false
+            selectDone = false
+        }
+        if(gp.axes[4] == 1){
+            rightPressed = true
+        } else {
+            rightPressed = false
+        }
+        if(gp.axes[4] == -1){
+            leftPressed = true
+        } else {
+            leftPressed = false
         }
     }
-    document.getElementById("debug").innerHTML = html
-/**/
-/* PLAYSTATION
-    gp = navigator.getGamepads()[0];
-    if(!gp){return}
-    if(gp.buttons[3].pressed){ //gp.buttons[5].pressed || gp.buttons[4].pressed){
-        firePressed = true
-    } else {
-        firePressed = false
-    }
-    if(gp.buttons[2].pressed){
-        upPressed = true
-    } else {
-        upPressed = false
-    }
-    if(gp.buttons[0].pressed){
-        quitPressed = true
-    } else {
-        quitPressed = false
-    }
-    if(gp.buttons[8].pressed){
-        selectPressed = true
-    } else {
-        selectPressed = false
-        selectDone = false
-    }
-    if(gp.axes[0] == 1){
-        rightPressed = true
-    } else {
-        rightPressed = false
-    }
-    if(gp.axes[0] == -1){
-        leftPressed = true
-    } else {
-        leftPressed = false
-    }
-*/
-/* MEGA DRIVE */
-    gp = navigator.getGamepads()[0];
-    if(!gp){return}
-    if(gp.buttons[1].pressed || gp.buttons[2].pressed || gp.buttons[4].pressed){
-        firePressed = true
-    } else {
-        firePressed = false
-    }
-    if(gp.axes[5] == -1){
-        upPressed = true
-    } else {
-        upPressed = false
-    }
-    if(gp.buttons[9].pressed){
-        selectPressed = true
-    } else {
-        selectPressed = false
-        selectDone = false
-    }
-    if(gp.axes[4] == 1){
-        rightPressed = true
-    } else {
-        rightPressed = false
-    }
-    if(gp.axes[4] == -1){
-        leftPressed = true
-    } else {
-        leftPressed = false
-    }
-/**/
     button_styles()
 }
 
-setInterval(do_gamepad, 100)
+if(game_config("controller") == "none") {
+    setInterval(do_gamepad, 100)
+}
 
 document.addEventListener('mouseup', function(event){
     if(mouse=="up"){

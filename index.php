@@ -10,7 +10,11 @@ $config_defaults = Array(
     "show-instructions" => true,
     "debug" => false,
 );
-$game_config = json_decode(file_get_contents("config.json"), true);
+if(file_exists("config.json")){
+    $game_config = json_decode(file_get_contents("config.json"), true);
+} else {
+    $game_config = Array();
+}
 
 function game_config($id) {
     global $game_config;

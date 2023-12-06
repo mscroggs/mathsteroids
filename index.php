@@ -1,35 +1,8 @@
 <?php
 
-$config_defaults = Array(
-    "high-scores" => false,
-    "controller" => "none",
-    "game-mode" => "lives",
-    "pre-html" => "",
-    "centered" => false,
-    "show-webad" => false,
-    "show-instructions" => true,
-    "debug" => false,
-);
-if(file_exists("config.json")){
-    $game_config = json_decode(file_get_contents("config.json"), true);
-} else {
-    $game_config = Array();
-}
+include("load_config.php");
 
-function game_config($id) {
-    global $game_config;
-    global $config_defaults;
-    foreach($config_defaults as $i=>$j) {
-        if($id == $i) {
-            if(isset($game_config[$id])){
-                return $game_config[$id];
-            } else {
-                return $j;
-            }
-        }
-    }
-    return false;
-}
+load_config("config.json");
 
 ?>
 <html>
@@ -94,27 +67,10 @@ if(game_config("centered")) {
     echo("</center>");
 }
 
-function to_js($value){
-    if($value === true) {
-        return "true";
-    }
-    if($value === false) {
-        return "false";
-    }
-    return "\"".$value."\"";
-}
-
 echo("<script type='text/javascript'>
-function game_config(id) {");
-foreach($config_defaults as $i=>$j){
-    echo("
-    if(id==\"".$i."\"){
-        return ".to_js(game_config($i))."
-    }");
-}
+");
+write_js_config();
 echo("
-    return false;
-}
 var font_data = ".file_get_contents("font.json")."
 var VERSION = \"".explode("\n",file_get_contents("VERSION"))[0]."\"
 var game_n_start = \"");

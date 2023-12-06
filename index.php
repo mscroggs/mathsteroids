@@ -1,3 +1,10 @@
+<?php
+
+include("load_config.php");
+
+load_config("config.json");
+
+?>
 <html>
 <head>
 <title>Mathsteroids</title>
@@ -5,7 +12,7 @@
     .clickbutton {border:2px solid green;display:inline-block;margin:2px;background-color:white}
     .buttongroup {text-align:center;background-color:#CCCCCC;}
 
-    .clickbutton {width:100px;height:100px;font-size:50px;line-height:100px}
+    .clickbutton {width:50px;height:50px;font-size:20px;line-height:50px}
 
     .clickbutton#display_left {float:left}
     .clickbutton#display_right {float:left}
@@ -13,19 +20,16 @@
     .clickbutton#display_fire {float:right}
 
     .buttongroup {width:800px}
-
-/*@media (min-width:1000px){
-    .mathsteroids {width:800px}
-    .buttongroup {width:800px}
-}
-@media (max-width:1000px){
-    .mathsteroids {width:100%}
-    .buttongroup {width:100%}
-}*/
+    .webad {font-family:monospace;margin-top:10px;font-size:22px}
 </style>
 </head>
 <body>
-
+<?php
+echo(game_config("pre-html"));
+if(game_config("centered")) {
+    echo("<center>");
+}
+?>
 <canvas id='mathsteroids' width='800' height='450'></canvas>
 <div class='buttongroup'>
 <div class='clickbutton' id='display_left'>&larr;</div>
@@ -33,9 +37,11 @@
 <div class='clickbutton' id='display_fire'>&#x1F3F9;</div>
 <div class='clickbutton' id='display_right'>&rarr;</div>
 <div class='clickbutton' id='display_quit'>&#x274C;</div>
+<div class='clickbutton' id='display_select'>?</div>
 </div>
-
-<div>
+<?php
+if(game_config("show-instructions")){
+    echo("<div>
 Mathsteroids is a game based on asteroids that can be played on a selection of interesting mathematical surfaces.
 Destroy the asteroids to win points.
 <h3>Controls</h3>
@@ -47,10 +53,24 @@ Destroy the asteroids to win points.
 <tr><td>Return to menu</td><td>Q</td></tr>
 </table>
 Alternatively, you can click the buttons above to turn/move/fire/quit.
-</div>
+</div>");
+}
+if(game_config("show-webad")){
+    echo("<div class='webad'>You can play this game online at <b>mscroggs.co.uk/mathsteroids</b></div>");
+}
+if(game_config("debug")){
+    echo("<div id='debug'></div>");
+}
+?>
 <?php
+if(game_config("centered")) {
+    echo("</center>");
+}
 
 echo("<script type='text/javascript'>
+");
+write_js_config();
+echo("
 var font_data = ".file_get_contents("font.json")."
 var VERSION = \"".explode("\n",file_get_contents("VERSION"))[0]."\"
 var game_n_start = \"");

@@ -18,6 +18,8 @@ var upPressed    = false;
 var firePressed  = false;
 var leftPressed  = false;
 var rightPressed = false;
+var selectPressed = false;
+var selectDone = false;
 
 // titlescreen
 var leftTimer=0
@@ -25,9 +27,13 @@ var rightTimer=0
 var game_n = 0
 var game_title = ""
 
-
+// high score
+var entered_name = ""
+var entered_available_letters = "abcdefghijklmnopqrstuvwxyz !$"
+var entered_letter = 0
 
 // Global variables
+var nscores = 5
 var games = [
     // Sphere levels
     ["sphere (mercator projection)","sphere","Mercator"],
@@ -70,6 +76,14 @@ var games = [
     ["unbounded hyperbolic (poincaré disk)","hyperbolicunbounded","Poincare"],
     ["unbounded hyperbolic (beltrami-klein)","hyperbolicunbounded","Beltrami-Klein"],
 ]
+
+var projections = []
+for(var i=0;i<games.length;i++){
+    if(games[i][1]=="sphere"){
+        projections[projections.length] = [games[i][2], i, games[i][0]]
+    }
+}
+
 var options = {"surface":"sphere","projection":"Mercator"}
 var mouse = "";
 var WIDTH=800
@@ -281,6 +295,16 @@ function tick(){
     if(rightPressed){
         rotate_right()
     }
+    if(selectPressed && options["surface"] == "sphere" && !selectDone){
+        selectDone = true
+        var pre_proj = options["projection"]
+        while(pre_proj == options["projection"]){
+            new_p = projections[Math.floor(Math.random() * projections.length)]
+            options["projection"] = new_p[0]
+            game_n = new_p[1]
+            game_title = new_p[2]
+        }
+    }
     move_ship()
     move_fire()
     move_explodes()
@@ -321,10 +345,27 @@ function tick(){
     }
     ctx.stroke()
 
-    if(lives<=0){gameover()}
+    if(lives<=0){highscore()}
 }
 
-function gameover(){
+function load_scores() {
+    if(!game_config("high-scores")){ return }
+    var score_file = "scores-" + options["surface"]
+    var data = localStorage.getItem(score_file)
+    var scores = []
+    if (data != null){
+        scores = JSON.parse(data)
+    }
+    return scores
+}
+
+function save_scores(scores) {
+    if(!game_config("high-scores")){ return }
+    var score_file = "scores-" + options["surface"]
+    localStorage.setItem(score_file, JSON.stringify(scores))
+}
+
+function highscore() {
     clearInterval(interval)
     var canvas = document.getElementById("mathsteroids");
     var ctx = canvas.getContext("2d");
@@ -337,19 +378,137 @@ function gameover(){
     add_text(ctx, "game over", (WIDTH-270)/2+10, (HEIGHT-50)/2+40)
     ctx.stroke();
 
-    setTimeout(gameoveron,1000)
+    if(game_config("high-scores")){
+        var scores = load_scores()
+        if (score > 0 && (scores.length < nscores || score > scores[nscores-1][0])){
+            setTimeout(enter_name,1000)
+        } else {
+            setTimeout(gameoveron,1000)
+        }
+    } else {
+        setTimeout(gameoveron,1000)
+    }
 }
 
-function gameoveron(){
+function enter_name()
+{
+    if(!game_config("high-scores")){ return }
+    entered_name = ""
+    entered_letter = 0
+
+    name_tick()
+    clearInterval(interval)
+    interval = setInterval(name_tick,1000/60);
+}
+
+function show_enter_name()
+{
+    if(!game_config("high-scores")){ return }
     var canvas = document.getElementById("mathsteroids");
     var ctx = canvas.getContext("2d");
     ctx.fillStyle = "#000000";
-    ctx.fillRect((WIDTH-430)/2,(HEIGHT-50)/2+60,430,40);
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+    ctx.strokeStyle = "#FFFFFF"
+    ctx.lineWidth = 2;
+    ctx.beginPath()
+    add_text(ctx, "high score", (WIDTH-300)/2+10, (HEIGHT-50)/2-100)
+    add_text(ctx, "enter your name", (WIDTH-440)/2+10, (HEIGHT-50)/2-50)
+    add_text(ctx, entered_name, (WIDTH-100)/2+10, (HEIGHT-50)/2 + 20)
+    add_text(ctx, "<< " + entered_available_letters[entered_letter] + " >>", (WIDTH-150)/2+15, (HEIGHT-50)/2 + 70)
+    ctx.stroke();
+}
+
+function name_tick(){
+    if(!game_config("high-scores")){ return }
+    if(leftPressed){
+        if(leftTimer==0){
+            entered_letter--
+            if (entered_letter < 0)
+            {
+                entered_letter += entered_available_letters.length
+            }
+        }
+        leftTimer++
+        leftTimer%=15
+    } else {
+        leftTimer = 0
+    }
+    if(rightPressed){
+        if(rightTimer==0){
+            entered_letter++
+            if (entered_letter >= entered_available_letters.length)
+            {
+                entered_letter -= entered_available_letters.length
+            }
+        }
+        rightTimer++
+        rightTimer%=15
+    } else {
+        rightTimer = 0
+    }
+    if(firePressed){
+        if (entered_letter == entered_available_letters.indexOf("!"))
+        {
+            // END
+            scores = load_scores()
+            var i = 0
+            while (i < scores.length && scores[i][0] >= score){i++}
+            new_scores = []
+            for (var j = 0; j < i; j++)
+            {
+                new_scores[new_scores.length] = scores[j]
+            }
+            new_scores[new_scores.length] = [score, entered_name]
+            for (var j = i; j < scores.length && new_scores.length < nscores; j++)
+            {
+                new_scores[new_scores.length] = scores[j]
+            }
+            save_scores(new_scores)
+            firePressed = false
+            gameoveron()
+            return;
+        } else if (entered_letter == entered_available_letters.indexOf("$")) {
+            entered_name = entered_name.substr(0, entered_name.length - 1)
+        } else {
+            if (entered_name.length >= 3){
+            }
+            entered_name += entered_available_letters[entered_letter]
+            if (entered_name.length == 3){
+                entered_letter = entered_available_letters.indexOf("!")
+            }
+        }
+        firePressed = false
+    }
+    show_enter_name()
+}
+
+function gameoveron(){
+    clearInterval(interval)
+    var canvas = document.getElementById("mathsteroids");
+    var ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#000000";
+    if(game_config("high-scores")){
+        ctx.fillRect(40,40,WIDTH-80,WIDTH-40);
+    } else {
+        ctx.fillRect((WIDTH-430)/2,(HEIGHT-50)/2+60,430,40);
+    }
 
     ctx.strokeStyle = "#FFFFFF"
     ctx.lineWidth = 2;
     ctx.beginPath()
-    add_scaled_text(ctx, "press button to continue", (WIDTH-430)/2+10, (HEIGHT-50)/2+90, 0.6)
+    if(game_config("high-scores")){
+        add_scaled_text(ctx, "high scores", (WIDTH-200)/2, 80, 0.6)
+
+        scores = load_scores()
+        for (var i = 0; i < scores.length; i++)
+        {
+          add_scaled_text(ctx, scores[i][1], WIDTH/2 - 70, 140 + 40*i, 0.6)
+          add_scaled_text(ctx, scores[i][0]+"", WIDTH/2 + 10, 140 + 40*i, 0.6)
+        }
+        add_scaled_text(ctx, "press button to continue", (WIDTH-430)/2+10, HEIGHT-40, 0.6)
+    } else {
+        add_scaled_text(ctx, "press button to continue", (WIDTH-430)/2+10, (HEIGHT-50)/2+90, 0.6)
+    }
     ctx.stroke();
 
     interval = setInterval(overtick,1000/60);

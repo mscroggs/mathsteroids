@@ -1,0 +1,10 @@
+{
+    "high-scores": false,
+    "controller": "none",
+    "game-mode": "lives",
+    "pre-html": "",
+    "centered": false,
+    "show-webad": false,
+    "show-instructions": true,
+    "debug": false
+}

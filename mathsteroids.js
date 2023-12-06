@@ -99,6 +99,8 @@ var HYPER_RADIUS = 2
 
 var score = 0
 var lives = 3
+var timestarted = 0
+var timeleft = 60000
 var asterN = 1
 
 var fired = 0;
@@ -169,6 +171,8 @@ function reset(){
     }
     score = 0
     lives = 3
+    var d = new Date()
+    timestarted = d.getTime()
     fired = 0
     fires = Array()
     explode = Array()
@@ -310,6 +314,10 @@ function tick(){
     move_explodes()
     move_asteroids()
 
+    var d = new Date()
+    timeleft = timestarted + 60000 - d.getTime()
+
+
     var canvas = document.getElementById("mathsteroids");
     var ctx = canvas.getContext("2d");
     ctx.fillStyle = "#000000";
@@ -346,6 +354,7 @@ function tick(){
     ctx.stroke()
 
     if(lives<=0){highscore()}
+    if(timeleft <= 0){highscore()}
 }
 
 function load_scores() {
@@ -634,12 +643,17 @@ function rotate_right(){
 }
 
 function draw_lives(ctx){
-    for(var i=0;i<lives;i++){
-        ctx.moveTo(WIDTH-i*25-30,20)
-        ctx.lineTo(WIDTH-i*25-20,40)
-        ctx.lineTo(WIDTH-i*25-30,35)
-        ctx.lineTo(WIDTH-i*25-40,40)
-        ctx.lineTo(WIDTH-i*25-30,20)
+    if(game_config("game-mode") == "lives"){
+        for(var i=0;i<lives;i++){
+            ctx.moveTo(WIDTH-i*25-30,20)
+            ctx.lineTo(WIDTH-i*25-20,40)
+            ctx.lineTo(WIDTH-i*25-30,35)
+            ctx.lineTo(WIDTH-i*25-40,40)
+            ctx.lineTo(WIDTH-i*25-30,20)
+        }
+    } else if(game_config("game-mode") == "time"){
+        var timeleftdisp = Math.ceil(timeleft / 1000)
+        add_scaled_text(ctx,""+timeleftdisp,WIDTH-50,38,0.6)
     }
 }
 
@@ -1285,7 +1299,12 @@ function move_asteroids(){
                     spaceship["vangle"] = HEIGHT/2+rad*LOOPSIZE[1]*Math.sin(angle)
                 }
             }
-            lives--
+            if(game_config("game-mode") == "lives") {
+                lives--
+            }
+            if(game_config("game-mode") == "time") {
+                score -= 300
+            }
         }
 
         for(var j=0;j<fires.length;j++){

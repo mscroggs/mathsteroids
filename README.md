@@ -52,7 +52,6 @@ Mathsteroids can be configured by setting values in a file called `config.json`
 (see [`config.json.template`](config.json.template)). The following entries can be set
 in the configuration JSON:
 
------------------------------------------------------------------------------------------------
 | Entry                 | Allowed values                            | Default   | Description |
 -----------------------------------------------------------------------------------------------
 | `"high-scores"`       | `true`, `false`                           | `false`   | Toggles high score tables |
@@ -63,5 +62,4 @@ in the configuration JSON:
 | `"show-webad"`        | `true`, `false`                           | `false`   | Toggles advert below game saying you can play it onling|
 | `"show-instructions"` | `true`, `false`                           | `true`    | Toggles instructions that can be displayed beloe the game |
 | `"debug"`             | `true`, `false`                           | `false`   | Toggles the visibility of debug information |
------------------------------------------------------------------------------------------------
-
+| `"sound"`             | `true`, `false`                           | `false`   | Toggles sound |

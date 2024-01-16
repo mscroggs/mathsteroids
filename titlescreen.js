@@ -1254,6 +1254,9 @@ function draw_surface(ctx){
     if(options["projection"]=="azim"){
         draw_a_circle(ctx,3*WIDTH/4)
     }
+    if(options["projection"]=="van der Grinten"){
+        draw_a_circle(ctx,3*WIDTH/4)
+    }
     if(options["projection"]=="Craig"){
         draw_a_Craig(ctx,3*WIDTH/4)
     }

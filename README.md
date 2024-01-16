@@ -18,9 +18,10 @@ The following surfaces are currently available:
   * sinusoidal projection
   * Mollweide projection
   * Goode homolosine projection
+  * van der Grinten projection
   * dymaxion map
-  * cube net
   * tetrahedron net
+  * cube net
   * octahedron net
   * dodecahedron net
   * icosahedron net

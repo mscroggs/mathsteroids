@@ -21,6 +21,15 @@ var rightPressed = false;
 var selectPressed = false;
 var selectDone = false;
 
+if(game_config("sound")){
+    var sound_fire = new Audio('sounds/fire.wav');
+    var sound_thrust = new Audio('sounds/thrust.wav');
+    sound_thrust.loop = true
+    var sound_bang_large = new Audio('sounds/bangLarge.wav');
+    var sound_bang_medium = new Audio('sounds/bangMedium.wav');
+    var sound_bang_small = new Audio('sounds/bangSmall.wav');
+}
+
 // titlescreen
 var leftTimer=0
 var rightTimer=0
@@ -289,8 +298,10 @@ function tick(){
         return
     }
     if(upPressed){
+        if(game_config("sound")){ sound_thrust.play() }
         increase_speed()
     } else {
+        if(game_config("sound")){ sound_thrust.pause() }
         decrease_speed()
     }
     if(leftPressed){
@@ -376,6 +387,8 @@ function save_scores(scores) {
 
 function highscore() {
     clearInterval(interval)
+    if(game_config("sound")){ sound_thrust.pause() }
+
     var canvas = document.getElementById("mathsteroids");
     var ctx = canvas.getContext("2d");
     ctx.fillStyle = "#000000";
@@ -543,6 +556,7 @@ function move_fire(){
     fires = new_fires
     if(firePressed){
         if(fired==0){
+            if(game_config("sound")){ sound_fire.cloneNode().play() }
             var leng = 0
             var speed = 0
             if(options["surface"].substring(0,4) == "flat" || options["surface"]=="pool"){
@@ -1269,6 +1283,7 @@ function move_asteroids(){
 
         var points = ship_sprite(1)[0]
         if(in_contact(ship_sprite(1)[0], a)){
+            if(game_config("sound")){ sound_bang_large.cloneNode().play() }
             explode[explode.length] = {"hangle":spaceship["hangle"],"vangle":spaceship["vangle"],"age":0,"rotation":Math.random()*Math.PI,"speed":3}
             spaceship["rotation"] = Math.random()*2*Math.PI
             spaceship["direction"] = spaceship["rotation"]
@@ -1309,6 +1324,13 @@ function move_asteroids(){
 
         for(var j=0;j<fires.length;j++){
             if(in_contact([[fires[j]["hangle"],fires[j]["vangle"]]], a)){
+                if(game_config("sound")){
+                    if(a["sides"] == 3){
+                        sound_bang_small.cloneNode().play()
+                    } else {
+                        sound_bang_medium.cloneNode().play()
+                    }
+                }
                 fireRemove[fireRemove.length]=j
                 explode[explode.length] = {"hangle":a["hangle"],"vangle":a["vangle"],"age":0,"rotation":Math.random()*Math.PI,"speed":1}
             }

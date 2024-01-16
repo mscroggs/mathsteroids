@@ -9,6 +9,7 @@ $config_defaults = Array(
     "show-webad" => false,
     "show-instructions" => true,
     "debug" => false,
+    "sound" => false,
 );
 $game_config = Array();
 

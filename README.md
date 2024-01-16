@@ -52,9 +52,8 @@ Mathsteroids can be configured by setting values in a file called `config.json`
 (see [`config.json.template`](config.json.template)). The following entries can be set
 in the configuration JSON:
 
------------------------------------------------------------------------------------------------
 | Entry                 | Allowed values                            | Default   | Description |
------------------------------------------------------------------------------------------------
+| --------------------- | ----------------------------------------- | --------- | ----------- |
 | `"high-scores"`       | `true`, `false`                           | `false`   | Toggles high score tables |
 | `"controller"`        | `"none"`, `"playstation"`, `"mega-drive"` | `"none"`  | Allows input from a controller to be used |
 | `"game-mode"`         | `"lives"`, `"time"`                       | `"lives"` | Set the game mode. If `"lives"`, player start with 3 lives and games end when lives run out. If `"time", games will last 30 seconds, with negative points given for losing a "life" |
@@ -63,5 +62,4 @@ in the configuration JSON:
 | `"show-webad"`        | `true`, `false`                           | `false`   | Toggles advert below game saying you can play it onling|
 | `"show-instructions"` | `true`, `false`                           | `true`    | Toggles instructions that can be displayed beloe the game |
 | `"debug"`             | `true`, `false`                           | `false`   | Toggles the visibility of debug information |
------------------------------------------------------------------------------------------------
-
+| `"sound"`             | `true`, `false`                           | `false`   | Toggles sound |

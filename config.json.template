@@ -6,5 +6,6 @@
     "centered": false,
     "show-webad": false,
     "show-instructions": true,
+    "sound": false,
     "debug": false
 }

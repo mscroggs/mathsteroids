@@ -121,12 +121,6 @@ function do_gamepad(){
         } else {
             upPressed = false
         }
-        if(gp.buttons[9].pressed){
-            selectPressed = true
-        } else {
-            selectPressed = false
-            selectDone = false
-        }
         if(gp.axes[4] == 1){
             rightPressed = true
         } else {

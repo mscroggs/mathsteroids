@@ -21,6 +21,15 @@ var rightPressed = false;
 var selectPressed = false;
 var selectDone = false;
 
+if(game_config("sound")){
+    var sound_fire = new Audio('sounds/fire.wav');
+    var sound_thrust = new Audio('sounds/thrust.wav');
+    sound_thrust.loop = true
+    var sound_bang_large = new Audio('sounds/bangLarge.wav');
+    var sound_bang_medium = new Audio('sounds/bangMedium.wav');
+    var sound_bang_small = new Audio('sounds/bangSmall.wav');
+}
+
 // titlescreen
 var leftTimer=0
 var rightTimer=0
@@ -46,6 +55,7 @@ var games = [
     ["sphere (sinusoidal projection)","sphere","sinusoidal"],
     ["sphere (mollweide projection)","sphere","Mollweide"],
     ["sphere (goode homolosine projection)","sphere","Goode"],
+    ["sphere (van der grinten projection)","sphere","van der Grinten"],
     ["sphere (dymaxion map)","sphere","dymaxion"],
     ["sphere (tetrahedron net)","sphere","tetrahedron"],
     ["sphere (cube net)","sphere","cube"],
@@ -134,7 +144,7 @@ function reset(){
         if(options["projection"]=="Mercator" || options["projection"]=="Gall"
         || options["projection"]=="Craig" || options["projection"]=="Robinson"
         || options["projection"] == "sinusoidal" || options["projection"]=="Mollweide"
-        || options["projection"] == "Goode"){
+        || options["projection"] == "Goode" || options["projection"] == "van der Grinten"){
             spaceship["hangle"] = Math.PI
         }
         if(options["projection"]=="stereographic"){
@@ -289,8 +299,10 @@ function tick(){
         return
     }
     if(upPressed){
+        if(game_config("sound")){ sound_thrust.play() }
         increase_speed()
     } else {
+        if(game_config("sound")){ sound_thrust.pause() }
         decrease_speed()
     }
     if(leftPressed){
@@ -376,6 +388,8 @@ function save_scores(scores) {
 
 function highscore() {
     clearInterval(interval)
+    if(game_config("sound")){ sound_thrust.pause() }
+
     var canvas = document.getElementById("mathsteroids");
     var ctx = canvas.getContext("2d");
     ctx.fillStyle = "#000000";
@@ -543,6 +557,7 @@ function move_fire(){
     fires = new_fires
     if(firePressed){
         if(fired==0){
+            if(game_config("sound")){ sound_fire.cloneNode().play() }
             var leng = 0
             var speed = 0
             if(options["surface"].substring(0,4) == "flat" || options["surface"]=="pool"){
@@ -718,6 +733,21 @@ function draw_shape(){
                 hangle += Math.PI*2/N
                 add_line_to_draw(Array(preh,-Math.PI/2,hangle,-Math.PI/2))
                 preh = hangle
+            }
+        } else if(options["projection"]=="van der Grinten"){
+            var vangle = -Math.PI/2
+            var N = 200
+            var prev = vangle
+            for(var i=1;i<=N;i++){
+                vangle = -Math.PI/2 * Math.cos(i/N * Math.PI)
+                add_line_to_draw(Array(0, prev,0,vangle))
+                prev = vangle
+            }
+            prev = -Math.PI/2
+            for(var i=1;i<=N;i++){
+                vangle = -Math.PI/2 * Math.cos(i/N * Math.PI)
+                add_line_to_draw(Array(2*Math.PI, prev,2*Math.PI,vangle))
+                prev = vangle
             }
         } else if(options["projection"]=="Craig"){
             var leng = 0.02
@@ -1269,6 +1299,7 @@ function move_asteroids(){
 
         var points = ship_sprite(1)[0]
         if(in_contact(ship_sprite(1)[0], a)){
+            if(game_config("sound")){ sound_bang_large.cloneNode().play() }
             explode[explode.length] = {"hangle":spaceship["hangle"],"vangle":spaceship["vangle"],"age":0,"rotation":Math.random()*Math.PI,"speed":3}
             spaceship["rotation"] = Math.random()*2*Math.PI
             spaceship["direction"] = spaceship["rotation"]
@@ -1309,6 +1340,13 @@ function move_asteroids(){
 
         for(var j=0;j<fires.length;j++){
             if(in_contact([[fires[j]["hangle"],fires[j]["vangle"]]], a)){
+                if(game_config("sound")){
+                    if(a["sides"] == 3){
+                        sound_bang_small.cloneNode().play()
+                    } else {
+                        sound_bang_medium.cloneNode().play()
+                    }
+                }
                 fireRemove[fireRemove.length]=j
                 explode[explode.length] = {"hangle":a["hangle"],"vangle":a["vangle"],"age":0,"rotation":Math.random()*Math.PI,"speed":1}
             }
@@ -1717,6 +1755,8 @@ function draw_line(ctx,preh,prev,hangle,vangle){
     } else if(options["surface"]=="sphere"){
         if(options["projection"]=="Mercator"){
             Mercator_draw_line(ctx,preh,prev,hangle,vangle)
+        } else if(options["projection"]=="van der Grinten"){
+            van_der_Grinten_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="Robinson"){
             Robinson_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="sinusoidal"){
@@ -2167,6 +2207,46 @@ function Mercator_draw_line(ctx,preh,prev,h,v){
         draw_xy(ctx,xa,ya,WIDTH,ymid)
         draw_xy(ctx,0,ymid,xb,yb)
     } else {
+        draw_xy(ctx,prex,prey,x,y)
+    }
+}
+
+// van der Grinten
+function van_der_Grinten_xy(hangle,vangle){
+    var x = 0
+    var y = 0
+
+    if (vangle == 0) {
+        x = hangle - Math.PI
+        y = 0
+    } else if (hangle == Math.PI || Math.abs(vangle) > Math.PI/2-0.0001) {
+        x = 0
+        y = Math.PI * Math.tan(Math.asin(Math.min(1, Math.abs(2*vangle / Math.PI)))/2)
+    } else {
+        var sinO = Math.abs(2*vangle / Math.PI)
+        var cosO = Math.sqrt(1 - sinO * sinO)
+        var a = Math.abs(Math.PI / (hangle - Math.PI) - (hangle - Math.PI) / Math.PI) / 2
+        var g = cosO / (sinO + cosO - 1)
+        var p = g * (2 / sinO - 1)
+        var q = a * a + g
+
+        x = Math.PI * (a * (g - p*p) + Math.sqrt(a*a*Math.pow(g - p*p, 2)-(p*p+a*a)*(g*g-p*p))) / (p*p + a*a)
+        y = Math.PI * (p * q - a * Math.sqrt((a*a+1)*(p*p+a*a) - q*q)) / (p*p + a*a)
+    }
+    if (hangle < Math.PI) { x *= -1 }
+    if (vangle < 0) { y *= -1 }
+
+    return {"x":WIDTH/2 + HEIGHT/7 * x,"y":HEIGHT/2 + HEIGHT/7 * y}
+}
+
+function van_der_Grinten_draw_line(ctx,preh,prev,h,v){
+    var xy = van_der_Grinten_xy(preh,prev)
+    var prex = xy["x"]
+    var prey = xy["y"]
+    xy = van_der_Grinten_xy(h,v)
+    var x = xy["x"]
+    var y = xy["y"]
+    if (Math.min(h, preh) > Math.PI/4 || Math.max(h, preh) < 7*Math.PI/4) {
         draw_xy(ctx,prex,prey,x,y)
     }
 }

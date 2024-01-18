@@ -326,8 +326,10 @@ function tick(){
     move_explodes()
     move_asteroids()
 
-    var d = new Date()
-    timeleft = timestarted + 60000 - d.getTime()
+    if(game_config("game-mode") == "time") {
+        var d = new Date()
+        timeleft = timestarted + 60000 - d.getTime()
+    }
 
 
     var canvas = document.getElementById("mathsteroids");

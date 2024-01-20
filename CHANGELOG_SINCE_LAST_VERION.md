@@ -1,0 +1,2 @@
+- Added van der Grinten sphere projection
+- Fixed time bug in score mode

@@ -1290,7 +1290,8 @@ function draw_surface(ctx){
     if(options["projection"]=="dymaxion"){
         draw_a_dymaxion(ctx,3*WIDTH/4)
     }
-    if(options["projection"]=="Mercator" || options["projection"] == "Gall" || options["projection"]=="flat" || options["projection"] == "projected"){
+    if(options["projection"]=="Mercator" || options["projection"] == "Gall" || options["projection"]=="flat" || options["projection"] == "projected" ||
+       options["projection"]=="plate caree"){
         draw_a_plane(ctx,3*WIDTH/4)
     }
     if(options["projection"]=="stereographic"){

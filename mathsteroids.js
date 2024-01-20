@@ -56,6 +56,7 @@ var games = [
     ["sphere (mollweide projection)","sphere","Mollweide"],
     ["sphere (goode homolosine projection)","sphere","Goode"],
     ["sphere (van der grinten projection)","sphere","van der Grinten"],
+    ["sphere (plate carée projection)","sphere","plate caree"],
     ["sphere (dymaxion map)","sphere","dymaxion"],
     ["sphere (tetrahedron net)","sphere","tetrahedron"],
     ["sphere (cube net)","sphere","cube"],
@@ -144,7 +145,8 @@ function reset(){
         if(options["projection"]=="Mercator" || options["projection"]=="Gall"
         || options["projection"]=="Craig" || options["projection"]=="Robinson"
         || options["projection"] == "sinusoidal" || options["projection"]=="Mollweide"
-        || options["projection"] == "Goode" || options["projection"] == "van der Grinten"){
+        || options["projection"] == "Goode" || options["projection"] == "van der Grinten"
+        || options["projection"] == "plate caree"){
             spaceship["hangle"] = Math.PI
         }
         if(options["projection"]=="stereographic"){
@@ -1757,6 +1759,8 @@ function draw_line(ctx,preh,prev,hangle,vangle){
     } else if(options["surface"]=="sphere"){
         if(options["projection"]=="Mercator"){
             Mercator_draw_line(ctx,preh,prev,hangle,vangle)
+        } else if(options["projection"]=="plate caree"){
+            plate_caree_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="van der Grinten"){
             van_der_Grinten_draw_line(ctx,preh,prev,hangle,vangle)
         } else if(options["projection"]=="Robinson"){
@@ -2191,6 +2195,40 @@ function Mercator_draw_line(ctx,preh,prev,h,v){
     var prex = xy["x"]
     var prey = xy["y"]
     xy = Mercator_xy(h,v)
+    var x = xy["x"]
+    var y = xy["y"]
+    if(Math.abs(x-prex)>WIDTH/2){
+        if(x < prex){
+            xa = prex
+            xb = x
+            ya = prey
+            yb = y
+        } else {
+            xa = x
+            xb = prex
+            ya = y
+            yb = prey
+        }
+        ymid = xb*(yb-ya)/(xa-xb-WIDTH) + yb
+        draw_xy(ctx,xa,ya,WIDTH,ymid)
+        draw_xy(ctx,0,ymid,xb,yb)
+    } else {
+        draw_xy(ctx,prex,prey,x,y)
+    }
+}
+
+// plate caree
+function plate_caree_xy(hangle,vangle){
+    var x = WIDTH * hangle/(2*Math.PI)
+    var y = HEIGHT * (vangle + Math.PI/2) / (Math.PI)
+    return {"x":x,"y":y}
+}
+
+function plate_caree_draw_line(ctx,preh,prev,h,v){
+    var xy = plate_caree_xy(preh,prev)
+    var prex = xy["x"]
+    var prey = xy["y"]
+    xy = plate_caree_xy(h,v)
     var x = xy["x"]
     var y = xy["y"]
     if(Math.abs(x-prex)>WIDTH/2){

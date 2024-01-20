@@ -70,6 +70,7 @@ var games = [
     ["(flat) torus","flattorus","flat"],
     ["(flat) klein bottle","flatKlein","flat"],
     ["(flat) real projective plane","flatreal-pp","flat"],
+    ["(flat) double torus","flatdouble-torus","flat"],
     ["unbounded 2d space","flatunbounded", "unbounded"],
     ["loop (elliptical pool table)","pool","loop"],
 
@@ -1738,6 +1739,10 @@ function draw_line(ctx,preh,prev,hangle,vangle){
         } else if(options["surface"]=="flatKlein"){
             if(options["projection"]=="flat"){
                 flat_Klein_draw_line(ctx,preh,prev,hangle,vangle)
+            }
+        } else if(options["surface"]=="flatreal-pp"){
+            if(options["projection"]=="flat"){
+                flat_real_pp_draw_line(ctx,preh,prev,hangle,vangle)
             }
         } else if(options["surface"]=="flatreal-pp"){
             if(options["projection"]=="flat"){

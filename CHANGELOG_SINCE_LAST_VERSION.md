@@ -1,3 +1,0 @@
-- Added van der Grinten sphere projection
-- Added plate caree projection
-- Fixed time bug in score mode

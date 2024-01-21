@@ -22,12 +22,12 @@ var selectPressed = false;
 var selectDone = false;
 
 if(game_config("sound")){
-    var sound_fire = new Audio('sounds/' + game_config("sound-dir") + '/fire.wav');
-    var sound_thrust = new Audio('sounds/' + game_config("sound-dir") + '/thrust.wav');
+    var sound_fire = new Audio(game_config("sound-dir") + '/fire.wav');
+    var sound_thrust = new Audio(game_config("sound-dir") + '/thrust.wav');
     sound_thrust.loop = true
-    var sound_bang_large = new Audio('sounds/' + game_config("sound-dir") + '/bangLarge.wav');
-    var sound_bang_medium = new Audio('sounds/' + game_config("sound-dir") + '/bangMedium.wav');
-    var sound_bang_small = new Audio('sounds/' + game_config("sound-dir") + '/bangSmall.wav');
+    var sound_bang_large = new Audio(game_config("sound-dir") + '/bangLarge.wav');
+    var sound_bang_medium = new Audio(game_config("sound-dir") + '/bangMedium.wav');
+    var sound_bang_small = new Audio(game_config("sound-dir") + '/bangSmall.wav');
 }
 
 // titlescreen

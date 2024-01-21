@@ -7,6 +7,6 @@
     "show-webad": false,
     "show-instructions": true,
     "sound": false,
-    "sound-dir": "default",
+    "sound-dir": "sounds/default",
     "debug": false
 }

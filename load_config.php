@@ -10,7 +10,7 @@ $config_defaults = Array(
     "show-instructions" => true,
     "debug" => false,
     "sound" => false,
-    "sound-dir" => "default",
+    "sound-dir" => "sounds/default",
 );
 $game_config = Array();
 

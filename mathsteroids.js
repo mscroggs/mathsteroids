@@ -28,6 +28,7 @@ if(game_config("sound")){
     var sound_bang_large = new Audio(game_config("sound-dir") + '/bangLarge.wav');
     var sound_bang_medium = new Audio(game_config("sound-dir") + '/bangMedium.wav');
     var sound_bang_small = new Audio(game_config("sound-dir") + '/bangSmall.wav');
+    var sound_level_up = new Audio(game_config("sound-dir") + '/levelUp.wav');
 }
 
 // titlescreen
@@ -1292,6 +1293,7 @@ function move_asteroids(){
     if(asteroids.length==0){
         asterN++
         score += 1000
+        if(game_config("sound")){ sound_level_up.cloneNode().play() }
         asteroids = make_new_asteroids(asterN)
     }
     var new_asteroids = Array()

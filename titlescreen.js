@@ -8,6 +8,11 @@
 /*  mscroggs.co.uk/mathsteroids */
 /********************************/
 
+if(game_config("sound")){
+    var sound_next = new Audio(game_config("sound-dir") + '/next.wav');
+    var sound_start = new Audio(game_config("sound-dir") + '/start.wav');
+}
+
 
 function show_menu(){
     menu_tick()
@@ -1347,6 +1352,9 @@ changeGameN(0)
 function menu_tick(){
     if(leftPressed){
         if(leftTimer==0){
+            if(game_config("sound")){
+                sound_next.cloneNode().play()
+            }
             changeGameN(-1)
         }
         leftTimer++
@@ -1357,6 +1365,9 @@ function menu_tick(){
     if(rightPressed){
         if(rightTimer==0){
             changeGameN(1)
+            if(game_config("sound")){
+                sound_next.cloneNode().play()
+            }
         }
         rightTimer++
         rightTimer%=15
@@ -1364,6 +1375,9 @@ function menu_tick(){
         rightTimer = 0
     }
     if(firePressed){
+        if(game_config("sound")){
+            sound_start.cloneNode().play()
+        }
         firePressed = false
         start_game()
     }

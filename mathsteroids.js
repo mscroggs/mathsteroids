@@ -61,6 +61,9 @@ var nscores = 5
 var games = [
     // Sphere levels
     ["sphere (mercator projection)","sphere","Mercator"],
+
+    ["(flat) double torus","flatdouble-torus","flat"],
+
     ["sphere (isometric)","sphere","isometric"],
     ["sphere (stereographic projection)","sphere","stereographic"],
     ["sphere (gall-peters projection)","sphere","Gall"],
@@ -235,31 +238,9 @@ function make_new_asteroids(n){
             new_a["radius"] = 0.1
         }
         while(too_close(new_a,spaceship)){
-            if(options["surface"].substring(0,4) == "flat"){
-                new_a["hangle"] = Math.random()*WIDTH
-                if(options["surface"]=="flatmobius" || options["surface"]=="flatcylinder"){
-                    new_a["vangle"] = Math.random()*(HEIGHT-2*MOBIUSY) + MOBIUSY
-                } else {
-                    new_a["vangle"] = Math.random()*HEIGHT
-                }
-            } else if(options["surface"]=="sphere"){
-                new_a["hangle"] = Math.random()*Math.PI*2
-                new_a["vangle"] = Math.random()*Math.PI-Math.PI/2
-            } else if(options["surface"].substr(0,10)=="hyperbolic"){
-                var ang = Math.random() * 2 * Math.PI
-                var dist = Math.random() * HYPER_RADIUS
-                var pt = hyper_add(0, 0, Math.random() * 2 * Math.PI, Math.random() * HYPER_RADIUS)
-                new_a["hangle"] = pt[0]
-                new_a["vangle"] = pt[1]
-            } else if(options["surface"]=="torus"){
-                new_a["hangle"] = Math.random()*Math.PI*2
-                new_a["vangle"] = Math.random()*Math.PI*2
-            } else if(options["projection"] == "loop"){
-                var angle = Math.random()*Math.PI*2
-                var rad = Math.random()
-                new_a["hangle"] = WIDTH/2+rad*LOOPSIZE[0]*Math.cos(angle)
-                new_a["vangle"] = HEIGHT/2+rad*LOOPSIZE[1]*Math.sin(angle)
-            }
+            var p = random_valid_point()
+            new_a["hangle"] = p["hangle"]
+            new_a["vangle"] = p["vangle"]
         }
         var as = get_a_s(new_a)
         new_a["radius"] = as["radius"]
@@ -268,6 +249,40 @@ function make_new_asteroids(n){
         out[i] = new_a
     }
     return out
+}
+
+function random_valid_point(){
+    var p = {"hangle": 0, "vangle": 0}
+    if(options["surface"].substring(0,4) == "flat"){
+        if(options["surface"]=="flatdouble-torus"){
+            p["hangle"] = WIDTH / 2 - HEIGHT / 2 + Math.random()*HEIGHT
+        } else {
+            p["hangle"] = Math.random()*WIDTH
+        }
+        if(options["surface"]=="flatmobius" || options["surface"]=="flatcylinder"){
+            p["vangle"] = Math.random()*(HEIGHT-2*MOBIUSY) + MOBIUSY
+        } else {
+            p["vangle"] = Math.random()*HEIGHT
+        }
+    } else if(options["surface"]=="sphere"){
+        p["hangle"] = Math.random()*Math.PI*2
+        p["vangle"] = Math.random()*Math.PI-Math.PI/2
+    } else if(options["surface"].substr(0,10)=="hyperbolic"){
+        var ang = Math.random() * 2 * Math.PI
+        var dist = Math.random() * HYPER_RADIUS
+        var pt = hyper_add(0, 0, Math.random() * 2 * Math.PI, Math.random() * HYPER_RADIUS)
+        p["hangle"] = pt[0]
+        p["vangle"] = pt[1]
+    } else if(options["surface"]=="torus"){
+        p["hangle"] = Math.random()*Math.PI*2
+        p["vangle"] = Math.random()*Math.PI*2
+    } else if(options["projection"] == "loop"){
+        var angle = Math.random()*Math.PI*2
+        var rad = Math.random()
+        p["hangle"] = WIDTH/2+rad*LOOPSIZE[0]*Math.cos(angle)
+        p["vangle"] = HEIGHT/2+rad*LOOPSIZE[1]*Math.sin(angle)
+    }
+    return p
 }
 
 function too_close(p,q){
@@ -744,6 +759,28 @@ function draw_shape(){
         for(var i=0;i<10;i++){
             add_line_to_draw(Array(i*WIDTH/10,MOBIUSY,(i+1)*WIDTH/10,MOBIUSY))
             add_line_to_draw(Array(i*WIDTH/10,HEIGHT-MOBIUSY,(i+1)*WIDTH/10,HEIGHT-MOBIUSY))
+        }
+    } else if(options["surface"]=="flatdouble-torus"){
+        var lines = [
+            [[WIDTH/2+HEIGHT/2*(Math.sqrt(2)-1),0], [WIDTH/2+HEIGHT/2,HEIGHT*(1-Math.sqrt(2)/2)]],
+            // vangle + hangle == WIDTH/2 + HEIGHT/2 * (Math.sqrt(2) + 1)
+            [[WIDTH/2+HEIGHT/2*(Math.sqrt(2)-1),HEIGHT], [WIDTH/2+HEIGHT/2,HEIGHT*Math.sqrt(2)/2]],
+            [[WIDTH/2+HEIGHT/2,HEIGHT*(1-Math.sqrt(2)/2)], [WIDTH/2+HEIGHT/2,HEIGHT-HEIGHT*(1-Math.sqrt(2)/2)]],
+            [[WIDTH-WIDTH/2-HEIGHT/2*(Math.sqrt(2)-1),0], [WIDTH-WIDTH/2-HEIGHT/2,HEIGHT*(1-Math.sqrt(2)/2)]],
+           [[WIDTH-WIDTH/2-HEIGHT/2*(Math.sqrt(2)-1),HEIGHT], [WIDTH-WIDTH/2-HEIGHT/2,HEIGHT-HEIGHT*(1-Math.sqrt(2)/2)]],
+            [[WIDTH-WIDTH/2-HEIGHT/2,HEIGHT*(1-Math.sqrt(2)/2)], [WIDTH-WIDTH/2-HEIGHT/2,HEIGHT-HEIGHT*(1-Math.sqrt(2)/2)]],
+        ]
+        for(var l=0;l<lines.length;l++){
+            var a = lines[l][0]
+            var b = lines[l][1]
+            for(var i=0;i<10;i++){
+                add_line_to_draw(Array(
+                    a[0] + (b[0]-a[0]) * i/10,
+                    a[1] + (b[1]-a[1]) * i/10,
+                    a[0] + (b[0]-a[0]) * (i+1)/10,
+                    a[1] + (b[1]-a[1]) * (i+1)/10
+                ))
+            }
         }
     } else if(options["projection"]=="loop"){
         N = 100
@@ -1375,28 +1412,9 @@ function move_asteroids(){
             var counter = 0
             while(close_to_asteroid() && counter<50){
                 counter ++
-                if(options["surface"].substring(0,4)=="flat"){
-                    spaceship["hangle"] = Math.random()*WIDTH
-                    spaceship["vangle"] = Math.random()*HEIGHT
-                } else if(options["surface"]=="sphere"){
-                    spaceship["hangle"] = Math.random()*2*Math.PI
-                    spaceship["vangle"] = Math.random()*Math.PI-Math.PI/2
-                } else if(options["surface"]=="torus"){
-                    spaceship["hangle"] = Math.random()*2*Math.PI
-                    spaceship["vangle"] = Math.random()*Math.PI-Math.PI/2
-                } else if(options["surface"].substr(0,10)=="hyperbolic"){
-                    var ang = Math.random() * 2 * Math.PI
-                    var dist = Math.random() * HYPER_RADIUS
-                    var pt = hyper_add(0, 0, Math.random() * 2 * Math.PI, Math.random() * HYPER_RADIUS)
-                    spaceship["hangle"] = pt[0]
-                    spaceship["vangle"] = pt[1]
-                }
-                if(options["projection"] == "loop"){
-                    var angle = Math.random()*Math.PI*2
-                    var rad = Math.random()
-                    spaceship["hangle"] = WIDTH/2+rad*LOOPSIZE[0]*Math.cos(angle)
-                    spaceship["vangle"] = HEIGHT/2+rad*LOOPSIZE[1]*Math.sin(angle)
-                }
+                p = random_valid_point()
+                spaceship["hangle"] = p["hangle"]
+                spaceship["vangle"] = p["vangle"]
             }
             if(game_config("game-mode") == "lives") {
                 lives--
@@ -1807,9 +1825,9 @@ function draw_line(ctx,preh,prev,hangle,vangle){
             if(options["projection"]=="flat"){
                 flat_real_pp_draw_line(ctx,preh,prev,hangle,vangle)
             }
-        } else if(options["surface"]=="flatreal-pp"){
+        } else if(options["surface"]=="flatdouble-torus"){
             if(options["projection"]=="flat"){
-                flat_real_pp_draw_line(ctx,preh,prev,hangle,vangle)
+                flat_double_torus_draw_line(ctx,preh,prev,hangle,vangle)
             }
         } else if(options["surface"]=="flatmobius"){
             if(options["projection"]=="flat"){
@@ -2030,6 +2048,78 @@ function _add_to_surface_internal(hangle, vangle, rot, badd, flip, moving){
                 rot = Math.PI - rot
                 flip *= -1
             }
+        } else if(options["surface"]=="flatdouble-torus"){
+            var ov = vangle
+            var oh = hangle
+            var cangle = Math.atan2(vangle-HEIGHT/2, hangle-WIDTH/2)
+            if (cangle <= -7*Math.PI/8 || cangle > 7*Math.PI/8) {
+                if(hangle<WIDTH/2-HEIGHT/2){
+                    hangle = WIDTH/2 + HEIGHT/2 - ov
+                    vangle = WIDTH/2 + HEIGHT/2 - oh
+                    rot += Math.PI/2
+                }
+            } else if (cangle <= -5*Math.PI/8) {
+                if(- hangle - vangle > - WIDTH/2 + HEIGHT/2 * (Math.sqrt(2) - 1)){
+                    vangle = HEIGHT - ov
+                    rot -= Math.PI/2
+                }
+            } else if (cangle <= -3*Math.PI/8) {
+                if(vangle<0){
+                    vangle = WIDTH/2 + HEIGHT/2 - oh
+                    hangle = ov + (WIDTH/2 + HEIGHT/2)
+                    rot -= Math.PI/2
+                }
+            } else if (cangle <= -Math.PI/8) {
+                if(hangle - vangle > WIDTH/2 + HEIGHT/2 * (Math.sqrt(2) - 1)){
+                    vangle = HEIGHT - ov
+                    rot -= Math.PI/2
+                }
+            } else if (cangle <= Math.PI / 8) {
+                if(hangle>WIDTH/2+HEIGHT/2){
+                    hangle = WIDTH/2 + HEIGHT/2 - ov
+                    vangle = oh - (WIDTH/2 + HEIGHT/2)
+                    rot += Math.PI/2
+                }
+            } else if (cangle <= 3*Math.PI/8) {
+                if(vangle + hangle > WIDTH/2 + HEIGHT/2 * (Math.sqrt(2) + 1)){
+                    vangle = HEIGHT - ov
+                    rot += Math.PI/2
+                }
+            } else if (cangle <= 5*Math.PI/8) {
+                if(vangle>HEIGHT){
+                    vangle = WIDTH/2 + HEIGHT/2 - oh
+                    hangle = WIDTH/2 + HEIGHT/2 - ov
+                    rot -= Math.PI/2
+                }
+            } else if (cangle <= 7*Math.PI/8) {
+                if(vangle - hangle > -WIDTH/2 + HEIGHT/2 * (Math.sqrt(2) + 1)){
+                    vangle = HEIGHT - ov
+                    rot += Math.PI/2
+                }
+            } else {
+                alert("oh uh!")
+            }
+            // 1 - 4a + 2a^2 = 0
+            // a = 1 - sqrt(2) / 2
+/*
+            if(hangle<0){
+                hangle+=WIDTH
+                vangle = HEIGHT - vangle
+                flip *= -1
+                rot *= -1
+            }
+            if(vangle>HEIGHT){
+                vangle-=HEIGHT
+                hangle = WIDTH - hangle
+                rot = Math.PI - rot
+                flip *= -1
+            }
+            if(vangle<0){
+                vangle+=HEIGHT
+                hangle = WIDTH - hangle
+                rot = Math.PI - rot
+                flip *= -1
+            }*/
         }
 
         return {"hangle":hangle,"vangle":vangle,"rotation":rot,"flip":flip}
@@ -2862,6 +2952,19 @@ function flat_real_pp_draw_line(ctx,prex,prey,x,y){
         xmid = yb*(xb-WIDTH+xa)/(ya-yb-HEIGHT) + xb
         draw_xy(ctx,xa,ya,WIDTH-xmid,HEIGHT)
         draw_xy(ctx,xmid,0,xb,yb)
+    } else {
+        draw_xy(ctx,prex,prey,x,y)
+    }
+}
+
+// flat_double_torus
+function flat_double_torus_draw_line(ctx,prex,prey,x,y){
+    if(Math.abs(x-prex)>HEIGHT/4 && Math.abs(y-prey)>HEIGHT/4){
+        // currently hide these lines
+    } else if(Math.abs(x-prex)>HEIGHT/4){
+        // currently hide these lines
+    } else if(Math.abs(y-prey)>HEIGHT/4){
+        // currently hide these lines
     } else {
         draw_xy(ctx,prex,prey,x,y)
     }

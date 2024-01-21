@@ -1,1 +1,2 @@
 - Add default sound effects
+- Allow player to mute sound

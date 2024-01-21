@@ -38,7 +38,11 @@ if(game_config("centered")) {
 <div class='clickbutton' id='display_right'>&rarr;</div>
 <div class='clickbutton' id='display_quit'>&#x274C;</div>
 <div class='clickbutton' id='display_select'>?</div>
-</div>
+<?php
+if(game_config("sound")){
+    echo("<div class='clickbutton' id='display_mute'>&#x1F509;</div>
+");
+?></div>
 <?php
 if(game_config("show-instructions")){
     echo("<div>
@@ -51,7 +55,12 @@ Destroy the asteroids to win points.
 <tr><td>Move forwards</td><td>W</td></tr>
 <tr><td>Fire</td><td>K</td></tr>
 <tr><td>Return to menu</td><td>Q</td></tr>
-</table>
+<?php
+if(game_config("sound")){
+echo("<tr><td>Mute/unmute sound</td><td>M</td></tr>
+");
+}
+?></table>
 Alternatively, you can click the buttons above to turn/move/fire/quit.
 </div>");
 }

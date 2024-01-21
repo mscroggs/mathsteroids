@@ -36,27 +36,12 @@ if(game_config("sound")){
     var sound_start = new Audio(game_config("sound-dir") + '/start.wav');
 
     // force load
-    var a = sound_fire.cloneNode()
-    a.volume = 0
-    a.play()
-    a = sound_thrust.cloneNode()
-    a.volume = 0
-    a.play()
-    a = sound_bang_large.cloneNode()
-    a.volume = 0
-    a.play()
-    a = sound_bang_medium.cloneNode()
-    a.volume = 0
-    a.play()
-    a = sound_bang_small.cloneNode()
-    a.volume = 0
-    a.play()
-    a = sound_next.cloneNode()
-    a.volume = 0
-    a.play()
-    a = sound_start.cloneNode()
-    a.volume = 0
-    a.play()
+    for(var i in [sound_fire, sound_thrust, sound_bang_large, sound_bang_medium,
+                  sound_bang_small, sound_level_up, sound_next, sound_start]){
+        var a = i.cloneNode()
+        a.volume = 0
+        a.play()
+    }
 }
 
 // titlescreen

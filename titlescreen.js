@@ -1,15 +1,19 @@
-/********************************/
-/*                              */
-/*         Mathsteroids         */
-/*                              */
-/********************************/
-/* This code was written        */
-/*           by Matthew Scroggs */
-/*  mscroggs.co.uk/mathsteroids */
-/********************************/
-
+/************************************/
+/*                                  */
+/*           Mathsteroids           */
+/*                                  */
+/************************************/
+/* This code was written            */
+/*               by Matthew Scroggs */
+/*    mscroggs.co.uk/mathsteroids   */
+/* github.com/mscroggs/mathsteroids */
+/************************************/
+/* This code is licensed under      */
+/*                   an MIT license */
+/************************************/
 
 function show_menu(){
+    titlescreen = true
     menu_tick()
     clearInterval(interval)
     interval = setInterval(menu_tick,1000/60);
@@ -1347,6 +1351,9 @@ changeGameN(0)
 function menu_tick(){
     if(leftPressed){
         if(leftTimer==0){
+            if(game_config("sound") && !mute){
+                sound_next.cloneNode().play()
+            }
             changeGameN(-1)
         }
         leftTimer++
@@ -1357,6 +1364,9 @@ function menu_tick(){
     if(rightPressed){
         if(rightTimer==0){
             changeGameN(1)
+            if(game_config("sound") && !mute){
+                sound_next.cloneNode().play()
+            }
         }
         rightTimer++
         rightTimer%=15
@@ -1364,6 +1374,9 @@ function menu_tick(){
         rightTimer = 0
     }
     if(firePressed){
+        if(game_config("sound") && !mute){
+            sound_start.cloneNode().play()
+        }
         firePressed = false
         start_game()
     }
@@ -1412,6 +1425,7 @@ function redraw_menu(){
     add_scaled_text(ctx,"surface:",20,HEIGHT-45,0.5)
     add_scaled_text(ctx,"<< "+game_title+" >>",150,HEIGHT-45,0.5)
     add_scaled_text(ctx,"press <fire> to begin",WIDTH-295,HEIGHT-20,0.5)
+    draw_mute(ctx)
     ctx.stroke();
 }
 

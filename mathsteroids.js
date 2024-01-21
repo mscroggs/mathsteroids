@@ -20,14 +20,29 @@ var leftPressed  = false;
 var rightPressed = false;
 var selectPressed = false;
 var selectDone = false;
+var mutePressed = false
+var mute = false
+var titlescreen = true
 
 if(game_config("sound")){
-    var sound_fire = new Audio('sounds/fire.wav');
-    var sound_thrust = new Audio('sounds/thrust.wav');
+    var sound_fire = new Audio(game_config("sound-dir") + '/fire.wav');
+    var sound_thrust = new Audio(game_config("sound-dir") + '/thrust.wav');
     sound_thrust.loop = true
-    var sound_bang_large = new Audio('sounds/bangLarge.wav');
-    var sound_bang_medium = new Audio('sounds/bangMedium.wav');
-    var sound_bang_small = new Audio('sounds/bangSmall.wav');
+    var sound_bang_large = new Audio(game_config("sound-dir") + '/bangLarge.wav');
+    var sound_bang_medium = new Audio(game_config("sound-dir") + '/bangMedium.wav');
+    var sound_bang_small = new Audio(game_config("sound-dir") + '/bangSmall.wav');
+    var sound_level_up = new Audio(game_config("sound-dir") + '/levelUp.wav');
+    var sound_next = new Audio(game_config("sound-dir") + '/next.wav');
+    var sound_start = new Audio(game_config("sound-dir") + '/start.wav');
+
+    var sounds = [sound_fire, sound_thrust, sound_bang_large, sound_bang_medium,
+                  sound_bang_small, sound_level_up, sound_next, sound_start]
+    // force load
+    for(var i = 0; i < sounds.length; i++){
+        var a = sounds[i].cloneNode()
+        a.volume = 0
+        a.play()
+    }
 }
 
 // titlescreen
@@ -191,6 +206,7 @@ function reset(){
     explode = Array()
     asterN = 2
     asteroids = make_new_asteroids(asterN)
+    titlescreen = false
 }
 
 function make_new_asteroids(n){
@@ -296,16 +312,29 @@ function too_close(p,q){
     return false
 }
 
+function toggle_mute(){
+    if(game_config("sound")){
+        if (mute) {
+            mute = false
+            sound_start.cloneNode().play()
+        } else {
+            mute = true
+        }
+    }
+    if(titlescreen){
+        redraw_menu()
+    }
+}
 function tick(){
     if(quitPressed){
         show_menu()
         return
     }
     if(upPressed){
-        if(game_config("sound")){ sound_thrust.play() }
+        if(game_config("sound") && !mute){ sound_thrust.play() }
         increase_speed()
     } else {
-        if(game_config("sound")){ sound_thrust.pause() }
+        if(game_config("sound") && !mute){ sound_thrust.pause() }
         decrease_speed()
     }
     if(leftPressed){
@@ -345,6 +374,7 @@ function tick(){
     ctx.beginPath()
     add_scaled_text(ctx,""+score,20,38,0.6)
     draw_lives(ctx)
+    draw_mute(ctx)
     ctx.stroke();
 
     front_points = Array()
@@ -393,7 +423,7 @@ function save_scores(scores) {
 
 function highscore() {
     clearInterval(interval)
-    if(game_config("sound")){ sound_thrust.pause() }
+    if(game_config("sound") && !mute){ sound_thrust.pause() }
 
     var canvas = document.getElementById("mathsteroids");
     var ctx = canvas.getContext("2d");
@@ -562,7 +592,7 @@ function move_fire(){
     fires = new_fires
     if(firePressed){
         if(fired==0){
-            if(game_config("sound")){ sound_fire.cloneNode().play() }
+            if(game_config("sound") && !mute){ sound_fire.cloneNode().play() }
             var leng = 0
             var speed = 0
             if(options["surface"].substring(0,4) == "flat" || options["surface"]=="pool"){
@@ -674,6 +704,38 @@ function draw_lives(ctx){
     } else if(game_config("game-mode") == "time"){
         var timeleftdisp = Math.ceil(timeleft / 1000)
         add_scaled_text(ctx,""+timeleftdisp,WIDTH-50,38,0.6)
+    }
+}
+
+function draw_mute(ctx){
+    if(game_config("sound")){
+        if(mute) {
+            ctx.moveTo(15,HEIGHT-20)
+            ctx.lineTo(15,HEIGHT-20)
+            ctx.lineTo(15,HEIGHT-30)
+            ctx.lineTo(20,HEIGHT-30)
+            ctx.lineTo(20,HEIGHT-25)
+            ctx.moveTo(23+7/5,HEIGHT-20+5/5)
+            ctx.lineTo(30,HEIGHT-15)
+            ctx.lineTo(30,HEIGHT-25)
+            ctx.moveTo(30,HEIGHT-35)
+            ctx.lineTo(23,HEIGHT-30)
+            ctx.lineTo(23,HEIGHT-28)
+
+            ctx.moveTo(15,HEIGHT-15)
+            ctx.lineTo(35,HEIGHT-35)
+        } else {
+            ctx.moveTo(20,HEIGHT-20)
+            ctx.lineTo(15,HEIGHT-20)
+            ctx.lineTo(15,HEIGHT-30)
+            ctx.lineTo(20,HEIGHT-30)
+            ctx.lineTo(20,HEIGHT-20)
+            ctx.moveTo(23,HEIGHT-20)
+            ctx.lineTo(30,HEIGHT-15)
+            ctx.lineTo(30,HEIGHT-35)
+            ctx.lineTo(23,HEIGHT-30)
+            ctx.lineTo(23,HEIGHT-20)
+        }
     }
 }
 
@@ -1293,6 +1355,7 @@ function move_asteroids(){
     if(asteroids.length==0){
         asterN++
         score += 1000
+        if(game_config("sound") && !mute){ sound_level_up.cloneNode().play() }
         asteroids = make_new_asteroids(asterN)
     }
     var new_asteroids = Array()
@@ -1304,7 +1367,7 @@ function move_asteroids(){
 
         var points = ship_sprite(1)[0]
         if(in_contact(ship_sprite(1)[0], a)){
-            if(game_config("sound")){ sound_bang_large.cloneNode().play() }
+            if(game_config("sound") && !mute){ sound_bang_large.cloneNode().play() }
             explode[explode.length] = {"hangle":spaceship["hangle"],"vangle":spaceship["vangle"],"age":0,"rotation":Math.random()*Math.PI,"speed":3}
             spaceship["rotation"] = Math.random()*2*Math.PI
             spaceship["direction"] = spaceship["rotation"]
@@ -1345,7 +1408,7 @@ function move_asteroids(){
 
         for(var j=0;j<fires.length;j++){
             if(in_contact([[fires[j]["hangle"],fires[j]["vangle"]]], a)){
-                if(game_config("sound")){
+                if(game_config("sound") && !mute){
                     if(a["sides"] == 3){
                         sound_bang_small.cloneNode().play()
                     } else {
@@ -2539,7 +2602,6 @@ function cube_xy(hangle,vangle){
         [[-1, 2], [-1, 0], [-1, -2], [3, 0], [1, 0], [-3, 0]],
         [[[0, 1, 0], [-1, 0, 0]], [[0, 1, 0], [0, 0, 1]], [[0, 1, 0], [1, 0, 0]], [[0, -1, 0], [0, 0, 1]], [[-1, 0, 0], [0, 0, 1]], [[1, 0, 0], [0, 0, 1]]],
         HEIGHT / 7)
-    return {"x":ox+px,"y":oy+py}
 }
 
 function cube_draw_line(ctx,preh,prev,h,v){

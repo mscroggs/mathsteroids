@@ -1,13 +1,18 @@
-/********************************/
-/*                              */
-/*         Mathsteroids         */
-/*                              */
-/********************************/
-/* This code was written        */
-/*           by Matthew Scroggs */
-/*  mscroggs.co.uk/mathsteroids */
-/********************************/
+/************************************/
+/*                                  */
+/*           Mathsteroids           */
+/*                                  */
+/************************************/
+/* This code was written            */
+/*               by Matthew Scroggs */
+/*    mscroggs.co.uk/mathsteroids   */
+/* github.com/mscroggs/mathsteroids */
+/************************************/
+/* This code is licensed under      */
+/*                   an MIT license */
+/************************************/
 
+var muteDone = false
 
 document.addEventListener('keydown', function(event){
     const currentCode = event.which || event.code;
@@ -31,7 +36,6 @@ document.addEventListener('keyup', function(event){
     button_styles()
 });
 
-
 function process_key(keyName, result){
     if(keyName == "q" || keyName == "Q"){
         quitPressed=result;
@@ -48,7 +52,21 @@ function process_key(keyName, result){
     if(keyName == "k" || keyName == "K"){
         firePressed=result;
     }
+    if(game_config("sound")){
+        if(keyName == "m" || keyName == "M"){
+            mutePressed = result
+            if (result) {
+                if(!muteDone) {
+                    toggle_mute()
+                    muteDone = true
+                }
+            } else {
+                muteDone = false
+            }
+        }
+    }
 }
+
 function do_gamepad(){
     if(game_config("controller") == "none") {
         return
@@ -159,6 +177,9 @@ document.addEventListener('mouseup', function(event){
         selectPressed=false;
         selectDone=false;
     }
+    if(mouse=="mute"){
+        mutePressed=false;
+    }
     button_styles()
 });
 
@@ -216,6 +237,27 @@ document.getElementById("display_select").addEventListener('touchend', function(
     button_styles()
 });
 
+if(game_config("sound")){
+    document.getElementById("display_mute").addEventListener('touchmove', function(event){
+        event.preventDefault()
+    });
+    document.getElementById("display_mute").addEventListener('touchstart', function(event){
+        event.preventDefault()
+        mutePressed=true;
+        toggle_mute();
+        button_styles()
+    });
+    document.getElementById("display_mute").addEventListener('mousedown', function(event){
+        mutePressed=true;
+        toggle_mute();
+        mouse = "mute"
+        button_styles()
+    });
+    document.getElementById("display_mute").addEventListener('touchend', function(event){
+        mutePressed=false;
+        button_styles()
+    });
+}
 document.getElementById("display_fire").addEventListener('touchmove', function(event){
     event.preventDefault()
 });
@@ -290,6 +332,11 @@ function button_styles(){
         document.getElementById("display_select").style.backgroundColor="red"
     } else {
         document.getElementById("display_select").style.backgroundColor="white"
+    }
+    if(mutePressed){
+        document.getElementById("display_mute").style.backgroundColor="red"
+    } else {
+        document.getElementById("display_mute").style.backgroundColor="white"
     }
     if(leftPressed){
         document.getElementById("display_left").style.backgroundColor="red"

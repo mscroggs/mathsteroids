@@ -12,12 +12,6 @@
 /*                   an MIT license */
 /************************************/
 
-if(game_config("sound")){
-    var sound_next = new Audio(game_config("sound-dir") + '/next.wav');
-    var sound_start = new Audio(game_config("sound-dir") + '/start.wav');
-}
-
-
 function show_menu(){
     titlescreen = true
     menu_tick()

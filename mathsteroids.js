@@ -722,20 +722,32 @@ function draw_lives(ctx){
 
 function draw_mute(ctx){
     if(game_config("sound")){
-        ctx.moveTo(20,HEIGHT-20)
-        ctx.lineTo(15,HEIGHT-20)
-        ctx.lineTo(15,HEIGHT-30)
-        ctx.lineTo(20,HEIGHT-30)
-        ctx.lineTo(20,HEIGHT-20)
-        ctx.moveTo(23,HEIGHT-20)
-        ctx.lineTo(30,HEIGHT-15)
-        ctx.lineTo(30,HEIGHT-35)
-        ctx.lineTo(23,HEIGHT-30)
-        ctx.lineTo(23,HEIGHT-20)
-
         if(mute) {
+            ctx.moveTo(15,HEIGHT-20)
+            ctx.lineTo(15,HEIGHT-20)
+            ctx.lineTo(15,HEIGHT-30)
+            ctx.lineTo(20,HEIGHT-30)
+            ctx.lineTo(20,HEIGHT-25)
+            ctx.moveTo(23+7/5,HEIGHT-20+5/5)
+            ctx.lineTo(30,HEIGHT-15)
+            ctx.lineTo(30,HEIGHT-25)
+            ctx.moveTo(30,HEIGHT-35)
+            ctx.lineTo(23,HEIGHT-30)
+            ctx.lineTo(23,HEIGHT-28)
+
             ctx.moveTo(15,HEIGHT-15)
             ctx.lineTo(35,HEIGHT-35)
+        } else {
+            ctx.moveTo(20,HEIGHT-20)
+            ctx.lineTo(15,HEIGHT-20)
+            ctx.lineTo(15,HEIGHT-30)
+            ctx.lineTo(20,HEIGHT-30)
+            ctx.lineTo(20,HEIGHT-20)
+            ctx.moveTo(23,HEIGHT-20)
+            ctx.lineTo(30,HEIGHT-15)
+            ctx.lineTo(30,HEIGHT-35)
+            ctx.lineTo(23,HEIGHT-30)
+            ctx.lineTo(23,HEIGHT-20)
         }
     }
 }

@@ -35,10 +35,11 @@ if(game_config("sound")){
     var sound_next = new Audio(game_config("sound-dir") + '/next.wav');
     var sound_start = new Audio(game_config("sound-dir") + '/start.wav');
 
+    var sounds = [sound_fire, sound_thrust, sound_bang_large, sound_bang_medium,
+                  sound_bang_small, sound_level_up, sound_next, sound_start]
     // force load
-    for(var i in [sound_fire, sound_thrust, sound_bang_large, sound_bang_medium,
-                  sound_bang_small, sound_level_up, sound_next, sound_start]){
-        var a = i.cloneNode()
+    for(var i = 0; i < sounds.length; i++){
+        var a = sounds[i].cloneNode()
         a.volume = 0
         a.play()
     }

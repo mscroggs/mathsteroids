@@ -259,6 +259,18 @@ function random_valid_point(){
         } else {
             p["hangle"] = Math.random()*WIDTH
         }
+        var vcent = p["vangle"] - HEIGHT/2
+        var hcent = p["hangle"] - WIDTH/2
+        if(hcent < -HEIGHT/2
+            || hcent < - HEIGHT*Math.sqrt(2)/2 - vcent
+            || vcent < -HEIGHT/2
+            || hcent > HEIGHT*Math.sqrt(2)/2 + vcent
+            || hcent > HEIGHT/2
+            || hcent > HEIGHT*Math.sqrt(2)/2 - vcent
+            || vcent > HEIGHT/2
+            || vcent > hcent + HEIGHT*Math.sqrt(2)/2){
+            p = random_valid_point()
+        }
         if(options["surface"]=="flatmobius" || options["surface"]=="flatcylinder"){
             p["vangle"] = Math.random()*(HEIGHT-2*MOBIUSY) + MOBIUSY
         } else {
@@ -765,10 +777,11 @@ function draw_shape(){
             [[WIDTH/2+HEIGHT/2*(Math.sqrt(2)-1),0], [WIDTH/2+HEIGHT/2,HEIGHT*(1-Math.sqrt(2)/2)]],
             // vangle + hangle == WIDTH/2 + HEIGHT/2 * (Math.sqrt(2) + 1)
             [[WIDTH/2+HEIGHT/2*(Math.sqrt(2)-1),HEIGHT], [WIDTH/2+HEIGHT/2,HEIGHT*Math.sqrt(2)/2]],
-            [[WIDTH/2+HEIGHT/2,HEIGHT*(1-Math.sqrt(2)/2)], [WIDTH/2+HEIGHT/2,HEIGHT-HEIGHT*(1-Math.sqrt(2)/2)]],
             [[WIDTH-WIDTH/2-HEIGHT/2*(Math.sqrt(2)-1),0], [WIDTH-WIDTH/2-HEIGHT/2,HEIGHT*(1-Math.sqrt(2)/2)]],
-           [[WIDTH-WIDTH/2-HEIGHT/2*(Math.sqrt(2)-1),HEIGHT], [WIDTH-WIDTH/2-HEIGHT/2,HEIGHT-HEIGHT*(1-Math.sqrt(2)/2)]],
-            [[WIDTH-WIDTH/2-HEIGHT/2,HEIGHT*(1-Math.sqrt(2)/2)], [WIDTH-WIDTH/2-HEIGHT/2,HEIGHT-HEIGHT*(1-Math.sqrt(2)/2)]],
+            [[WIDTH-WIDTH/2-HEIGHT/2*(Math.sqrt(2)-1),HEIGHT], [WIDTH-WIDTH/2-HEIGHT/2,HEIGHT-HEIGHT*(1-Math.sqrt(2)/2)]],
+
+            [[WIDTH/2+HEIGHT/2,HEIGHT*(1-Math.sqrt(2)/2)], [WIDTH/2+HEIGHT/2,HEIGHT*Math.sqrt(2)/2]],
+            [[WIDTH-WIDTH/2-HEIGHT/2,HEIGHT*(1-Math.sqrt(2)/2)], [WIDTH-WIDTH/2-HEIGHT/2,HEIGHT*Math.sqrt(2)/2]],
         ]
         for(var l=0;l<lines.length;l++){
             var a = lines[l][0]
@@ -2049,77 +2062,55 @@ function _add_to_surface_internal(hangle, vangle, rot, badd, flip, moving){
                 flip *= -1
             }
         } else if(options["surface"]=="flatdouble-torus"){
-            var ov = vangle
-            var oh = hangle
-            var cangle = Math.atan2(vangle-HEIGHT/2, hangle-WIDTH/2)
+            var vcent = vangle - HEIGHT/2
+            var hcent = hangle - WIDTH/2
+            var cangle = Math.atan2(vcent, hcent)
             if (cangle <= -7*Math.PI/8 || cangle > 7*Math.PI/8) {
-                if(hangle<WIDTH/2-HEIGHT/2){
-                    hangle = WIDTH/2 + HEIGHT/2 - ov
-                    vangle = WIDTH/2 + HEIGHT/2 - oh
+                if(hcent < -HEIGHT/2){
+                    hangle = WIDTH/2 - vcent
+                    vangle = HEIGHT/2 - hcent
                     rot += Math.PI/2
                 }
             } else if (cangle <= -5*Math.PI/8) {
-                if(- hangle - vangle > - WIDTH/2 + HEIGHT/2 * (Math.sqrt(2) - 1)){
-                    vangle = HEIGHT - ov
-                    rot -= Math.PI/2
+                if(hcent < - HEIGHT*Math.sqrt(2)/2 - vcent){
+                    vangle = HEIGHT/2 - vcent
+                    rot += Math.PI/2
                 }
             } else if (cangle <= -3*Math.PI/8) {
-                if(vangle<0){
-                    vangle = WIDTH/2 + HEIGHT/2 - oh
-                    hangle = ov + (WIDTH/2 + HEIGHT/2)
+                if(vcent < -HEIGHT/2){
+                    vangle = HEIGHT/2 - hcent
+                    hangle = WIDTH/2 + vcent + HEIGHT
                     rot -= Math.PI/2
                 }
             } else if (cangle <= -Math.PI/8) {
-                if(hangle - vangle > WIDTH/2 + HEIGHT/2 * (Math.sqrt(2) - 1)){
-                    vangle = HEIGHT - ov
+                if(hcent > HEIGHT*Math.sqrt(2)/2 + vcent){
+                    vangle = HEIGHT/2 - vcent
                     rot -= Math.PI/2
                 }
             } else if (cangle <= Math.PI / 8) {
-                if(hangle>WIDTH/2+HEIGHT/2){
-                    hangle = WIDTH/2 + HEIGHT/2 - ov
-                    vangle = oh - (WIDTH/2 + HEIGHT/2)
+                if(hcent > HEIGHT/2){
+                    hangle = WIDTH/2 + vcent
+                    vangle = hcent - HEIGHT/2
                     rot += Math.PI/2
                 }
             } else if (cangle <= 3*Math.PI/8) {
-                if(vangle + hangle > WIDTH/2 + HEIGHT/2 * (Math.sqrt(2) + 1)){
-                    vangle = HEIGHT - ov
+                if(hcent > HEIGHT*Math.sqrt(2)/2 - vcent){
+                    vangle = HEIGHT/2 - vcent
                     rot += Math.PI/2
                 }
             } else if (cangle <= 5*Math.PI/8) {
-                if(vangle>HEIGHT){
-                    vangle = WIDTH/2 + HEIGHT/2 - oh
-                    hangle = WIDTH/2 + HEIGHT/2 - ov
+                if(vcent > HEIGHT/2){
+                    var ov = vangle
+                    vangle = HEIGHT/2 - hcent
+                    hangle = WIDTH/2 - vcent
                     rot -= Math.PI/2
                 }
             } else if (cangle <= 7*Math.PI/8) {
-                if(vangle - hangle > -WIDTH/2 + HEIGHT/2 * (Math.sqrt(2) + 1)){
-                    vangle = HEIGHT - ov
-                    rot += Math.PI/2
+                if(vcent > hcent + HEIGHT*Math.sqrt(2)/2){
+                    vangle = HEIGHT/2 - vcent
+                    rot -= Math.PI/2
                 }
-            } else {
-                alert("oh uh!")
             }
-            // 1 - 4a + 2a^2 = 0
-            // a = 1 - sqrt(2) / 2
-/*
-            if(hangle<0){
-                hangle+=WIDTH
-                vangle = HEIGHT - vangle
-                flip *= -1
-                rot *= -1
-            }
-            if(vangle>HEIGHT){
-                vangle-=HEIGHT
-                hangle = WIDTH - hangle
-                rot = Math.PI - rot
-                flip *= -1
-            }
-            if(vangle<0){
-                vangle+=HEIGHT
-                hangle = WIDTH - hangle
-                rot = Math.PI - rot
-                flip *= -1
-            }*/
         }
 
         return {"hangle":hangle,"vangle":vangle,"rotation":rot,"flip":flip}

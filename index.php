@@ -42,8 +42,9 @@ if(game_config("centered")) {
 if(game_config("sound")){
     echo("<div class='clickbutton' id='display_mute'>&#x1F509;</div>
 ");
-?></div>
-<?php
+}
+echo("</div>
+");
 if(game_config("show-instructions")){
     echo("<div>
 Mathsteroids is a game based on asteroids that can be played on a selection of interesting mathematical surfaces.
@@ -55,12 +56,12 @@ Destroy the asteroids to win points.
 <tr><td>Move forwards</td><td>W</td></tr>
 <tr><td>Fire</td><td>K</td></tr>
 <tr><td>Return to menu</td><td>Q</td></tr>
-<?php
+");
 if(game_config("sound")){
 echo("<tr><td>Mute/unmute sound</td><td>M</td></tr>
 ");
 }
-?></table>
+echo("</table>
 Alternatively, you can click the buttons above to turn/move/fire/quit.
 </div>");
 }

@@ -333,10 +333,12 @@ function button_styles(){
     } else {
         document.getElementById("display_select").style.backgroundColor="white"
     }
-    if(mutePressed){
-        document.getElementById("display_mute").style.backgroundColor="red"
-    } else {
-        document.getElementById("display_mute").style.backgroundColor="white"
+    if(game_config("sound")){
+        if(mutePressed){
+            document.getElementById("display_mute").style.backgroundColor="red"
+        } else {
+            document.getElementById("display_mute").style.backgroundColor="white"
+        }
     }
     if(leftPressed){
         document.getElementById("display_left").style.backgroundColor="red"

@@ -217,7 +217,7 @@ function make_new_asteroids(n){
     for(var i=0;i<n;i++){
         new_a = {"hangle":spaceship["hangle"],"vangle":spaceship["vangle"],
                  "rotation":Math.random()*Math.PI*2,"direction":Math.random()*Math.PI*2,
-                 "size":4,"sides":2,
+                 "size":4,"sides":2,"type":"standard",
                  "radius":1,"speed":1}
         if(options["surface"].substring(0,4) == "flat"){
             new_a["speed"] = 0.5+Math.random()*0.5
@@ -268,6 +268,27 @@ function make_new_asteroids(n){
         new_a["sides"] = as["sides"]
 
         out[i] = new_a
+    }
+    if(games[game_n][0] == "credits"){
+        var lines = Array(
+            Array("mathsteroids v" + VERSION, 100),
+            Array("created by matthew scroggs", 130),
+            Array("mscroggs.co.uk/mathsteroids", 160),
+            Array("source code available at", 350),
+            Array("github.com/mscroggs/mathsteroids", 380),
+        )
+        for(var i=0;i<lines.length;i++){
+            var text = lines[i][0]
+            var y = lines[i][1]
+            var x = 100
+            for (var j=0;j<text.length;j++){
+                var letter = text.charAt(j)
+                if(letter!=" "){
+                    out[out.length] = {"hangle": x,"vangle":y,"rotation":0,"direction":0,"size":2,"sides":4,"type":letter,"radius":12,"speed":0}
+                }
+                x = add_letter_x(letter, x, 0.5)
+            }
+        }
     }
     return out
 }
@@ -1449,7 +1470,7 @@ function move_asteroids(){
                 var new_a = {"hangle":a["hangle"],"vangle":a["vangle"],
                              "rotation":a["rotation"]-Math.PI/4+Math.random()*Math.PI/2,"speed":speed_start+Math.random()*1.1*a["speed"],
                              "direction":a["direction"]-Math.PI/4+Math.random()*Math.PI/2,
-                             "size":a["size"]-1,"radius":0.01,"sides":2}
+                             "size":a["size"]-1,"radius":0.01,"sides":2,"type":"standard"}
                 var as = get_a_s(new_a)
                 new_a["radius"] = as["radius"]
                 new_a["sides"] = as["sides"]
@@ -1458,7 +1479,7 @@ function move_asteroids(){
                 var new_b = {"hangle":a["hangle"],"vangle":a["vangle"],
                              "rotation":a["rotation"]+Math.PI/4+Math.random()*Math.PI/2,"speed":speed_start+Math.random()*1.1*a["speed"],
                              "direction":a["direction"]+Math.PI/4+Math.random()*Math.PI/2,
-                             "size":a["size"]-1,"radius":0.01,"sides":2}
+                             "size":a["size"]-1,"radius":0.01,"sides":2,"type":"standard"}
                 var as = get_a_s(new_b)
                 new_b["radius"] = as["radius"]
                 new_b["sides"] = as["sides"]
@@ -1684,6 +1705,22 @@ function explode_sprite(f){
 }
 
 function asteroid_sprite(a){
+    if(a["type"] != "standard") {
+        var letter = a["type"]
+        if(!(letter in font_data)){
+            letter = "??"
+        }
+        var lines = font_data[letter]
+        var out = Array()
+        for(var i = 0; i < lines.length;i++){
+            var group = Array()
+            for(var j = 0; j < lines[i].length;j++){
+                group[j] = Array(a["hangle"] + lines[i][j][0] * 0.5, a["vangle"] + lines[i][j][1] * 0.5)
+            }
+            out[i] = group
+        }
+        return out
+    }
     var out = Array()
     var r = a["radius"]
     var sides = a["sides"]

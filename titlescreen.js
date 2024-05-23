@@ -1430,7 +1430,7 @@ function redraw_menu(){
     }
     add_scaled_text(ctx,"surface:",20,HEIGHT-45,0.5)
     add_scaled_text(ctx,"<< "+game_title+" >>",150,HEIGHT-45,0.5)
-    add_scaled_text(ctx,"press <forward> for info",20,HEIGHT-20,0.5)
+    add_scaled_text(ctx,"hold <forward> for info",20,HEIGHT-20,0.5)
     add_scaled_text(ctx,"press <fire> to begin",WIDTH-295,HEIGHT-20,0.5)
     ctx.stroke();
     draw_mute(ctx)
@@ -1460,7 +1460,7 @@ function add_wrapped_text(ctx, text, x, y, width){
     for (var i=0;i<words.length;i++) {
         new_x = x
         for(var j=0;j<words[i].length;j++) {
-            new_x = add_letter_x(words[i].charAt(j), new_x, y, scale)
+            new_x = add_letter_x(words[i].charAt(j), new_x, scale)
         }
         if (new_x > x_in + width) {
             x = x_in
@@ -1503,7 +1503,7 @@ function add_letter(ctx,letter,x,y,scale){
     return xout+10*scale
 }
 
-function add_letter_x(letter,x,y,scale){
+function add_letter_x(letter,x,scale){
     if(letter==" "){
         return x+20*scale
     }

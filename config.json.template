@@ -6,6 +6,7 @@
     "centered": false,
     "show-webad": false,
     "show-instructions": true,
+    "show-control-buttons": true,
     "sound": false,
     "sound-dir": "sounds/default",
     "debug": false

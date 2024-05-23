@@ -29,8 +29,10 @@ echo(game_config("pre-html"));
 if(game_config("centered")) {
     echo("<center>");
 }
-?>
-<canvas id='mathsteroids' width='800' height='450'></canvas>
+echo("<canvas id='mathsteroids' width='800' height='450'></canvas>");
+
+if(game_config("show-control-buttons")){
+echo("
 <div class='buttongroup'>
 <div class='clickbutton' id='display_left'>&larr;</div>
 <div class='clickbutton' id='display_up'>&uarr;</div>
@@ -38,13 +40,14 @@ if(game_config("centered")) {
 <div class='clickbutton' id='display_right'>&rarr;</div>
 <div class='clickbutton' id='display_quit'>&#x274C;</div>
 <div class='clickbutton' id='display_select'>?</div>
-<?php
+");
 if(game_config("sound")){
     echo("<div class='clickbutton' id='display_mute'>&#x1F509;</div>
 ");
 }
 echo("</div>
 ");
+}
 if(game_config("show-instructions")){
     echo("<div>
 Mathsteroids is a game based on asteroids that can be played on a selection of interesting mathematical surfaces.

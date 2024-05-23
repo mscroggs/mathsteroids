@@ -105,11 +105,6 @@ function do_gamepad(){
         } else {
             upPressed = false
         }
-        if(gp.buttons[0].pressed){
-            quitPressed = true
-        } else {
-            quitPressed = false
-        }
         if(gp.buttons[8].pressed){
             selectPressed = true
         } else {
@@ -183,6 +178,7 @@ document.addEventListener('mouseup', function(event){
     button_styles()
 });
 
+if(game_config("show-display-buttons")){
 document.getElementById("display_up").addEventListener('touchmove', function(event){
     event.preventDefault()
 });
@@ -311,43 +307,45 @@ document.getElementById("display_right").addEventListener('touchend', function(e
     rightPressed=false;
     button_styles()
 });
-
+}
 function button_styles(){
-    if(quitPressed){
-        document.getElementById("display_quit").style.backgroundColor="red"
-    } else {
-        document.getElementById("display_quit").style.backgroundColor="white"
-    }
-    if(upPressed){
-        document.getElementById("display_up").style.backgroundColor="red"
-    } else {
-        document.getElementById("display_up").style.backgroundColor="white"
-    }
-    if(firePressed){
-        document.getElementById("display_fire").style.backgroundColor="red"
-    } else {
-        document.getElementById("display_fire").style.backgroundColor="white"
-    }
-    if(selectPressed){
-        document.getElementById("display_select").style.backgroundColor="red"
-    } else {
-        document.getElementById("display_select").style.backgroundColor="white"
-    }
     if(game_config("sound")){
-        if(mutePressed){
-            document.getElementById("display_mute").style.backgroundColor="red"
+        if(quitPressed){
+            document.getElementById("display_quit").style.backgroundColor="red"
         } else {
-            document.getElementById("display_mute").style.backgroundColor="white"
+            document.getElementById("display_quit").style.backgroundColor="white"
         }
-    }
-    if(leftPressed){
-        document.getElementById("display_left").style.backgroundColor="red"
-    } else {
-        document.getElementById("display_left").style.backgroundColor="white"
-    }
-    if(rightPressed){
-        document.getElementById("display_right").style.backgroundColor="red"
-    } else {
-        document.getElementById("display_right").style.backgroundColor="white"
+        if(upPressed){
+            document.getElementById("display_up").style.backgroundColor="red"
+        } else {
+            document.getElementById("display_up").style.backgroundColor="white"
+        }
+        if(firePressed){
+            document.getElementById("display_fire").style.backgroundColor="red"
+        } else {
+            document.getElementById("display_fire").style.backgroundColor="white"
+        }
+        if(selectPressed){
+            document.getElementById("display_select").style.backgroundColor="red"
+        } else {
+            document.getElementById("display_select").style.backgroundColor="white"
+        }
+        if(game_config("sound")){
+            if(mutePressed){
+                document.getElementById("display_mute").style.backgroundColor="red"
+            } else {
+                document.getElementById("display_mute").style.backgroundColor="white"
+            }
+        }
+        if(leftPressed){
+            document.getElementById("display_left").style.backgroundColor="red"
+        } else {
+            document.getElementById("display_left").style.backgroundColor="white"
+        }
+        if(rightPressed){
+            document.getElementById("display_right").style.backgroundColor="red"
+        } else {
+            document.getElementById("display_right").style.backgroundColor="white"
+        }
     }
 }

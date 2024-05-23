@@ -60,47 +60,50 @@ var entered_letter = 0
 var nscores = 5
 var games = [
     // Sphere levels
-    ["sphere (mercator projection)","sphere","Mercator"],
-    ["sphere (isometric)","sphere","isometric"],
-    ["sphere (stereographic projection)","sphere","stereographic"],
-    ["sphere (gall-peters projection)","sphere","Gall"],
-    ["sphere (craig retroazimuthal projection)","sphere","Craig"],
-    ["sphere (azimuthal projection)","sphere","azim"],
-    ["sphere (robinson projection)","sphere","Robinson"],
-    ["sphere (sinusoidal projection)","sphere","sinusoidal"],
-    ["sphere (mollweide projection)","sphere","Mollweide"],
-    ["sphere (goode homolosine projection)","sphere","Goode"],
-    ["sphere (van der grinten projection)","sphere","van der Grinten"],
-    ["sphere (plate carée projection)","sphere","plate caree"],
-    ["sphere (dymaxion map)","sphere","dymaxion"],
-    ["sphere (tetrahedron net)","sphere","tetrahedron"],
-    ["sphere (cube net)","sphere","cube"],
-    ["sphere (octahedron net)","sphere","octahedron"],
-    ["sphere (dodecahedron net)","sphere","dodecahedron"],
-    ["sphere (icosahedron net)","sphere","icosahedron"],
+    ["sphere (mercator projection)","sphere","Mercator","the mercator projection is most widely used map projection and is used to make most maps of the world. paths on the globe with a constant bearing from north appear as straight lines on the map."],
+    ["sphere (isometric)","sphere","isometric","in this level the sphere is represented isometrically with the back half of the sphere shown in grey."],
+    ["sphere (stereographic projection)","sphere","stereographic","a stereographic projection is the result of putting a transparent sphere with a light source at its top point on a flat surface. this level is split into two parts: the images of the southern hemisphere with a light at the north pole and the northern hemisphere with a light at the south pole."],
+    ["sphere (gall-peters projection)","sphere","Gall","the gall-peters projection is an area preserving projection: two shapes on the map will have the same relative sizes as they do on the globe."],
+    ["sphere (craig retroazimuthal projection)","sphere","Craig","the craig projection preserves angles from every point to the point marked with a cross. if it is centred on mecca then it can be used as a prayer map as the angle from north to mecca on the map will be the same as the angle from north you should face."],
+    ["sphere (azimuthal projection)","sphere","azim","the azimuthal projection preserves angles from the centre point to every other point. an azimulthal map of the world appears in the un logo."],
+    ["sphere (robinson projection)","sphere","Robinson","the robinson projection is a comprimise projection: it preserves neither angles nor sizes but it doesn't change either by too much."],
+    ["sphere (sinusoidal projection)","sphere","sinusoidal","the sinusoidal projection is an area preserving projection: two shapes on the map will have the same relative sizes as they do on the globe."],
+    ["sphere (mollweide projection)","sphere","Mollweide","the mollweide projection is an area preserving projection: two shapes on the map will have the same relative sizes as they do on the globe."],
+    ["sphere (goode homolosine projection)","sphere","Goode","the goode homolosine projection is an area preserving projection: two shapes on the map will have the same relative sizes as they do on the globe. the map has gaps where it jumps from one place to another: these are usually placed in the middle on an ocean so that landmasses are uninterrupted on this map."],
+    ["sphere (van der grinten projection)","sphere","van der Grinten","the van der grinten projection is a comprimise projection: it preserves neither angles nor sizes but it doesn't change either by too much."],
+    ["sphere (plate carEe projection)","sphere","plate caree","the plate carEe projection is the result of mapping the longitute and latitude directly to x and y coordinates."],
+    ["sphere (dymaxion map)","sphere","dymaxion","the dymaxion map is the result of approximating the sphere as an icosahedron then flattening out a net of this icosahedron."],
+    ["sphere (tetrahedron net)","sphere","tetrahedron","this level is the result of approximating the sphere as an tetrahedron then flattening out a net of this tetrahedron."],
+    ["sphere (cube net)","sphere","cube","this level is the result of approximating the sphere as an cube then flattening out a net of this cube."],
+    ["sphere (octahedron net)","sphere","octahedron","this level is the result of approximating the sphere as an octahedron then flattening out a net of this octahedron."],
+    ["sphere (dodecahedron net)","sphere","dodecahedron","this level is the result of approximating the sphere as an dodecahedron then flattening out a net of this dodecahedron."],
+    ["sphere (icosahedron net)","sphere","icosahedron","this level is the result of approximating the sphere as an icosahedron then flattening out a net of this icosahedron."],
 
     // Flat levels
-    ["(flat) cylinder","flatcylinder","flat"],
-    ["(flat) möbius strip","flatmobius","flat"],
-    ["(flat) torus","flattorus","flat"],
-    ["(flat) klein bottle","flatKlein","flat"],
-    ["(flat) real projective plane","flatreal-pp","flat"],
-    ["unbounded 2d space","flatunbounded", "unbounded"],
-    ["loop (elliptical pool table)","pool","loop"],
+    ["(flat) cylinder","flatcylinder","flat","this level takes place on a cylinder. if you go off the left side then you come back on the right side."],
+    ["(flat) mObius strip","flatmobius","flat","this level takes place on a mObius strip: a loop of paper with a twist in it. if you go odd the left side then you come back on the right side but upside down."],
+    ["(flat) torus","flattorus","flat","this level takes place on a (flat) torus or doughnut. if you go off the left side then you come back on the right side and if you go off the top then you come back on the bottom. this is the level that appears in the standard asteroids game."],
+    ["(flat) klein bottle","flatKlein","flat","this level takes place on a klein bottle: a 4 dimensional shape. if you go off the left side then you come back on the right side but upside down and if you go off the top then you come back on the bottom."],
+    ["(flat) real projective plane","flatreal-pp","flat","this level takes place on the real projective plane: a 4 dimensional shape that's even harder to visualise than the klein bottle. if you go off the left side then you come back on the right side but upside down and if you go off the top then you come back on the bottom but leftside right."],
+    ["unbounded 2d space","flatunbounded", "unbounded","this level takes place in unbounded 2d space: if you go near the edges then the level will scroll sideways."],
+    ["loop (elliptical pool table)","pool","loop","this level takes place inside an ellipse with bouncy sides. the two crosses shown in the level are the two foci of the ellipse. if you fly through one focus then bounce off the side (without firing your engines) you will end up going through the other focus."],
 
     // Torus levels
-    ["torus (top view)","torus","top_v"],
-    ["torus (projected)","torus","projected"],
+    ["torus (top view)","torus","top_v","this level takes place on a (non-flat) torus viewed from above."],
+    ["torus (projected)","torus","projected","this level takes place on a (non-flat) torus. the connectivity is the same as the standard level but you don't always travel in a straight line due to the curvature of the torus."],
 
     // Hyperbolic levels
-    ["hyperbolic circle (poincaré disk)","hyperbolic","Poincare"],
-    ["hyperbolic circle (beltrami-klein)","hyperbolic","Beltrami-Klein"],
-    ["hyperbolic circle (poincaré half-plane)","hyperbolic","Poincare HP"],
-    ["hyperbolic circle (hyperboloid)","hyperbolic","hyperboloid"],
-    ["hyperbolic circle (gans)","hyperbolic","gans"],
-    ["hyperbolic circle (band)","hyperbolic","band"],
-    ["unbounded hyperbolic (poincaré disk)","hyperbolicunbounded","Poincare"],
-    ["unbounded hyperbolic (beltrami-klein)","hyperbolicunbounded","Beltrami-Klein"],
+    ["hyperbolic circle (poincarE disk)","hyperbolic","Poincare","this level takes place in hyperbolic space. straight lines in the poincarE disk are represented by circles that meet the edge of the disk at right angles. this level is bounded: if you go too far from the centre you will bounce off the edge."],
+    ["hyperbolic circle (beltrami-klein)","hyperbolic","Beltrami-Klein","this level takes place in hyperbolic space. straight lines in the beltrami-klein disk are represented by straight lines. this level is bounded: if you go too far from the centre you will bounce off the edge."],
+    ["hyperbolic circle (poincarE half-plane)","hyperbolic","Poincare HP","this level takes place in hyperbolic space. straight lines in the poincarE half-plane are represented by circles that meet the edge of the half-plane at right angles. this level is bounded: if you go too far from the centre you will bounce off the edge."],
+    ["hyperbolic circle (hyperboloid)","hyperbolic","hyperboloid","this level takes place in hyperbolic space represented on a hyperboloid. this level is bounded: if you go too far from the centre you will bounce off the edge."],
+    ["hyperbolic circle (gans)","hyperbolic","gans","this level takes place in hyperbolic space represented using the gans model. this level is bounded: if you go too far from the centre you will bounce off the edge."],
+    ["hyperbolic circle (band)","hyperbolic","band","this level takes place in hyperbolic space represented using the band model. this level is bounded: if you go too far from the centre you will bounce off the edge."],
+    ["unbounded hyperbolic (poincarE disk)","hyperbolicunbounded","Poincare","this level takes place in hyperbolic space. straight lines in the poincarE disk are represented by circle that meet the edge of the disk at right angles. this level is unbounded: if you go too far from the centre then the level will scroll."],
+    ["unbounded hyperbolic (beltrami-klein)","hyperbolicunbounded","Beltrami-Klein","this level takes place in hyperbolic space. straight lines in the beltrami-klein disk are represented by straight lines. this level is unbounded: if you go too far from the centre then the level will scroll."],
+
+    // Credits
+    ["credits","flattorus","flat","play this level to find out who made this game"],
 ]
 
 var projections = []
@@ -214,7 +217,7 @@ function make_new_asteroids(n){
     for(var i=0;i<n;i++){
         new_a = {"hangle":spaceship["hangle"],"vangle":spaceship["vangle"],
                  "rotation":Math.random()*Math.PI*2,"direction":Math.random()*Math.PI*2,
-                 "size":4,"sides":2,
+                 "size":4,"sides":2,"type":"standard",
                  "radius":1,"speed":1}
         if(options["surface"].substring(0,4) == "flat"){
             new_a["speed"] = 0.5+Math.random()*0.5
@@ -265,6 +268,27 @@ function make_new_asteroids(n){
         new_a["sides"] = as["sides"]
 
         out[i] = new_a
+    }
+    if(games[game_n][0] == "credits"){
+        var lines = Array(
+            Array("mathsteroids v" + VERSION, 100),
+            Array("created by matthew scroggs", 130),
+            Array("mscroggs.co.uk/mathsteroids", 160),
+            Array("source code available at", 350),
+            Array("github.com/mscroggs/mathsteroids", 380),
+        )
+        for(var i=0;i<lines.length;i++){
+            var text = lines[i][0]
+            var y = lines[i][1]
+            var x = 100
+            for (var j=0;j<text.length;j++){
+                var letter = text.charAt(j)
+                if(letter!=" "){
+                    out[out.length] = {"hangle": x,"vangle":y,"rotation":0,"direction":0,"size":2,"sides":4,"type":letter,"radius":12,"speed":0}
+                }
+                x = add_letter_x(letter, x, 0.5)
+            }
+        }
     }
     return out
 }
@@ -1446,7 +1470,7 @@ function move_asteroids(){
                 var new_a = {"hangle":a["hangle"],"vangle":a["vangle"],
                              "rotation":a["rotation"]-Math.PI/4+Math.random()*Math.PI/2,"speed":speed_start+Math.random()*1.1*a["speed"],
                              "direction":a["direction"]-Math.PI/4+Math.random()*Math.PI/2,
-                             "size":a["size"]-1,"radius":0.01,"sides":2}
+                             "size":a["size"]-1,"radius":0.01,"sides":2,"type":"standard"}
                 var as = get_a_s(new_a)
                 new_a["radius"] = as["radius"]
                 new_a["sides"] = as["sides"]
@@ -1455,7 +1479,7 @@ function move_asteroids(){
                 var new_b = {"hangle":a["hangle"],"vangle":a["vangle"],
                              "rotation":a["rotation"]+Math.PI/4+Math.random()*Math.PI/2,"speed":speed_start+Math.random()*1.1*a["speed"],
                              "direction":a["direction"]+Math.PI/4+Math.random()*Math.PI/2,
-                             "size":a["size"]-1,"radius":0.01,"sides":2}
+                             "size":a["size"]-1,"radius":0.01,"sides":2,"type":"standard"}
                 var as = get_a_s(new_b)
                 new_b["radius"] = as["radius"]
                 new_b["sides"] = as["sides"]
@@ -1681,6 +1705,22 @@ function explode_sprite(f){
 }
 
 function asteroid_sprite(a){
+    if(a["type"] != "standard") {
+        var letter = a["type"]
+        if(!(letter in font_data)){
+            letter = "??"
+        }
+        var lines = font_data[letter]
+        var out = Array()
+        for(var i = 0; i < lines.length;i++){
+            var group = Array()
+            for(var j = 0; j < lines[i].length;j++){
+                group[j] = Array(a["hangle"] + lines[i][j][0] * 0.5, a["vangle"] + lines[i][j][1] * 0.5)
+            }
+            out[i] = group
+        }
+        return out
+    }
     var out = Array()
     var r = a["radius"]
     var sides = a["sides"]

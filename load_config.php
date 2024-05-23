@@ -8,6 +8,7 @@ $config_defaults = Array(
     "centered" => false,
     "show-webad" => false,
     "show-instructions" => true,
+    "show-control-buttons" => true,
     "debug" => false,
     "sound" => false,
     "sound-dir" => "sounds/default",

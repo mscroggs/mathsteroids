@@ -71,7 +71,7 @@ var games = [
     ["sphere (mollweide projection)","sphere","Mollweide"],
     ["sphere (goode homolosine projection)","sphere","Goode"],
     ["sphere (van der grinten projection)","sphere","van der Grinten"],
-    ["sphere (plate carée projection)","sphere","plate caree"],
+    ["sphere (plate carEe projection)","sphere","plate caree"],
     ["sphere (dymaxion map)","sphere","dymaxion"],
     ["sphere (tetrahedron net)","sphere","tetrahedron"],
     ["sphere (cube net)","sphere","cube"],
@@ -81,7 +81,7 @@ var games = [
 
     // Flat levels
     ["(flat) cylinder","flatcylinder","flat"],
-    ["(flat) möbius strip","flatmobius","flat"],
+    ["(flat) mObius strip","flatmobius","flat"],
     ["(flat) torus","flattorus","flat"],
     ["(flat) klein bottle","flatKlein","flat"],
     ["(flat) real projective plane","flatreal-pp","flat"],
@@ -93,13 +93,13 @@ var games = [
     ["torus (projected)","torus","projected"],
 
     // Hyperbolic levels
-    ["hyperbolic circle (poincaré disk)","hyperbolic","Poincare"],
+    ["hyperbolic circle (poincarE disk)","hyperbolic","Poincare"],
     ["hyperbolic circle (beltrami-klein)","hyperbolic","Beltrami-Klein"],
-    ["hyperbolic circle (poincaré half-plane)","hyperbolic","Poincare HP"],
+    ["hyperbolic circle (poincarE half-plane)","hyperbolic","Poincare HP"],
     ["hyperbolic circle (hyperboloid)","hyperbolic","hyperboloid"],
     ["hyperbolic circle (gans)","hyperbolic","gans"],
     ["hyperbolic circle (band)","hyperbolic","band"],
-    ["unbounded hyperbolic (poincaré disk)","hyperbolicunbounded","Poincare"],
+    ["unbounded hyperbolic (poincarE disk)","hyperbolicunbounded","Poincare"],
     ["unbounded hyperbolic (beltrami-klein)","hyperbolicunbounded","Beltrami-Klein"],
 ]
 

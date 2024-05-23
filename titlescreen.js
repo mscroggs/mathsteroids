@@ -1298,6 +1298,11 @@ function draw_surface(ctx){
     }
     if(options["projection"]=="Mercator" || options["projection"] == "Gall" || options["projection"]=="flat" || options["projection"] == "projected" ||
        options["projection"]=="plate caree"){
+        if(games[game_n][0] == "credits"){
+            add_scaled_text(ctx, "mathsteroids v"+VERSION, 3*WIDTH/4-90, HEIGHT/2-25, 0.25)
+            add_scaled_text(ctx, "created by matthew scroggs", 3*WIDTH/4-90, HEIGHT/2, 0.25)
+            add_scaled_text(ctx, "mscroggs.co.uk/mathsteroids", 3*WIDTH/4-90, HEIGHT/2+25, 0.25)
+        }
         draw_a_plane(ctx,3*WIDTH/4)
     }
     if(options["projection"]=="stereographic"){
@@ -1445,7 +1450,7 @@ function redraw_menu(){
 
 function draw_titles(ctx){
     add_text(ctx, "Mathsteroids", 20, 70)
-    add_scaled_text(ctx, "v"+VERSION, 405, 70, 0.6)
+    add_scaled_text(ctx, "v"+VERSION, 350, 30, 0.4)
 }
 
 function add_text(ctx, text, x, y){

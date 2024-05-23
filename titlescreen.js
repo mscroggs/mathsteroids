@@ -12,6 +12,8 @@
 /*                   an MIT license */
 /************************************/
 
+var info_shown = false
+
 function show_menu(){
     titlescreen = true
     menu_tick()
@@ -1380,6 +1382,10 @@ function menu_tick(){
         firePressed = false
         start_game()
     }
+    if(upPressed != info_shown){
+        info_shown = upPressed
+        redraw_menu()
+    }
 }
 
 function redraw_menu(){
@@ -1424,19 +1430,47 @@ function redraw_menu(){
     }
     add_scaled_text(ctx,"surface:",20,HEIGHT-45,0.5)
     add_scaled_text(ctx,"<< "+game_title+" >>",150,HEIGHT-45,0.5)
+    add_scaled_text(ctx,"press <forward> for info",20,HEIGHT-20,0.5)
     add_scaled_text(ctx,"press <fire> to begin",WIDTH-295,HEIGHT-20,0.5)
-    draw_mute(ctx)
     ctx.stroke();
+    draw_mute(ctx)
+    if(info_shown){
+        ctx.fillStyle = "#000000CC";
+        ctx.fillRect(0,80,WIDTH,HEIGHT-150);
+        ctx.beginPath()
+        add_wrapped_text(ctx, games[game_n][3], 50, 120, WIDTH-100)
+        ctx.stroke();
+    }
 }
 
 function draw_titles(ctx){
     add_text(ctx, "Mathsteroids", 20, 70)
-    add_scaled_text(ctx, "created by matthew scroggs (mscroggs.co.uk/mathsteroids)", 5, 445, 0.3)
+//    add_scaled_text(ctx, "created by matthew scroggs (mscroggs.co.uk/mathsteroids)", 5, 445, 0.3)
     add_scaled_text(ctx, "v"+VERSION, 405, 70, 0.6)
 }
 
 function add_text(ctx, text, x, y){
     add_scaled_text(ctx, text, x, y, 1)
+}
+function add_wrapped_text(ctx, text, x, y, width){
+    var scale = 0.5
+    var words = text.split(" ")
+    var new_x = x
+    var x_in = x
+    for (var i=0;i<words.length;i++) {
+        new_x = x
+        for(var j=0;j<words[i].length;j++) {
+            new_x = add_letter_x(words[i].charAt(j), new_x, y, scale)
+        }
+        if (new_x > x_in + width) {
+            x = x_in
+            y += 50*scale
+        }
+        for(var j=0;j<words[i].length;j++) {
+            x = add_letter(ctx, words[i].charAt(j), x, y, scale);
+        }
+        x = add_letter(ctx, " ", x, y, scale);
+    }
 }
 function add_scaled_text(ctx, text, x, y, scale){
     for (var i=0;i<text.length;i++) {
@@ -1463,6 +1497,23 @@ function add_letter(ctx,letter,x,y,scale){
             } else {
                 ctx.lineTo(x+lines[j][i][0]*scale,y+lines[j][i][1]*scale)
             }
+            xout = Math.max(xout,x+lines[j][i][0]*scale)
+        }
+    }
+    return xout+10*scale
+}
+
+function add_letter_x(letter,x,y,scale){
+    if(letter==" "){
+        return x+20*scale
+    }
+    if(!(letter in font_data)){
+        letter = "??"
+    }
+    var lines = font_data[letter]
+    xout = x
+    for(var j=0;j<lines.length;j++){
+        for(var i=0;i<lines[j].length;i++){
             xout = Math.max(xout,x+lines[j][i][0]*scale)
         }
     }

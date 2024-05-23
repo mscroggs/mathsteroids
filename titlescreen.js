@@ -1445,7 +1445,6 @@ function redraw_menu(){
 
 function draw_titles(ctx){
     add_text(ctx, "Mathsteroids", 20, 70)
-//    add_scaled_text(ctx, "created by matthew scroggs (mscroggs.co.uk/mathsteroids)", 5, 445, 0.3)
     add_scaled_text(ctx, "v"+VERSION, 405, 70, 0.6)
 }
 

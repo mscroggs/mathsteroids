@@ -7,6 +7,7 @@
 
 - Add default sound effects
 - Allow player to mute sound
+- Added credits level
 
 # Version 3.2 (20 January 2024)
 

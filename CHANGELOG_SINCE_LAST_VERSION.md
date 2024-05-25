@@ -1,0 +1,2 @@
+- Add descriptions of each level
+- Allow control buttons to be hidden

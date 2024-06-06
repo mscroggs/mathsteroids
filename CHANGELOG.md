@@ -1,3 +1,10 @@
+# Version 4.0 (06 June 2024)
+
+- Add descriptions of each level
+- Allow control buttons to be hidden
+- Add credits level
+- Add EMF controller
+
 # Version 3.3 (21 January 2024)
 
 - Add default sound effects

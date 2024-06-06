@@ -1,16 +1,13 @@
-/************************************/
-/*                                  */
-/*           Mathsteroids           */
-/*                                  */
-/************************************/
-/* This code was written            */
-/*               by Matthew Scroggs */
-/*    mscroggs.co.uk/mathsteroids   */
-/* github.com/mscroggs/mathsteroids */
-/************************************/
-/* This code is licensed under      */
-/*                   an MIT license */
-/************************************/
+/**********************************************/
+/*                                            */
+/*                Mathsteroids                */
+/*                                            */
+/*         Created by Matthew Scroggs         */
+/*         mscroggs.co.uk/mathsteroids        */
+/*      github.com/mscroggs/mathsteroids      */
+/*                                            */
+/* This code is licensed under an MIT license */
+/**********************************************/
 
 var info_shown = false
 
@@ -1430,6 +1427,10 @@ function redraw_menu(){
         } else if(game_config("controller") == "mega-drive") {
             add_scaled_text(ctx,"&",WIDTH-300,50,0.5)
             add_scaled_text(ctx,"b",WIDTH-300,75,0.5)
+            add_scaled_text(ctx,"F",WIDTH-210,75,0.5)
+        } else if(game_config("controller") == "emf") {
+            add_scaled_text(ctx,"&",WIDTH-300,50,0.5)
+            add_scaled_text(ctx,"a",WIDTH-300,75,0.5)
             add_scaled_text(ctx,"F",WIDTH-210,75,0.5)
         }
     }

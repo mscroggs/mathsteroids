@@ -1,16 +1,13 @@
-/************************************/
-/*                                  */
-/*           Mathsteroids           */
-/*                                  */
-/************************************/
-/* This code was written            */
-/*               by Matthew Scroggs */
-/*    mscroggs.co.uk/mathsteroids   */
-/* github.com/mscroggs/mathsteroids */
-/************************************/
-/* This code is licensed under      */
-/*                   an MIT license */
-/************************************/
+/**********************************************/
+/*                                            */
+/*                Mathsteroids                */
+/*                                            */
+/*         Created by Matthew Scroggs         */
+/*         mscroggs.co.uk/mathsteroids        */
+/*      github.com/mscroggs/mathsteroids      */
+/*                                            */
+/* This code is licensed under an MIT license */
+/**********************************************/
 
 var muteDone = false
 
@@ -92,7 +89,30 @@ function do_gamepad(){
         }
         document.getElementById("debug").innerHTML = html
     }
-    if(game_config("controller") == "playstation") {
+    if(game_config("controller") == "emf") {
+        gp = navigator.getGamepads()[0];
+        if(!gp){return}
+        if(gp.buttons[0].pressed || gp.buttons[1].pressed || gp.buttons[2].pressed || gp.buttons[3].pressed) {
+            firePressed = true
+        } else {
+            firePressed = false
+        }
+        if(gp.buttons[12].pressed || gp.axes[1] < -0.8){
+            upPressed = true
+        } else {
+            upPressed = false
+        }
+        if(gp.axes[0] > 0.8){
+            rightPressed = true
+        } else {
+            rightPressed = false
+        }
+        if(gp.axes[0] < -0.8){
+            leftPressed = true
+        } else {
+            leftPressed = false
+        }
+    } else if(game_config("controller") == "playstation") {
         gp = navigator.getGamepads()[0];
         if(!gp){return}
         if(gp.buttons[3].pressed){ //gp.buttons[5].pressed || gp.buttons[4].pressed){

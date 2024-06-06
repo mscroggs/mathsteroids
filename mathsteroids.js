@@ -1,16 +1,13 @@
-/************************************/
-/*                                  */
-/*           Mathsteroids           */
-/*                                  */
-/************************************/
-/* This code was written            */
-/*               by Matthew Scroggs */
-/*    mscroggs.co.uk/mathsteroids   */
-/* github.com/mscroggs/mathsteroids */
-/************************************/
-/* This code is licensed under      */
-/*                   an MIT license */
-/************************************/
+/**********************************************/
+/*                                            */
+/*                Mathsteroids                */
+/*                                            */
+/*         Created by Matthew Scroggs         */
+/*         mscroggs.co.uk/mathsteroids        */
+/*      github.com/mscroggs/mathsteroids      */
+/*                                            */
+/* This code is licensed under an MIT license */
+/**********************************************/
 
 // inputs
 var quitPressed  = false;

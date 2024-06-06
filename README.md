@@ -60,7 +60,7 @@ in the configuration JSON:
 | `"game-mode"`            | `"lives"`, `"time"`  | `"lives"`          | Set the game mode. If `"lives"`, player start with 3 lives and games end when lives run out. If `"time", games will last 30 seconds, with negative points given for losing a "life" |
 | `"pre-html"`             | Any string           | `""`               | HTML to place above the game |
 | `"centered"`             | `true`, `false`      | `false`            | Toggles centering of content |
-| `"show-webad"`           | `true`, `false`      | `false`            | Toggles advert below game saying you can play it onling|
+| `"show-webad"`           | `true`, `false`      | `false`            | Toggles advert below game saying you can play it online |
 | `"show-instructions"`    | `true`, `false`      | `true`             | Toggles instructions that can be displayed below the game |
 | `"show-control-buttons"` | `true`, `false`      | `true`             | Toggles control buttons shown below the game |
 | `"debug"`                | `true`, `false`      | `false`            | Toggles the visibility of debug information |

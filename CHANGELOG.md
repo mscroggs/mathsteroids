@@ -1,8 +1,3 @@
-# Version 4.0 (25 May 2024)
-
-- Add descriptions of each level
-- Allow control buttons to be hidden
-
 # Version 3.3 (21 January 2024)
 
 - Add default sound effects

@@ -198,7 +198,7 @@ document.addEventListener('mouseup', function(event){
     button_styles()
 });
 
-if(game_config("show-display-buttons")){
+if(game_config("show-control-buttons")){
 document.getElementById("display_up").addEventListener('touchmove', function(event){
     event.preventDefault()
 });

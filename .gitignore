@@ -1,3 +1,4 @@
-.*.swp
 index.html
 config.json
+
+*.pyc

@@ -72,7 +72,7 @@ in the configuration JSON:
 | ------------------------ | -------------------- | ------------------ | ----------- |
 | `"high-scores"`          | `true`, `false`      | `false`            | Toggles high score tables |
 | `"controller"`           | `"none"`, `"playstation"`, `"mega-drive"`, `"emf"` | `"none"`           | Allows input from a controller to be used |
-| `"game-mode"`            | `"lives"`, `"time"`  | `"lives"`          | Set the game mode. If `"lives"`, player start with 3 lives and games end when lives run out. If `"time", games will last 30 seconds, with negative points given for losing a "life" |
+| `"game-mode"`            | `"lives"`, `"time"`  | `"lives"`          | Set the game mode. If `"lives"`, player start with 3 lives and games end when lives run out. If `"time"`, games will last 30 seconds, with negative points given for losing a "life" |
 | `"pre-html"`             | Any string           | `""`               | HTML to place above the game |
 | `"centered"`             | `true`, `false`      | `false`            | Toggles centering of content |
 | `"show-webad"`           | `true`, `false`      | `false`            | Toggles advert below game saying you can play it online |

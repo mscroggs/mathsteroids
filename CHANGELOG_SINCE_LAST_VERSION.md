@@ -1,0 +1,1 @@
+- Fix control buttons bug

@@ -329,7 +329,7 @@ document.getElementById("display_right").addEventListener('touchend', function(e
 });
 }
 function button_styles(){
-    if(game_config("sound")){
+    if(game_config("show-control-buttons")){
         if(quitPressed){
             document.getElementById("display_quit").style.backgroundColor="red"
         } else {

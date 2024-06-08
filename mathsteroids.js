@@ -791,12 +791,16 @@ function draw_shape(){
                 var vangle = 0
                 var hangle = 0
                 var N = 100
-                if(circle==1){hangle=3*Math.PI/4}
+                if(circle==1){
+                    hangle=3*Math.PI/4
+                }
                 var prev = vangle
                 var preh = hangle
-                for(var i=0;i<N;i++){
-                    if(circle==0){hangle += Math.PI*2/N}
-                    else{vangle += Math.PI*2/N}
+                for(var i=1;i<=N;i++){
+                    hangle += Math.PI*2/N
+                    if(circle==1){
+                        vangle = Math.atan(Math.cos(hangle)+Math.sin(hangle))
+                    }
                     add_line_to_draw(Array(preh,prev,hangle,vangle))
                     prev = vangle
                     preh = hangle
@@ -1805,7 +1809,8 @@ function add_line_to_draw(thing){
         var vangle = (thing[1]+thing[3])/2
         var x = Math.cos(vangle) * Math.cos(hangle)
         var y = Math.cos(vangle) * Math.sin(hangle)
-        if(x+y<-0.1){
+        var z = Math.sin(vangle)
+        if(x+y-z<-0.1){
             back_points[back_points.length] = thing
             return
         }
@@ -2165,11 +2170,11 @@ function isometric_xy(hangle,vangle){
     var x = RADIUS * Math.cos(vangle) * Math.cos(hangle)
     var y = RADIUS * Math.cos(vangle) * Math.sin(hangle)
     var z = RADIUS * Math.sin(vangle)
-    var x2 = (x-y) * Math.sin(30)
-    var y2 = z + (x+y) * Math.cos(30)
+    var x2 = (y-x) * Math.cos(Math.PI/6)
+    var y2 = z + (x+y) * Math.sin(Math.PI/6)
     var out = {}
-    out["x"] = WIDTH/2 + x2/(2.2*RADIUS) * Math.min(HEIGHT, WIDTH)
-    out["y"] = HEIGHT/2 + y2/(2.2*RADIUS) * Math.min(HEIGHT, WIDTH)
+    out["x"] = WIDTH/2 + x2/(2.5*RADIUS) * Math.min(HEIGHT, WIDTH)
+    out["y"] = HEIGHT/2 + y2/(2.5*RADIUS) * Math.min(HEIGHT, WIDTH)
     return out
 }
 

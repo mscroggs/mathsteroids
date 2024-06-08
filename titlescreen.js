@@ -29,17 +29,19 @@ function draw_a_sphere(ctx, xcenter){
             var x = Math.cos(vangle) * Math.cos(hangle)
             var y = Math.cos(vangle) * Math.sin(hangle)
             var z = Math.sin(vangle)
-            var x2 = (x-y) * Math.sin(30)
-            var y2 = z + (x+y) * Math.cos(30)
+            var x2 = (x-y) * Math.cos(Math.PI/6)
+            var y2 = z + (x+y) * Math.sin(Math.PI/6)
             var x3 = xcenter + x2 * 100
             var y3 = HEIGHT/2 + y2 * 100
-            if(i==0 || (i%2==0 && x+y<-0.2)){
+            if(i==0 || (i%2==0 && x+y-z<-0.2)){
                 ctx.moveTo(x3,y3)
             } else {
                 ctx.lineTo(x3,y3)
             }
-            if(circle==0){hangle += Math.PI*2/N}
-            else{vangle += Math.PI*2/N}
+            hangle += Math.PI*2/N
+            if(circle==1){
+                vangle = Math.atan(Math.cos(hangle)+Math.sin(hangle))
+            }
         }
     }
 }

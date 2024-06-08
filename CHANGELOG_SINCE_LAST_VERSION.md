@@ -1,1 +1,2 @@
 - Fix control buttons bug
+- Correct isometric level

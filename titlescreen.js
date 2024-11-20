@@ -1424,7 +1424,6 @@ function redraw_menu(){
             add_scaled_text(ctx,"#",WIDTH-300,50,0.5)
             add_scaled_text(ctx,"@",WIDTH-300,75,0.5)
             add_scaled_text(ctx,"*",WIDTH-210,75,0.5)
-            add_scaled_text(ctx,"%",WIDTH-90,75,0.5)
         } else if(game_config("controller") == "mega-drive") {
             add_scaled_text(ctx,"&",WIDTH-300,50,0.5)
             add_scaled_text(ctx,"b",WIDTH-300,75,0.5)

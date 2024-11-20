@@ -1421,7 +1421,6 @@ function redraw_menu(){
         add_scaled_text(ctx,"fire",WIDTH-275,75,0.35)
         add_scaled_text(ctx,"forward",WIDTH-185,75,0.35)
         if(game_config("controller") == "playstation") {
-            add_scaled_text(ctx,"quit",WIDTH-65,75,0.35)
             add_scaled_text(ctx,"#",WIDTH-300,50,0.5)
             add_scaled_text(ctx,"@",WIDTH-300,75,0.5)
             add_scaled_text(ctx,"*",WIDTH-210,75,0.5)
